@@ -52,3 +52,12 @@ Thumbs.db
 .env
 .env.local
 .env.*.local
+
+# Compiled serverless output
+api/app.js
+api/app.js.map
+api/pino-*.js
+api/pino-*.js.map
+api/thread-stream-worker.js
+api/thread-stream-worker.js.map
+

@@ -1,13 +1,22 @@
 {
   "version": 2,
-  "rewrites": [
+  "buildCommand": "pnpm run vercel-build",
+  "outputDirectory": "artifacts/onelife-finance/dist/public",
+  "installCommand": "pnpm install",
+  "framework": null,
+  "functions": {
+    "api/app.js": {
+      "runtime": "@vercel/node@5"
+    }
+  },
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/app"
+      "src": "/api/(.*)",
+      "dest": "/api/app.js"
     },
     {
-      "source": "/((?!api/).*)",
-      "destination": "/index.html"
+      "src": "/(.*)",
+      "dest": "/$1"
     }
   ]
 }

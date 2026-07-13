@@ -1,0 +1,1499 @@
+You are a Microsoft Principal Software Architect, Senior UX Designer, Product Designer, Financial Software Expert, and Senior Full Stack Engineer with over 25 years of experience.
+
+
+
+Your task is to build a COMPLETE production-ready Personal Finance Management (PFM) web application.
+
+
+
+This is NOT a demo.
+
+
+
+This is NOT a college project.
+
+
+
+This should be designed like a real SaaS product similar to:
+
+
+
+• CRED
+
+• Zerodha Console
+
+• INDMoney
+
+• Walnut
+
+• MoneyView
+
+• Monarch Money
+
+• YNAB
+
+• Rocket Money
+
+
+
+The application should be enterprise-grade with clean architecture, excellent UI/UX, reusable components, scalable database design, responsive layouts, accessibility, and modern coding standards.
+
+
+
+======================================================
+
+TECH STACK
+
+======================================================
+
+
+
+Frontend
+
+
+
+• HTML5
+
+• CSS3
+
+• Bootstrap 5.3
+
+• JavaScript ES2023
+
+• Chart.js
+
+• ApexCharts
+
+• FontAwesome
+
+• Bootstrap Icons
+
+• Google Material Icons
+
+• Animate.css
+
+• AOS Animation
+
+• SweetAlert2
+
+• Flatpickr
+
+
+
+Backend
+
+
+
+ASP.NET Core .NET 11
+
+
+
+Entity Framework Core
+
+
+
+SQLite (Development)
+
+
+
+PostgreSQL (Production)
+
+
+
+REST APIs
+
+
+
+JWT Authentication
+
+
+
+======================================================
+
+ARCHITECTURE
+
+======================================================
+
+
+
+Use proper folder structure.
+
+
+
+Follow
+
+
+
+Clean Architecture
+
+
+
+SOLID Principles
+
+
+
+DRY
+
+
+
+KISS
+
+
+
+Repository Pattern
+
+
+
+Dependency Injection
+
+
+
+CQRS (where needed)
+
+
+
+Service Layer
+
+
+
+Validation Layer
+
+
+
+DTOs
+
+
+
+Global Exception Handling
+
+
+
+Logging
+
+
+
+======================================================
+
+PROJECT NAME
+
+======================================================
+
+
+
+OneLife Finance
+
+
+
+======================================================
+
+THEME
+
+======================================================
+
+
+
+Modern
+
+
+
+Premium
+
+
+
+Banking Dashboard
+
+
+
+Glassmorphism
+
+
+
+Soft Shadows
+
+
+
+Rounded Cards
+
+
+
+Animated Counters
+
+
+
+Gradient Cards
+
+
+
+Professional Color Palette
+
+
+
+======================================================
+
+PRIMARY COLORS
+
+======================================================
+
+
+
+Primary
+
+
+
+#2563EB
+
+
+
+Success
+
+
+
+#16A34A
+
+
+
+Warning
+
+
+
+#FACC15
+
+
+
+Danger
+
+
+
+#DC2626
+
+
+
+Info
+
+
+
+#0EA5E9
+
+
+
+Background
+
+
+
+#F8FAFC
+
+
+
+Dark
+
+
+
+#111827
+
+
+
+======================================================
+
+DARK MODE
+
+======================================================
+
+
+
+Implement complete Dark Mode
+
+
+
+Remember user preference
+
+
+
+======================================================
+
+SIDEBAR
+
+======================================================
+
+
+
+Dashboard
+
+
+
+Income
+
+
+
+Expenses
+
+
+
+Loans
+
+
+
+EMI Tracker
+
+
+
+Insurance
+
+
+
+Investments
+
+
+
+Savings
+
+
+
+Budget Planner
+
+
+
+Goals
+
+
+
+Transactions
+
+
+
+Calendar
+
+
+
+Reports
+
+
+
+Analytics
+
+
+
+Notifications
+
+
+
+Documents
+
+
+
+Settings
+
+
+
+Profile
+
+
+
+======================================================
+
+TOP NAVIGATION
+
+======================================================
+
+
+
+Search
+
+
+
+Profile
+
+
+
+Theme Switch
+
+
+
+Notifications
+
+
+
+Current Month
+
+
+
+Current Savings
+
+
+
+======================================================
+
+DASHBOARD
+
+======================================================
+
+
+
+Design a beautiful dashboard.
+
+
+
+Top KPI Cards
+
+
+
+Monthly Income
+
+
+
+Monthly Expenses
+
+
+
+Remaining Balance
+
+
+
+Savings
+
+
+
+Net Worth
+
+
+
+Total Loans
+
+
+
+Investment Value
+
+
+
+Insurance Coverage
+
+
+
+EMIs Due
+
+
+
+Upcoming Payments
+
+
+
+Emergency Fund
+
+
+
+Each card should
+
+
+
+Animate
+
+
+
+Have icons
+
+
+
+Hover effects
+
+
+
+Gradient backgrounds
+
+
+
+Trend indicators
+
+
+
+======================================================
+
+CHARTS
+
+======================================================
+
+
+
+Expense Pie Chart
+
+
+
+Income vs Expense
+
+
+
+Monthly Savings
+
+
+
+Loan Progress
+
+
+
+Cash Flow
+
+
+
+Category Breakdown
+
+
+
+Investment Growth
+
+
+
+Yearly Comparison
+
+
+
+EMI Trend
+
+
+
+Budget Utilization
+
+
+
+======================================================
+
+MODULES
+
+======================================================
+
+
+
+1 Dashboard
+
+
+
+2 Income
+
+
+
+Salary
+
+
+
+Bonus
+
+
+
+Freelancing
+
+
+
+Rental Income
+
+
+
+Interest
+
+
+
+Other Income
+
+
+
+Recurring Income
+
+
+
+3 Expenses
+
+
+
+Groceries
+
+
+
+Vegetables
+
+
+
+Milk
+
+
+
+Fuel
+
+
+
+Internet
+
+
+
+Electricity
+
+
+
+Water
+
+
+
+Gas
+
+
+
+House Rent
+
+
+
+Medical
+
+
+
+Shopping
+
+
+
+Dining
+
+
+
+Entertainment
+
+
+
+Kids
+
+
+
+Travel
+
+
+
+Office
+
+
+
+Misc
+
+
+
+4 Loan Management
+
+
+
+Multiple Loans
+
+
+
+Home Loan
+
+
+
+Car Loan
+
+
+
+Personal Loan
+
+
+
+Gold Loan
+
+
+
+Education Loan
+
+
+
+Each Loan
+
+
+
+Outstanding Amount
+
+
+
+Interest
+
+
+
+EMI
+
+
+
+Months Remaining
+
+
+
+Loan Documents
+
+
+
+Prepayment
+
+
+
+Amortization Schedule
+
+
+
+Progress Bar
+
+
+
+Interest Paid
+
+
+
+Principal Paid
+
+
+
+5 EMI Tracker
+
+
+
+Due Date
+
+
+
+Paid Date
+
+
+
+Status
+
+
+
+Paid
+
+
+
+Pending
+
+
+
+Overdue
+
+
+
+Partial
+
+
+
+Color coded
+
+
+
+Green
+
+
+
+Yellow
+
+
+
+Red
+
+
+
+6 Insurance
+
+
+
+Health
+
+
+
+Life
+
+
+
+Car
+
+
+
+House
+
+
+
+Term
+
+
+
+Renewal
+
+
+
+Premium
+
+
+
+Reminder
+
+
+
+Policy PDF
+
+
+
+7 Investments
+
+
+
+Mutual Funds
+
+
+
+Stocks
+
+
+
+PPF
+
+
+
+NPS
+
+
+
+FD
+
+
+
+Gold
+
+
+
+Crypto
+
+
+
+Returns
+
+
+
+XIRR
+
+
+
+Profit Loss
+
+
+
+8 Savings Goals
+
+
+
+Emergency Fund
+
+
+
+Vacation
+
+
+
+Car
+
+
+
+House
+
+
+
+Kids Education
+
+
+
+Retirement
+
+
+
+Each Goal
+
+
+
+Target
+
+
+
+Current
+
+
+
+Progress
+
+
+
+ETA
+
+
+
+9 Budget Planner
+
+
+
+Monthly Budget
+
+
+
+Actual Expense
+
+
+
+Remaining Budget
+
+
+
+Color indicators
+
+
+
+Progress Bars
+
+
+
+Alerts
+
+
+
+10 Transactions
+
+
+
+Beautiful Data Table
+
+
+
+Search
+
+
+
+Filter
+
+
+
+Sort
+
+
+
+Export
+
+
+
+Import
+
+
+
+11 Reports
+
+
+
+Monthly Report
+
+
+
+Yearly Report
+
+
+
+Expense Report
+
+
+
+Income Report
+
+
+
+Loan Report
+
+
+
+Investment Report
+
+
+
+Insurance Report
+
+
+
+Budget Report
+
+
+
+Cash Flow Report
+
+
+
+Net Worth Report
+
+
+
+======================================================
+
+DATABASE
+
+======================================================
+
+
+
+Design a proper normalized SQLite database.
+
+
+
+Include
+
+
+
+Primary Keys
+
+
+
+Foreign Keys
+
+
+
+Indexes
+
+
+
+Seed Data
+
+
+
+Relationships
+
+
+
+Migration Scripts
+
+
+
+======================================================
+
+USER EXPERIENCE
+
+======================================================
+
+
+
+Responsive
+
+
+
+Desktop
+
+
+
+Laptop
+
+
+
+Tablet
+
+
+
+Mobile
+
+
+
+Beautiful animations
+
+
+
+Smooth transitions
+
+
+
+Professional typography
+
+
+
+Large spacing
+
+
+
+Consistent icons
+
+
+
+Accessible UI
+
+
+
+Loading skeletons
+
+
+
+Empty states
+
+
+
+Success messages
+
+
+
+Validation
+
+
+
+======================================================
+
+FEATURES
+
+======================================================
+
+
+
+Global Search
+
+
+
+Export PDF
+
+
+
+Export Excel
+
+
+
+Import CSV
+
+
+
+Recurring Transactions
+
+
+
+Recurring EMIs
+
+
+
+Notifications
+
+
+
+Reminder Engine
+
+
+
+Calendar
+
+
+
+Upcoming Bills
+
+
+
+Dashboard Widgets
+
+
+
+Custom Themes
+
+
+
+Profile Picture
+
+
+
+Document Upload
+
+
+
+Loan Documents
+
+
+
+Insurance PDFs
+
+
+
+Expense Receipts
+
+
+
+Monthly Notes
+
+
+
+======================================================
+
+DASHBOARD REQUIREMENTS
+
+======================================================
+
+
+
+Dashboard should automatically update whenever data changes.
+
+
+
+If user adds
+
+
+
+Expense
+
+
+
+Income
+
+
+
+Loan
+
+
+
+Insurance
+
+
+
+Investment
+
+
+
+EMI
+
+
+
+Budget
+
+
+
+Dashboard must refresh automatically.
+
+
+
+No manual refresh.
+
+
+
+======================================================
+
+STATUS COLORS
+
+======================================================
+
+
+
+Paid
+
+
+
+Green
+
+
+
+Pending
+
+
+
+Yellow
+
+
+
+Overdue
+
+
+
+Red
+
+
+
+Cancelled
+
+
+
+Gray
+
+
+
+======================================================
+
+ICONS
+
+======================================================
+
+
+
+Use FontAwesome
+
+
+
+Bootstrap Icons
+
+
+
+Material Icons
+
+
+
+Choose meaningful icons.
+
+
+
+======================================================
+
+ANIMATIONS
+
+======================================================
+
+
+
+Card Hover
+
+
+
+Fade
+
+
+
+Slide
+
+
+
+Counter Animation
+
+
+
+Progress Animation
+
+
+
+Chart Animation
+
+
+
+======================================================
+
+CODING STANDARDS
+
+======================================================
+
+
+
+Never write large files.
+
+
+
+Split everything into reusable components.
+
+
+
+Separate
+
+
+
+HTML
+
+
+
+CSS
+
+
+
+JavaScript
+
+
+
+API
+
+
+
+Database
+
+
+
+Repository
+
+
+
+Services
+
+
+
+DTOs
+
+
+
+Controllers
+
+
+
+Views
+
+
+
+Do not mix concerns.
+
+
+
+======================================================
+
+IMPORTANT
+
+======================================================
+
+
+
+Do NOT generate everything in one response.
+
+
+
+Work module by module.
+
+
+
+Always provide
+
+
+
+Folder Structure
+
+
+
+Database
+
+
+
+HTML
+
+
+
+CSS
+
+
+
+JavaScript
+
+
+
+Bootstrap Components
+
+
+
+Icons
+
+
+
+Animations
+
+
+
+Responsive Design
+
+
+
+Accessibility
+
+
+
+Validation
+
+
+
+Sample Data
+
+
+
+Only after completing one module perfectly move to the next.
+
+
+
+Every module should be production-ready.
+
+
+
+The final application should look like a premium fintech product and be ready to evolve into the Finance module of the OneLife platform.

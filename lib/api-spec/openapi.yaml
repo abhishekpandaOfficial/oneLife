@@ -3,13 +3,33 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: OneLife Finance API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: dashboard
+    description: Dashboard summary
+  - name: categories
+    description: Income/expense categories
+  - name: transactions
+    description: Income and expense transactions
+  - name: loans
+    description: Loan management
+  - name: emis
+    description: EMI tracking
+  - name: insurances
+    description: Insurance policies
+  - name: investments
+    description: Investment holdings
+  - name: goals
+    description: Savings goals
+  - name: budgets
+    description: Monthly budgets
+  - name: reports
+    description: Financial reports
 paths:
   /healthz:
     get:
@@ -24,6 +44,657 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get dashboard summary
+      description: Returns aggregated KPIs and chart data for the dashboard
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /categories:
+    get:
+      operationId: listCategories
+      tags: [categories]
+      summary: List categories
+      parameters:
+        - name: type
+          in: query
+          schema:
+            $ref: "#/components/schemas/TransactionType"
+      responses:
+        "200":
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+    post:
+      operationId: createCategory
+      tags: [categories]
+      summary: Create a category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryInput"
+      responses:
+        "201":
+          description: Created category
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+
+  /categories/{id}:
+    delete:
+      operationId: deleteCategory
+      tags: [categories]
+      summary: Delete a category
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /transactions:
+    get:
+      operationId: listTransactions
+      tags: [transactions]
+      summary: List transactions
+      parameters:
+        - name: type
+          in: query
+          schema:
+            $ref: "#/components/schemas/TransactionType"
+        - name: categoryId
+          in: query
+          schema:
+            type: integer
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Transaction"
+    post:
+      operationId: createTransaction
+      tags: [transactions]
+      summary: Create a transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionInput"
+      responses:
+        "201":
+          description: Created transaction
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+
+  /transactions/{id}:
+    get:
+      operationId: getTransaction
+      tags: [transactions]
+      summary: Get a transaction
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Transaction
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateTransaction
+      tags: [transactions]
+      summary: Update a transaction
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransactionUpdate"
+      responses:
+        "200":
+          description: Updated transaction
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteTransaction
+      tags: [transactions]
+      summary: Delete a transaction
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
+  /loans:
+    get:
+      operationId: listLoans
+      tags: [loans]
+      summary: List loans
+      responses:
+        "200":
+          description: List of loans
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Loan"
+    post:
+      operationId: createLoan
+      tags: [loans]
+      summary: Create a loan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoanInput"
+      responses:
+        "201":
+          description: Created loan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Loan"
+
+  /loans/{id}:
+    get:
+      operationId: getLoan
+      tags: [loans]
+      summary: Get a loan with its EMI schedule
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Loan detail with EMIs
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoanDetail"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateLoan
+      tags: [loans]
+      summary: Update a loan
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoanUpdate"
+      responses:
+        "200":
+          description: Updated loan
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Loan"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteLoan
+      tags: [loans]
+      summary: Delete a loan
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
+  /emis:
+    get:
+      operationId: listEmis
+      tags: [emis]
+      summary: List EMIs across all loans
+      parameters:
+        - name: loanId
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/EmiStatus"
+      responses:
+        "200":
+          description: List of EMIs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Emi"
+
+  /emis/{id}:
+    patch:
+      operationId: updateEmi
+      tags: [emis]
+      summary: Update an EMI (e.g. mark as paid)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmiUpdate"
+      responses:
+        "200":
+          description: Updated EMI
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Emi"
+        "404":
+          description: Not found
+
+  /insurances:
+    get:
+      operationId: listInsurances
+      tags: [insurances]
+      summary: List insurance policies
+      responses:
+        "200":
+          description: List of insurance policies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Insurance"
+    post:
+      operationId: createInsurance
+      tags: [insurances]
+      summary: Create an insurance policy
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InsuranceInput"
+      responses:
+        "201":
+          description: Created insurance policy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Insurance"
+
+  /insurances/{id}:
+    patch:
+      operationId: updateInsurance
+      tags: [insurances]
+      summary: Update an insurance policy
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InsuranceUpdate"
+      responses:
+        "200":
+          description: Updated insurance policy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Insurance"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteInsurance
+      tags: [insurances]
+      summary: Delete an insurance policy
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
+  /investments:
+    get:
+      operationId: listInvestments
+      tags: [investments]
+      summary: List investments
+      responses:
+        "200":
+          description: List of investments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Investment"
+    post:
+      operationId: createInvestment
+      tags: [investments]
+      summary: Create an investment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InvestmentInput"
+      responses:
+        "201":
+          description: Created investment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Investment"
+
+  /investments/{id}:
+    patch:
+      operationId: updateInvestment
+      tags: [investments]
+      summary: Update an investment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InvestmentUpdate"
+      responses:
+        "200":
+          description: Updated investment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Investment"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteInvestment
+      tags: [investments]
+      summary: Delete an investment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
+  /goals:
+    get:
+      operationId: listGoals
+      tags: [goals]
+      summary: List savings goals
+      responses:
+        "200":
+          description: List of goals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Goal"
+    post:
+      operationId: createGoal
+      tags: [goals]
+      summary: Create a savings goal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GoalInput"
+      responses:
+        "201":
+          description: Created goal
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Goal"
+
+  /goals/{id}:
+    patch:
+      operationId: updateGoal
+      tags: [goals]
+      summary: Update a savings goal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GoalUpdate"
+      responses:
+        "200":
+          description: Updated goal
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Goal"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteGoal
+      tags: [goals]
+      summary: Delete a savings goal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
+  /budgets:
+    get:
+      operationId: listBudgets
+      tags: [budgets]
+      summary: List budgets for a month
+      parameters:
+        - name: month
+          in: query
+          required: true
+          schema:
+            type: string
+            description: "Month in YYYY-MM format"
+      responses:
+        "200":
+          description: List of budgets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Budget"
+    post:
+      operationId: createBudget
+      tags: [budgets]
+      summary: Create a budget line
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BudgetInput"
+      responses:
+        "201":
+          description: Created budget
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Budget"
+
+  /budgets/{id}:
+    patch:
+      operationId: updateBudget
+      tags: [budgets]
+      summary: Update a budget line
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BudgetUpdate"
+      responses:
+        "200":
+          description: Updated budget
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Budget"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteBudget
+      tags: [budgets]
+      summary: Delete a budget line
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
+  /reports/summary:
+    get:
+      operationId: getReportSummary
+      tags: [reports]
+      summary: Get a financial report summary
+      description: Returns income/expense/category breakdown and trends over the requested period
+      parameters:
+        - name: period
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [monthly, yearly]
+      responses:
+        "200":
+          description: Report summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportSummary"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +705,406 @@ components:
       required:
         - status
 
+    TransactionType:
+      type: string
+      enum: [income, expense]
+
+    EmiStatus:
+      type: string
+      enum: [paid, pending, overdue, partial]
+
+    LoanType:
+      type: string
+      enum: [home, car, personal, gold, education, other]
+
+    LoanStatus:
+      type: string
+      enum: [active, closed]
+
+    InsuranceType:
+      type: string
+      enum: [health, life, car, house, term]
+
+    InsuranceStatus:
+      type: string
+      enum: [active, expired]
+
+    InvestmentType:
+      type: string
+      enum: [mutual_fund, stocks, ppf, nps, fd, gold, crypto]
+
+    GoalType:
+      type: string
+      enum: [emergency_fund, vacation, car, house, kids_education, retirement, other]
+
+    Category:
+      type: object
+      required: [id, name, type, color, createdAt]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        type:
+          $ref: "#/components/schemas/TransactionType"
+        color: { type: string }
+        icon: { type: ["string", "null"] }
+        createdAt: { type: string, format: date-time }
+
+    CategoryInput:
+      type: object
+      required: [name, type, color]
+      properties:
+        name: { type: string, minLength: 1 }
+        type:
+          $ref: "#/components/schemas/TransactionType"
+        color: { type: string, minLength: 1 }
+        icon: { type: string }
+
+    Transaction:
+      type: object
+      required: [id, type, amount, description, date, categoryId, isRecurring, createdAt]
+      properties:
+        id: { type: integer }
+        type:
+          $ref: "#/components/schemas/TransactionType"
+        amount: { type: number }
+        description: { type: string }
+        date: { type: string, format: date }
+        categoryId: { type: ["integer", "null"] }
+        categoryName: { type: ["string", "null"] }
+        categoryColor: { type: ["string", "null"] }
+        isRecurring: { type: boolean }
+        createdAt: { type: string, format: date-time }
+
+    TransactionInput:
+      type: object
+      required: [type, amount, description, date]
+      properties:
+        type:
+          $ref: "#/components/schemas/TransactionType"
+        amount: { type: number, minimum: 0 }
+        description: { type: string, minLength: 1 }
+        date: { type: string, format: date }
+        categoryId: { type: ["integer", "null"] }
+        isRecurring: { type: boolean, default: false }
+
+    TransactionUpdate:
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/TransactionType"
+        amount: { type: number, minimum: 0 }
+        description: { type: string, minLength: 1 }
+        date: { type: string, format: date }
+        categoryId: { type: ["integer", "null"] }
+        isRecurring: { type: boolean }
+
+    Loan:
+      type: object
+      required:
+        [id, name, loanType, principalAmount, outstandingAmount, interestRate,
+         emiAmount, tenureMonths, monthsRemaining, startDate, status, createdAt]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        loanType:
+          $ref: "#/components/schemas/LoanType"
+        principalAmount: { type: number }
+        outstandingAmount: { type: number }
+        interestRate: { type: number }
+        emiAmount: { type: number }
+        tenureMonths: { type: integer }
+        monthsRemaining: { type: integer }
+        startDate: { type: string, format: date }
+        status:
+          $ref: "#/components/schemas/LoanStatus"
+        createdAt: { type: string, format: date-time }
+
+    LoanDetail:
+      allOf:
+        - $ref: "#/components/schemas/Loan"
+        - type: object
+          required: [emis, principalPaid, interestPaid]
+          properties:
+            principalPaid: { type: number }
+            interestPaid: { type: number }
+            emis:
+              type: array
+              items:
+                $ref: "#/components/schemas/Emi"
+
+    LoanInput:
+      type: object
+      required: [name, loanType, principalAmount, interestRate, emiAmount, tenureMonths, startDate]
+      properties:
+        name: { type: string, minLength: 1 }
+        loanType:
+          $ref: "#/components/schemas/LoanType"
+        principalAmount: { type: number, minimum: 0 }
+        outstandingAmount: { type: number, minimum: 0 }
+        interestRate: { type: number, minimum: 0 }
+        emiAmount: { type: number, minimum: 0 }
+        tenureMonths: { type: integer, minimum: 1 }
+        startDate: { type: string, format: date }
+
+    LoanUpdate:
+      type: object
+      properties:
+        name: { type: string, minLength: 1 }
+        loanType:
+          $ref: "#/components/schemas/LoanType"
+        principalAmount: { type: number, minimum: 0 }
+        outstandingAmount: { type: number, minimum: 0 }
+        interestRate: { type: number, minimum: 0 }
+        emiAmount: { type: number, minimum: 0 }
+        tenureMonths: { type: integer, minimum: 1 }
+        startDate: { type: string, format: date }
+        status:
+          $ref: "#/components/schemas/LoanStatus"
+
+    Emi:
+      type: object
+      required: [id, loanId, loanName, dueDate, paidDate, amount, status]
+      properties:
+        id: { type: integer }
+        loanId: { type: integer }
+        loanName: { type: string }
+        dueDate: { type: string, format: date }
+        paidDate: { type: ["string", "null"], format: date }
+        amount: { type: number }
+        status:
+          $ref: "#/components/schemas/EmiStatus"
+
+    EmiUpdate:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/EmiStatus"
+        paidDate: { type: ["string", "null"], format: date }
+
+    Insurance:
+      type: object
+      required:
+        [id, name, insuranceType, provider, premiumAmount, coverageAmount,
+         renewalDate, status, createdAt]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        insuranceType:
+          $ref: "#/components/schemas/InsuranceType"
+        provider: { type: string }
+        premiumAmount: { type: number }
+        coverageAmount: { type: number }
+        renewalDate: { type: string, format: date }
+        policyNumber: { type: ["string", "null"] }
+        status:
+          $ref: "#/components/schemas/InsuranceStatus"
+        createdAt: { type: string, format: date-time }
+
+    InsuranceInput:
+      type: object
+      required: [name, insuranceType, provider, premiumAmount, coverageAmount, renewalDate]
+      properties:
+        name: { type: string, minLength: 1 }
+        insuranceType:
+          $ref: "#/components/schemas/InsuranceType"
+        provider: { type: string, minLength: 1 }
+        premiumAmount: { type: number, minimum: 0 }
+        coverageAmount: { type: number, minimum: 0 }
+        renewalDate: { type: string, format: date }
+        policyNumber: { type: string }
+
+    InsuranceUpdate:
+      type: object
+      properties:
+        name: { type: string, minLength: 1 }
+        insuranceType:
+          $ref: "#/components/schemas/InsuranceType"
+        provider: { type: string, minLength: 1 }
+        premiumAmount: { type: number, minimum: 0 }
+        coverageAmount: { type: number, minimum: 0 }
+        renewalDate: { type: string, format: date }
+        policyNumber: { type: ["string", "null"] }
+        status:
+          $ref: "#/components/schemas/InsuranceStatus"
+
+    Investment:
+      type: object
+      required:
+        [id, name, investmentType, investedAmount, currentValue, purchaseDate, createdAt]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        investmentType:
+          $ref: "#/components/schemas/InvestmentType"
+        investedAmount: { type: number }
+        currentValue: { type: number }
+        purchaseDate: { type: string, format: date }
+        xirr: { type: ["number", "null"] }
+        createdAt: { type: string, format: date-time }
+
+    InvestmentInput:
+      type: object
+      required: [name, investmentType, investedAmount, currentValue, purchaseDate]
+      properties:
+        name: { type: string, minLength: 1 }
+        investmentType:
+          $ref: "#/components/schemas/InvestmentType"
+        investedAmount: { type: number, minimum: 0 }
+        currentValue: { type: number, minimum: 0 }
+        purchaseDate: { type: string, format: date }
+        xirr: { type: number }
+
+    InvestmentUpdate:
+      type: object
+      properties:
+        name: { type: string, minLength: 1 }
+        investmentType:
+          $ref: "#/components/schemas/InvestmentType"
+        investedAmount: { type: number, minimum: 0 }
+        currentValue: { type: number, minimum: 0 }
+        purchaseDate: { type: string, format: date }
+        xirr: { type: ["number", "null"] }
+
+    Goal:
+      type: object
+      required: [id, name, goalType, targetAmount, currentAmount, createdAt]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        goalType:
+          $ref: "#/components/schemas/GoalType"
+        targetAmount: { type: number }
+        currentAmount: { type: number }
+        targetDate: { type: ["string", "null"], format: date }
+        createdAt: { type: string, format: date-time }
+
+    GoalInput:
+      type: object
+      required: [name, goalType, targetAmount]
+      properties:
+        name: { type: string, minLength: 1 }
+        goalType:
+          $ref: "#/components/schemas/GoalType"
+        targetAmount: { type: number, minimum: 0 }
+        currentAmount: { type: number, minimum: 0, default: 0 }
+        targetDate: { type: string, format: date }
+
+    GoalUpdate:
+      type: object
+      properties:
+        name: { type: string, minLength: 1 }
+        goalType:
+          $ref: "#/components/schemas/GoalType"
+        targetAmount: { type: number, minimum: 0 }
+        currentAmount: { type: number, minimum: 0 }
+        targetDate: { type: ["string", "null"], format: date }
+
+    Budget:
+      type: object
+      required: [id, categoryId, categoryName, categoryColor, month, plannedAmount, actualAmount]
+      properties:
+        id: { type: integer }
+        categoryId: { type: integer }
+        categoryName: { type: string }
+        categoryColor: { type: string }
+        month: { type: string }
+        plannedAmount: { type: number }
+        actualAmount: { type: number }
+
+    BudgetInput:
+      type: object
+      required: [categoryId, month, plannedAmount]
+      properties:
+        categoryId: { type: integer }
+        month: { type: string, minLength: 7 }
+        plannedAmount: { type: number, minimum: 0 }
+
+    BudgetUpdate:
+      type: object
+      properties:
+        plannedAmount: { type: number, minimum: 0 }
+
+    UpcomingPayment:
+      type: object
+      required: [id, name, type, dueDate, amount]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        type: { type: string }
+        dueDate: { type: string, format: date }
+        amount: { type: number }
+
+    CategoryAmount:
+      type: object
+      required: [category, amount, color]
+      properties:
+        category: { type: string }
+        amount: { type: number }
+        color: { type: string }
+
+    TrendPoint:
+      type: object
+      required: [period, income, expense]
+      properties:
+        period: { type: string }
+        income: { type: number }
+        expense: { type: number }
+
+    NetWorthPoint:
+      type: object
+      required: [period, netWorth]
+      properties:
+        period: { type: string }
+        netWorth: { type: number }
+
+    DashboardSummary:
+      type: object
+      required:
+        [monthlyIncome, monthlyExpenses, remainingBalance, totalSavings,
+         netWorth, totalLoanOutstanding, totalInvestmentValue, totalInsuranceCoverage,
+         emisDueCount, emergencyFundAmount, expenseByCategory, incomeVsExpenseTrend,
+         upcomingPayments]
+      properties:
+        monthlyIncome: { type: number }
+        monthlyExpenses: { type: number }
+        remainingBalance: { type: number }
+        totalSavings: { type: number }
+        netWorth: { type: number }
+        totalLoanOutstanding: { type: number }
+        totalInvestmentValue: { type: number }
+        totalInsuranceCoverage: { type: number }
+        emisDueCount: { type: integer }
+        emergencyFundAmount: { type: number }
+        expenseByCategory:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryAmount"
+        incomeVsExpenseTrend:
+          type: array
+          items:
+            $ref: "#/components/schemas/TrendPoint"
+        upcomingPayments:
+          type: array
+          items:
+            $ref: "#/components/schemas/UpcomingPayment"
+
+    ReportSummary:
+      type: object
+      required:
+        [totalIncome, totalExpense, netSavings, categoryBreakdown, trend, netWorthTrend]
+      properties:
+        totalIncome: { type: number }
+        totalExpense: { type: number }
+        netSavings: { type: number }
+        categoryBreakdown:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryAmount"
+        trend:
+          type: array
+          items:
+            $ref: "#/components/schemas/TrendPoint"
+        netWorthTrend:
+          type: array
+          items:
+            $ref: "#/components/schemas/NetWorthPoint"

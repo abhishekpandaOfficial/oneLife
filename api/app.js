@@ -57741,6 +57741,22 @@ app.use((0, import_cors.default)());
 app.use(import_express14.default.json());
 app.use(import_express14.default.urlencoded({ extended: true }));
 app.use("/api", routes_default);
+app.use((_req, res) => {
+  res.status(404).json({
+    error: "Not Found",
+    message: "The requested OneLife API endpoint does not exist.",
+    brand: "OneLife Finance",
+    docs: "/api/healthz"
+  });
+});
+app.use((err, _req, res, _next) => {
+  logger.error(err, "Unhandled server error");
+  res.status(500).json({
+    error: "Internal Server Error",
+    message: "Something went wrong on the OneLife server. Please try again.",
+    brand: "OneLife Finance"
+  });
+});
 var app_default = app;
 export {
   app_default as default

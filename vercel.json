@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "pnpm run vercel-build",
+  "buildCommand": "pnpm -w run vercel-build",
   "outputDirectory": "artifacts/onelife-finance/dist/public",
   "installCommand": "pnpm install",
   "framework": null,

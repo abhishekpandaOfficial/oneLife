@@ -16,30 +16,48 @@ import {
   Menu,
   Bell,
   Search,
-  Command
+  Command,
+  Database,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const navItems = [
-  { label: "Dashboard", href: "/", icon: LayoutDashboard },
-  { label: "Income", href: "/income", icon: ArrowDownToLine },
-  { label: "Expenses", href: "/expenses", icon: ArrowUpFromLine },
-  { label: "Transactions", href: "/transactions", icon: ArrowLeftRight },
-  { label: "Loans", href: "/loans", icon: Wallet },
-  { label: "Insurance", href: "/insurance", icon: ShieldCheck },
-  { label: "Investments", href: "/investments", icon: TrendingUp },
-  { label: "Goals", href: "/goals", icon: Target },
-  { label: "Budget", href: "/budget", icon: PieChart },
-  { label: "Reports", href: "/reports", icon: BarChart3 },
+  { label: "Dashboard",  href: "/",          icon: LayoutDashboard },
+  { label: "Income",     href: "/income",     icon: ArrowDownToLine },
+  { label: "Expenses",   href: "/expenses",   icon: ArrowUpFromLine },
+  { label: "Transactions",href: "/transactions",icon: ArrowLeftRight },
+  { label: "Loans",      href: "/loans",      icon: Wallet },
+  { label: "Insurance",  href: "/insurance",  icon: ShieldCheck },
+  { label: "Investments",href: "/investments",icon: TrendingUp },
+  { label: "Goals",      href: "/goals",      icon: Target },
+  { label: "Budget",     href: "/budget",     icon: PieChart },
+  { label: "Reports",    href: "/reports",    icon: BarChart3 },
   { label: "Categories", href: "/categories", icon: Tags },
-  { label: "Settings", href: "/settings", icon: Settings },
+  { label: "Settings",   href: "/settings",   icon: Settings },
 ];
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [dbStatus, setDbStatus] = useState<"connected" | "error" | "checking">("checking");
+
+  // Probe DB connection status quietly every 30s
+  useEffect(() => {
+    const probe = async () => {
+      try {
+        const r = await fetch("/api/db/info");
+        const data = await r.json();
+        setDbStatus(data.status === "connected" ? "connected" : "error");
+      } catch {
+        setDbStatus("error");
+      }
+    };
+    probe();
+    const id = setInterval(probe, 30_000);
+    return () => clearInterval(id);
+  }, []);
 
   // Close mobile menu on navigate
   useEffect(() => {
@@ -78,6 +96,33 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 </Link>
               );
             })}
+
+            {/* ── Database Monitor separator ──────────────────────── */}
+            <div className="pt-2 pb-1">
+              <p className="px-3 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">System</p>
+            </div>
+            {(() => {
+              const isActive = location === "/database" || location.startsWith("/database");
+              return (
+                <Link href="/database" className={cn(
+                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                  isActive
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}>
+                  <Database className="h-4 w-4" />
+                  <span className="flex-1">Database</span>
+                  <span className={cn(
+                    "h-2 w-2 rounded-full ring-2",
+                    dbStatus === "connected"
+                      ? "bg-emerald-500 ring-emerald-500/20"
+                      : dbStatus === "error"
+                      ? "bg-destructive ring-destructive/20"
+                      : "bg-muted ring-muted/20 animate-pulse"
+                  )} />
+                </Link>
+              );
+            })()}
           </div>
           
           <div className="p-4 border-t">

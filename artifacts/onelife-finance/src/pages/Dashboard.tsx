@@ -347,7 +347,7 @@ function KpiCard({
           {title}
         </CardTitle>
         <div className={`p-2 rounded-xl ${featured ? 'bg-primary-foreground/10' : 'bg-primary/5'}`}>
-          {React.cloneElement(icon as React.ReactElement, {
+          {React.cloneElement(icon as React.ReactElement<any>, {
             className: `h-4 w-4 ${featured ? 'text-primary-foreground' : (icon as any).props.className}`
           })}
         </div>

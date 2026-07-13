@@ -10,6 +10,7 @@ import investmentsRouter from "./investments";
 import goalsRouter from "./goals";
 import budgetsRouter from "./budgets";
 import reportsRouter from "./reports";
+import dbRouter from "./db";
 
 const router: IRouter = Router();
 
@@ -24,5 +25,7 @@ router.use(investmentsRouter);
 router.use(goalsRouter);
 router.use(budgetsRouter);
 router.use(reportsRouter);
+router.use(dbRouter);
 
 export default router;
+

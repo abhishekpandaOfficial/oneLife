@@ -50,7 +50,7 @@ export default function TransactionForm({ params }: { params?: { id?: string } }
   const queryClient = useQueryClient();
 
   const { data: transaction, isLoading: isTxLoading } = useGetTransaction(transactionId!, {
-    query: { enabled: isEditing }
+    query: { enabled: isEditing } as any
   });
 
   const { data: categories } = useListCategories();

@@ -12,6 +12,7 @@ import Budget from "@/pages/Budget";
 import Reports from "@/pages/Reports";
 import Categories from "@/pages/Categories";
 import Settings from "@/pages/Settings";
+import DatabaseMonitor from "@/pages/DatabaseMonitor";
 import NotFound from "@/pages/not-found";
 import { Toaster } from "@/components/ui/toaster";
 import { Route, Switch, Router as WouterRouter } from "wouter";
@@ -29,7 +30,9 @@ function Router() {
           {() => <Transactions type="expense" />}
         </Route>
         
-        <Route path="/transactions" component={Transactions} />
+        <Route path="/transactions">
+          {() => <Transactions />}
+        </Route>
         <Route path="/transactions/new" component={TransactionForm} />
         <Route path="/transactions/:id/edit" component={TransactionForm} />
         
@@ -43,6 +46,7 @@ function Router() {
         <Route path="/reports" component={Reports} />
         <Route path="/categories" component={Categories} />
         <Route path="/settings" component={Settings} />
+        <Route path="/database" component={DatabaseMonitor} />
         
         <Route component={NotFound} />
       </Switch>

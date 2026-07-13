@@ -15,8 +15,14 @@ const isLocal =
   process.env.DATABASE_URL.includes("localhost") || 
   process.env.DATABASE_URL.includes("127.0.0.1");
 
+let connectionString = process.env.DATABASE_URL;
+if (connectionString) {
+  // Strip any sslmode query params so pg-connection-string doesn't override Pool constructor options
+  connectionString = connectionString.replace(/[\?&]sslmode=[^&]*/g, "");
+}
+
 export const pool = new Pool({ 
-  connectionString: process.env.DATABASE_URL,
+  connectionString,
   ssl: isLocal ? false : { rejectUnauthorized: false }
 });
 export const db = drizzle(pool, { schema });

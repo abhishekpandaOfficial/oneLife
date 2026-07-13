@@ -103,4 +103,18 @@ router.post("/db/sync", async (_req, res): Promise<void> => {
   }
 });
 
+router.post("/db/clear", async (_req, res): Promise<void> => {
+  try {
+    const client = await pool.connect();
+    await client.query("BEGIN");
+    await client.query("TRUNCATE TABLE budgets, emis, goals, insurances, investments, loans, transactions, categories CASCADE");
+    await client.query("COMMIT");
+    client.release();
+    res.json({ success: true, message: "All database tables cleared successfully. Ready for production data." });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    res.status(500).json({ success: false, message: message });
+  }
+});
+
 export default router;

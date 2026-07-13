@@ -14,11 +14,24 @@ import {
   Rows3,
   ChevronRight,
   Activity,
+  Trash2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -78,6 +91,7 @@ function humanDate(iso: string) {
 export default function DatabaseMonitor() {
   const queryClient = useQueryClient();
   const [selectedTable, setSelectedTable] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const { data, isLoading, isError, dataUpdatedAt } = useQuery<DbInfo>({
     queryKey: ["db-info"],
@@ -90,7 +104,24 @@ export default function DatabaseMonitor() {
     mutationFn: triggerSync,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["db-info"] });
+      toast({ title: "Refreshed Successfully", description: "Database stats updated." });
     },
+  });
+
+  const clearMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/db/clear", { method: "POST" });
+      if (!res.ok) throw new Error("Database reset failed");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["db-info"] });
+      setSelectedTable(null);
+      toast({ title: "Database Reset Complete", description: "All records have been cleared. Ready for production." });
+    },
+    onError: (err: any) => {
+      toast({ title: "Reset Failed", description: err.message, variant: "destructive" });
+    }
   });
 
   const handleSync = useCallback(() => {
@@ -115,14 +146,46 @@ export default function DatabaseMonitor() {
             Live Supabase connection status, table overview and data sync
           </p>
         </div>
-        <Button
-          onClick={handleSync}
-          disabled={isSyncing}
-          className="gap-2 self-start sm:self-auto"
-        >
-          <RefreshCw className={cn("h-4 w-4", isSyncing && "animate-spin")} />
-          {isSyncing ? "Syncing…" : "Sync & Refresh"}
-        </Button>
+        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="destructive"
+                className="gap-2"
+                disabled={clearMutation.isPending}
+              >
+                <Trash2 className="h-4 w-4" />
+                Clear Database
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action is irreversible. It will delete all transactions, budgets, goals, EMIs, investments, loans, and categories from your Supabase database. Use this to prepare your database for live production data.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction 
+                  onClick={() => clearMutation.mutate()}
+                  className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+                >
+                  Yes, Clear All Data
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+          
+          <Button
+            onClick={handleSync}
+            disabled={isSyncing}
+            className="gap-2"
+          >
+            <RefreshCw className={cn("h-4 w-4", isSyncing && "animate-spin")} />
+            {isSyncing ? "Syncing…" : "Sync & Refresh"}
+          </Button>
+        </div>
       </div>
 
       {/* ── Status cards row ─────────────────────────────────────────────── */}

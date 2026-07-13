@@ -18,7 +18,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AnimatedNumber, formatCurrency } from "@/components/ui/animated-number";
+import { AnimatedNumber, formatCurrency, useCurrencyRefresh, getGlobalCurrency, setGlobalCurrency } from "@/components/ui/animated-number";
 import {
   BarChart,
   Bar,
@@ -36,6 +36,7 @@ import {
 import { format, parseISO } from "date-fns";
 
 export default function Dashboard() {
+  const currentCurrency = useCurrencyRefresh();
   const { data: summary, isLoading, error } = useGetDashboardSummary();
 
   if (isLoading) {
@@ -81,7 +82,19 @@ export default function Dashboard() {
           <h1 className="text-3xl font-bold tracking-tight">Financial Overview</h1>
           <p className="text-muted-foreground mt-1">Your command center for all things money.</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-3">
+          <select
+            value={currentCurrency}
+            onChange={(e) => setGlobalCurrency(e.target.value)}
+            className="h-9 rounded-full border border-input bg-card px-4 py-1 text-sm shadow-sm ring-offset-background focus:outline-none focus:ring-1 focus:ring-ring font-medium"
+          >
+            <option value="INR">₹ INR (Indian Rupee)</option>
+            <option value="USD">$ USD (US Dollar)</option>
+            <option value="EUR">€ EUR (Euro)</option>
+            <option value="QAR">QR QAR (Qatari Riyal)</option>
+            <option value="SAR">SR SAR (Saudi Riyal)</option>
+          </select>
+          
           <Link href="/income">
             <Button variant="outline" className="rounded-full shadow-sm">
               <ArrowDownRight className="mr-2 h-4 w-4 text-emerald-500" />

@@ -22,7 +22,7 @@ import {
 import { format, parseISO } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { formatCurrency } from "@/components/ui/animated-number";
+import { formatCurrency, useCurrencyRefresh } from "@/components/ui/animated-number";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -52,6 +52,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 
 export default function Transactions({ type }: { type?: TransactionType }) {
+  useCurrencyRefresh();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filterType, setFilterType] = useState<TransactionType | "all">(type || "all");

@@ -291,7 +291,7 @@ export default function Loans() {
 
                 {/* Drag and Drop Upload Zones */}
                 <div className="space-y-3 pt-2">
-                  <FormLabel>Documents Attachment</FormLabel>
+                  <label className="text-sm font-medium text-foreground">Documents Attachment</label>
                   <div className="grid grid-cols-2 gap-4">
                     <div
                       onDragOver={(e) => e.preventDefault()}

@@ -104,7 +104,7 @@ globalThis.__dirname = __bannerPath.dirname(globalThis.__filename);
     esbuildPluginPino({ transports: ["pino-pretty"] })
   ];
 
-  // 1. Build standard index.ts for local running
+  // 1. Build standard index.ts for local running (includes pino-pretty transport workers)
   await esbuild({
     entryPoints: [path.resolve(artifactDir, "src/index.ts")],
     platform: "node",
@@ -120,16 +120,18 @@ globalThis.__dirname = __bannerPath.dirname(globalThis.__filename);
   });
 
   // 2. Build Vercel Serverless Function bundle in root /api/app.js
+  //    No pino-pretty plugin here — production logger uses plain pino (no worker threads)
+  //    This keeps api/ clean: only app.js, no pino-*.js worker files
   await esbuild({
     entryPoints: [path.resolve(artifactDir, "src/app.ts")],
     platform: "node",
     bundle: true,
     format: "esm",
-    outdir: path.resolve(artifactDir, "../../api"),
+    outfile: path.resolve(artifactDir, "../../api/app.js"),
     logLevel: "info",
     external,
-    sourcemap: "linked",
-    plugins,
+    sourcemap: false,
+    plugins: [],
     banner,
   });
 }

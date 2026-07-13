@@ -16,30 +16,38 @@ import DatabaseMonitor from "@/pages/DatabaseMonitor";
 import ApiMonitor from "@/pages/ApiMonitor";
 import NotFound from "@/pages/not-found";
 import { Toaster } from "@/components/ui/toaster";
-import { Route, Switch, Router as WouterRouter } from "wouter";
+import { Route, Switch, Router as WouterRouter, useLocation } from "wouter";
 
 function Router() {
+  const [location] = useLocation();
+
   return (
     <AppLayout>
       <Switch>
         <Route path="/" component={Dashboard} />
-        
+
+        {/* key forces full remount when switching income ↔ expenses ↔ transactions */}
         <Route path="/income">
-          {() => <Transactions type="income" />}
+          {() => <Transactions key="income" type="income" />}
         </Route>
         <Route path="/expenses">
-          {() => <Transactions type="expense" />}
+          {() => <Transactions key="expense" type="expense" />}
         </Route>
-        
         <Route path="/transactions">
-          {() => <Transactions />}
+          {() => <Transactions key="all" />}
         </Route>
-        <Route path="/transactions/new" component={TransactionForm} />
-        <Route path="/transactions/:id/edit" component={TransactionForm} />
-        
+
+        {/* key forces remount between /new and /edit */}
+        <Route path="/transactions/new">
+          {() => <TransactionForm key="new" />}
+        </Route>
+        <Route path="/transactions/:id/edit">
+          {(params) => <TransactionForm key={`edit-${params.id}`} />}
+        </Route>
+
         <Route path="/loans" component={Loans} />
         <Route path="/loans/:id" component={LoanDetail} />
-        
+
         <Route path="/insurance" component={Insurance} />
         <Route path="/investments" component={Investments} />
         <Route path="/goals" component={Goals} />
@@ -49,7 +57,7 @@ function Router() {
         <Route path="/settings" component={Settings} />
         <Route path="/database" component={DatabaseMonitor} />
         <Route path="/api-monitor" component={ApiMonitor} />
-        
+
         <Route component={NotFound} />
       </Switch>
     </AppLayout>

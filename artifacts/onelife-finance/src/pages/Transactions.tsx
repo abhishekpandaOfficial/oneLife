@@ -62,6 +62,14 @@ export default function Transactions({ type }: { type?: TransactionType }) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
+  // ← KEY FIX: Whenever the route-level `type` prop changes (income ↔ expense ↔ all),
+  // immediately sync filterType so data refetches without needing a refresh.
+  React.useEffect(() => {
+    setFilterType(type || "all");
+    setSearch("");
+    setDebouncedSearch("");
+  }, [type]);
+
   const { data: transactions, isLoading } = useListTransactions({
     type: filterType === "all" ? undefined : filterType,
     search: debouncedSearch || undefined,

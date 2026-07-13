@@ -4,11 +4,6 @@
   "outputDirectory": "dist",
   "installCommand": "pnpm install",
   "framework": null,
-  "functions": {
-    "api/app.js": {
-      "runtime": "@vercel/node@5"
-    }
-  },
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/app.js" },
     { "src": "/assets/(.*)", "dest": "/assets/$1" },

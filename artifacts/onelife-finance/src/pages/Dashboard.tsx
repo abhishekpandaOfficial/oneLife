@@ -18,7 +18,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AnimatedNumber, formatCurrency, useCurrencyRefresh, getGlobalCurrency, setGlobalCurrency } from "@/components/ui/animated-number";
+import { AnimatedNumber, formatCurrency, useCurrencyRefresh, getGlobalCurrency, setGlobalCurrency, getGlobalRates } from "@/components/ui/animated-number";
 import {
   BarChart,
   Bar,
@@ -75,12 +75,27 @@ export default function Dashboard() {
     );
   }
 
+  const rates = getGlobalRates();
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-12">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Financial Overview</h1>
           <p className="text-muted-foreground mt-1">Your command center for all things money.</p>
+          
+          {/* Live Exchange Rates Row */}
+          <div className="flex flex-wrap items-center gap-2 mt-3 text-[11px] text-muted-foreground bg-card border px-3 py-1.5 rounded-xl shadow-sm max-w-fit">
+            <span className="flex items-center gap-1 font-semibold text-foreground mr-1">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              Live Rates:
+            </span>
+            <span className="bg-muted/50 px-2 py-0.5 rounded-md border font-mono">1 USD = {(1 / rates.USD).toFixed(2)} INR</span>
+            <span className="bg-muted/50 px-2 py-0.5 rounded-md border font-mono">1 EUR = {(1 / rates.EUR).toFixed(2)} INR</span>
+            <span className="bg-muted/50 px-2 py-0.5 rounded-md border font-mono">1 QAR = {(1 / rates.QAR).toFixed(2)} INR</span>
+            <span className="bg-muted/50 px-2 py-0.5 rounded-md border font-mono">1 SAR = {(1 / rates.SAR).toFixed(2)} INR</span>
+            <span className="bg-muted/50 px-2 py-0.5 rounded-md border font-mono">1 AED = {(1 / rates.AED).toFixed(2)} INR</span>
+          </div>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <select
@@ -91,8 +106,9 @@ export default function Dashboard() {
             <option value="INR">₹ INR (Indian Rupee)</option>
             <option value="USD">$ USD (US Dollar)</option>
             <option value="EUR">€ EUR (Euro)</option>
-            <option value="QAR">QR QAR (Qatari Riyal)</option>
-            <option value="SAR">SR SAR (Saudi Riyal)</option>
+            <option value="QAR">ر.ق QAR (Qatari Riyal)</option>
+            <option value="SAR">ر.س SAR (Saudi Riyal)</option>
+            <option value="AED">د.إ AED (UAE Dirham)</option>
           </select>
           
           <Link href="/income">

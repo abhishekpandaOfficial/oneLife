@@ -48,12 +48,13 @@ export function AnimatedNumber({
 
 // Define global currency state
 let currentCurrency = (typeof localStorage !== 'undefined' && localStorage.getItem('onelife_currency')) || 'INR';
-let globalRates = {
+export const globalRates = {
   INR: 1.0,
   USD: 0.012,
   EUR: 0.011,
   QAR: 0.043,
   SAR: 0.045,
+  AED: 0.044,
 };
 
 // Fetch rates once when module is loaded
@@ -66,6 +67,7 @@ if (typeof fetch !== 'undefined') {
         globalRates.EUR = data.rates.EUR || globalRates.EUR;
         globalRates.QAR = data.rates.QAR || globalRates.QAR;
         globalRates.SAR = data.rates.SAR || globalRates.SAR;
+        globalRates.AED = data.rates.AED || globalRates.AED;
         // Dispatch refresh so any loaded UI picks up the latest fetched rates
         if (typeof window !== 'undefined') {
           window.dispatchEvent(new Event('onelife_currency_change'));
@@ -89,6 +91,10 @@ export function getGlobalCurrency() {
   return currentCurrency;
 }
 
+export function getGlobalRates() {
+  return globalRates;
+}
+
 export function useCurrencyRefresh() {
   const [currency, setCurrency] = useState(getGlobalCurrency());
   useEffect(() => {
@@ -103,8 +109,9 @@ const LOCALES: Record<string, string> = {
   INR: "en-IN",
   USD: "en-US",
   EUR: "en-IE",
-  QAR: "ar-QA",
-  SAR: "ar-SA",
+  QAR: "en-QA",
+  SAR: "en-SA",
+  AED: "en-AE",
 };
 
 export function formatCurrency(amount: number): string {

@@ -26,6 +26,16 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { useCurrencyRefresh, getGlobalRates } from "@/components/ui/animated-number";
+
+const CURRENCY_SYMBOLS: Record<string, string> = {
+  INR: "₹",
+  USD: "$",
+  EUR: "€",
+  QAR: "ر.ق",
+  SAR: "ر.س",
+  AED: "د.إ",
+};
 
 const formSchema = z.object({
   type: z.enum(["income", "expense"]),
@@ -48,6 +58,11 @@ export default function TransactionForm({ params }: { params?: { id?: string } }
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  const activeCurrency = useCurrencyRefresh();
+  const rates = getGlobalRates();
+  const activeRate = rates[activeCurrency as keyof typeof rates] || 1.0;
+  const currencySymbol = CURRENCY_SYMBOLS[activeCurrency] || "₹";
 
   const { data: transaction, isLoading: isTxLoading } = useGetTransaction(transactionId!, {
     query: { enabled: isEditing } as any
@@ -98,20 +113,23 @@ export default function TransactionForm({ params }: { params?: { id?: string } }
   // Reset form when editing data loads
   useEffect(() => {
     if (transaction) {
+      const amountInActiveCurrency = Number((transaction.amount * activeRate).toFixed(2));
       form.reset({
         type: transaction.type,
-        amount: transaction.amount,
+        amount: amountInActiveCurrency,
         description: transaction.description,
         date: new Date(transaction.date),
         categoryId: transaction.categoryId,
         isRecurring: transaction.isRecurring,
       });
     }
-  }, [transaction, form]);
+  }, [transaction, form, activeRate]);
 
   const onSubmit = (data: FormValues) => {
+    const amountInInr = Number((data.amount / activeRate).toFixed(2));
     const payload = {
       ...data,
+      amount: amountInInr,
       date: format(data.date, "yyyy-MM-dd"),
     };
 
@@ -180,7 +198,7 @@ export default function TransactionForm({ params }: { params?: { id?: string } }
                       <FormLabel>Amount</FormLabel>
                       <FormControl>
                         <div className="relative">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">$</span>
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">{currencySymbol}</span>
                           <Input type="number" step="0.01" className="pl-7 font-mono font-medium text-lg h-10" placeholder="0.00" {...field} />
                         </div>
                       </FormControl>

@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { getGlobalRates } from "@/components/ui/animated-number";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -249,6 +250,33 @@ export default function ApiMonitor() {
           </button>
         ))}
       </div>
+
+      {/* Live Exchange Rates Status Card */}
+      <Card className="rounded-2xl border border-primary/10 shadow-sm bg-gradient-to-br from-primary/5 to-transparent">
+        <CardContent className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <h3 className="font-semibold text-sm flex items-center gap-1.5 text-foreground">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              Live Currency Exchange Rates
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              Rates updated live against Open Exchange Rates API. Base Currency: INR (₹)
+            </p>
+          </div>
+          {(() => {
+            const rates = getGlobalRates();
+            return (
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                <Badge variant="outline" className="bg-background border-border/80 font-mono">1 USD = {(1 / rates.USD).toFixed(2)} INR</Badge>
+                <Badge variant="outline" className="bg-background border-border/80 font-mono">1 EUR = {(1 / rates.EUR).toFixed(2)} INR</Badge>
+                <Badge variant="outline" className="bg-background border-border/80 font-mono">1 QAR = {(1 / rates.QAR).toFixed(2)} INR</Badge>
+                <Badge variant="outline" className="bg-background border-border/80 font-mono">1 SAR = {(1 / rates.SAR).toFixed(2)} INR</Badge>
+                <Badge variant="outline" className="bg-background border-border/80 font-mono">1 AED = {(1 / rates.AED).toFixed(2)} INR</Badge>
+              </div>
+            );
+          })()}
+        </CardContent>
+      </Card>
 
       {/* Endpoint Cards */}
       <div className="space-y-3">

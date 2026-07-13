@@ -1,16 +1,15 @@
 {
   "extends": "./tsconfig.base.json",
-  "compileOnSave": false,
-  "files": [],
-  "references": [
-    {
-      "path": "./lib/db"
-    },
-    {
-      "path": "./lib/api-client-react"
-    },
-    {
-      "path": "./lib/api-zod"
-    }
+  "compilerOptions": {
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": [
+    "api/**/*.ts",
+    "artifacts/api-server/src/**/*.ts",
+    "lib/db/src/**/*.ts",
+    "lib/api-zod/src/**/*.ts"
   ]
 }

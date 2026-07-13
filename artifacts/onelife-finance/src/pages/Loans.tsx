@@ -43,12 +43,32 @@ const formSchema = z.object({
   interestRate: z.coerce.number().min(0),
   emiAmount: z.coerce.number().min(1),
   tenureMonths: z.coerce.number().min(1),
-  startDate: z.string()
+  startDate: z.string(),
+  bankName: z.string().min(2, "Bank Name is required"),
+  bankLogoUrl: z.string().optional(),
+  disbursementDocUrl: z.string().optional(),
+  repaymentScheduleDocUrl: z.string().optional(),
+  penaltyRate: z.coerce.number().min(0).default(2.0),
 });
+
+const INDIAN_BANKS = [
+  { name: "State Bank of India (SBI)", color: "bg-blue-600", logoText: "SBI" },
+  { name: "HDFC Bank", color: "bg-blue-800", logoText: "HDFC" },
+  { name: "ICICI Bank", color: "bg-orange-600", logoText: "ICICI" },
+  { name: "Axis Bank", color: "bg-rose-950", logoText: "Axis" },
+  { name: "Kotak Mahindra Bank", color: "bg-red-600", logoText: "Kotak" },
+  { name: "Punjab National Bank (PNB)", color: "bg-amber-700", logoText: "PNB" },
+  { name: "Bank of Baroda (BoB)", color: "bg-orange-700", logoText: "BoB" },
+  { name: "IDFC First Bank", color: "bg-red-800", logoText: "IDFC" },
+];
 
 export default function Loans() {
   const { data: loans, isLoading } = useListLoans();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [customBank, setCustomBank] = useState(false);
+  const [disbursementFile, setDisbursementFile] = useState<string | null>(null);
+  const [repaymentFile, setRepaymentFile] = useState<string | null>(null);
+
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -59,6 +79,8 @@ export default function Loans() {
         queryClient.invalidateQueries({ queryKey: getListLoansQueryKey() });
         queryClient.invalidateQueries({ queryKey: getGetDashboardSummaryQueryKey() });
         setIsDialogOpen(false);
+        setDisbursementFile(null);
+        setRepaymentFile(null);
         form.reset();
       },
       onError: () => {
@@ -77,12 +99,39 @@ export default function Loans() {
       interestRate: 0,
       emiAmount: 0,
       tenureMonths: 12,
-      startDate: format(new Date(), "yyyy-MM-dd")
+      startDate: format(new Date(), "yyyy-MM-dd"),
+      bankName: INDIAN_BANKS[0].name,
+      bankLogoUrl: "",
+      disbursementDocUrl: "",
+      repaymentScheduleDocUrl: "",
+      penaltyRate: 2.0,
     }
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    createMutation.mutate({ data: { ...values, outstandingAmount: values.outstandingAmount || values.principalAmount } });
+    createMutation.mutate({
+      data: {
+        ...values,
+        outstandingAmount: values.outstandingAmount || values.principalAmount,
+        disbursementDocUrl: disbursementFile || undefined,
+        repaymentScheduleDocUrl: repaymentFile || undefined,
+      }
+    });
+  };
+
+  const handleFileDrop = (e: React.DragEvent<HTMLDivElement>, type: "disbursement" | "repayment") => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      if (type === "disbursement") {
+        setDisbursementFile(file.name);
+        form.setValue("disbursementDocUrl", file.name);
+      } else {
+        setRepaymentFile(file.name);
+        form.setValue("repaymentScheduleDocUrl", file.name);
+      }
+      toast({ title: `${file.name} attached successfully` });
+    }
   };
 
   const totalOutstanding = loans?.reduce((acc, loan) => acc + loan.outstandingAmount, 0) || 0;
@@ -96,12 +145,17 @@ export default function Loans() {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="rounded-full shadow-md">
+            <Button className="rounded-full shadow-md" onClick={() => {
+              setCustomBank(false);
+              setDisbursementFile(null);
+              setRepaymentFile(null);
+              form.reset();
+            }}>
               <Plus className="mr-2 h-4 w-4" />
               Add Loan
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px]">
+          <DialogContent className="sm:max-w-[550px] max-h-[85vh] overflow-y-auto glass-card">
             <DialogHeader>
               <DialogTitle>Add New Loan</DialogTitle>
               <DialogDescription>Enter the details of your loan to track its progress.</DialogDescription>
@@ -115,7 +169,48 @@ export default function Loans() {
                     <FormMessage />
                   </FormItem>
                 )} />
+
                 <div className="grid grid-cols-2 gap-4">
+                  <FormField control={form.control} name="bankName" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Bank Name</FormLabel>
+                      <div className="space-y-2">
+                        <Select
+                          onValueChange={(val) => {
+                            if (val === "custom") {
+                              setCustomBank(true);
+                              field.onChange("");
+                            } else {
+                              setCustomBank(false);
+                              field.onChange(val);
+                            }
+                          }}
+                          defaultValue={field.value || INDIAN_BANKS[0].name}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select bank" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {INDIAN_BANKS.map((bank) => (
+                              <SelectItem key={bank.name} value={bank.name}>
+                                {bank.name}
+                              </SelectItem>
+                            ))}
+                            <SelectItem value="custom">-- Custom Bank --</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {customBank && (
+                          <Input
+                            placeholder="Type Custom Bank Name"
+                            value={field.value}
+                            onChange={(e) => field.onChange(e.target.value)}
+                          />
+                        )}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+
                   <FormField control={form.control} name="loanType" render={({ field }) => (
                     <FormItem>
                       <FormLabel>Type</FormLabel>
@@ -133,6 +228,9 @@ export default function Loans() {
                       <FormMessage />
                     </FormItem>
                   )} />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
                   <FormField control={form.control} name="startDate" render={({ field }) => (
                     <FormItem>
                       <FormLabel>Start Date</FormLabel>
@@ -140,7 +238,16 @@ export default function Loans() {
                       <FormMessage />
                     </FormItem>
                   )} />
+
+                  <FormField control={form.control} name="penaltyRate" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Monthly Penalty Rate (%)</FormLabel>
+                      <FormControl><Input type="number" step="0.1" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
                 </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <FormField control={form.control} name="principalAmount" render={({ field }) => (
                     <FormItem>
@@ -157,6 +264,7 @@ export default function Loans() {
                     </FormItem>
                   )} />
                 </div>
+
                 <div className="grid grid-cols-3 gap-4">
                   <FormField control={form.control} name="interestRate" render={({ field }) => (
                     <FormItem>
@@ -174,12 +282,67 @@ export default function Loans() {
                   )} />
                   <FormField control={form.control} name="tenureMonths" render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Months</FormLabel>
+                      <FormLabel>Tenure (Mos)</FormLabel>
                       <FormControl><Input type="number" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
                 </div>
+
+                {/* Drag and Drop Upload Zones */}
+                <div className="space-y-3 pt-2">
+                  <FormLabel>Documents Attachment</FormLabel>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={(e) => handleFileDrop(e, "disbursement")}
+                      className="border-2 border-dashed border-muted rounded-xl p-4 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-muted/10 transition-colors"
+                      onClick={() => {
+                        const input = document.createElement("input");
+                        input.type = "file";
+                        input.onchange = (e) => {
+                          const file = (e.target as HTMLInputElement).files?.[0];
+                          if (file) {
+                            setDisbursementFile(file.name);
+                            form.setValue("disbursementDocUrl", file.name);
+                            toast({ title: `${file.name} attached` });
+                          }
+                        };
+                        input.click();
+                      }}
+                    >
+                      <p className="text-xs font-semibold text-muted-foreground">Disbursement Doc</p>
+                      <p className="text-[10px] text-muted-foreground/60 mt-1">
+                        {disbursementFile ? `✓ ${disbursementFile}` : "Drag & Drop or Click"}
+                      </p>
+                    </div>
+
+                    <div
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={(e) => handleFileDrop(e, "repayment")}
+                      className="border-2 border-dashed border-muted rounded-xl p-4 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-muted/10 transition-colors"
+                      onClick={() => {
+                        const input = document.createElement("input");
+                        input.type = "file";
+                        input.onchange = (e) => {
+                          const file = (e.target as HTMLInputElement).files?.[0];
+                          if (file) {
+                            setRepaymentFile(file.name);
+                            form.setValue("repaymentScheduleDocUrl", file.name);
+                            toast({ title: `${file.name} attached` });
+                          }
+                        };
+                        input.click();
+                      }}
+                    >
+                      <p className="text-xs font-semibold text-muted-foreground">Repayment Schedule</p>
+                      <p className="text-[10px] text-muted-foreground/60 mt-1">
+                        {repaymentFile ? `✓ ${repaymentFile}` : "Drag & Drop or Click"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="pt-4 flex justify-end">
                   <Button type="submit" disabled={createMutation.isPending}>
                     {createMutation.isPending ? "Adding..." : "Add Loan"}

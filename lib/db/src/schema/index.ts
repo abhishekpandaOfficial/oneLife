@@ -6,3 +6,4 @@ export * from "./insurances";
 export * from "./investments";
 export * from "./goals";
 export * from "./budgets";
+export * from "./credit_cards";

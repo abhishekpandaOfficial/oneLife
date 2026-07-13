@@ -35,6 +35,38 @@ router.get("/loans", async (_req, res): Promise<void> => {
   res.json(ListLoansResponse.parse(withMonths));
 });
 
+function generateEmisForLoan(loanId: number, emiAmount: number, tenureMonths: number, startDateStr: string) {
+  const [yr, mo, dy] = startDateStr.split("-").map(Number);
+  const now = new Date();
+  const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  
+  const emis = [];
+  for (let i = 0; i < tenureMonths; i++) {
+    const dueDate = new Date(yr, (mo - 1) + i, dy);
+    const y = dueDate.getFullYear();
+    const m = String(dueDate.getMonth() + 1).padStart(2, "0");
+    const d = String(dueDate.getDate()).padStart(2, "0");
+    const dueDateStr = `${y}-${m}-${d}`;
+    
+    const dueDateMonthStart = new Date(y, dueDate.getMonth(), 1);
+    const isPast = dueDateMonthStart < currentMonthStart;
+    
+    const status = isPast ? "paid" : "pending";
+    const paidDate = isPast ? dueDateStr : null;
+    
+    emis.push({
+      loanId,
+      dueDate: dueDateStr,
+      paidDate,
+      amount: emiAmount,
+      status: status as "paid" | "pending",
+      penaltyAmount: 0,
+      overdueDays: 0
+    });
+  }
+  return emis;
+}
+
 router.post("/loans", async (req, res): Promise<void> => {
   const parsed = CreateLoanBody.safeParse(req.body);
   if (!parsed.success) {
@@ -55,8 +87,17 @@ router.post("/loans", async (req, res): Promise<void> => {
       emiAmount: parsed.data.emiAmount,
       tenureMonths: parsed.data.tenureMonths,
       startDate: toDateStr(parsed.data.startDate),
+      bankName: parsed.data.bankName ?? null,
+      bankLogoUrl: parsed.data.bankLogoUrl ?? null,
+      disbursementDocUrl: parsed.data.disbursementDocUrl ?? null,
+      repaymentScheduleDocUrl: parsed.data.repaymentScheduleDocUrl ?? null,
+      penaltyRate: parsed.data.penaltyRate ?? 2.0,
     })
     .returning();
+
+  // Generate EMIs automatically
+  const emis = generateEmisForLoan(loan.id, loan.emiAmount, loan.tenureMonths, loan.startDate);
+  await db.insert(emisTable).values(emis);
 
   res.status(201).json(CreateLoanResponse.parse(await withComputed(loan)));
 });
@@ -111,8 +152,21 @@ router.patch("/loans/:id", async (req, res): Promise<void> => {
     return;
   }
 
-  const update: Record<string, unknown> = { ...parsed.data };
+  const update: Record<string, unknown> = {};
+  if (parsed.data.name !== undefined) update.name = parsed.data.name;
+  if (parsed.data.loanType !== undefined) update.loanType = parsed.data.loanType;
+  if (parsed.data.principalAmount !== undefined) update.principalAmount = parsed.data.principalAmount;
+  if (parsed.data.outstandingAmount !== undefined) update.outstandingAmount = parsed.data.outstandingAmount;
+  if (parsed.data.interestRate !== undefined) update.interestRate = parsed.data.interestRate;
+  if (parsed.data.emiAmount !== undefined) update.emiAmount = parsed.data.emiAmount;
+  if (parsed.data.tenureMonths !== undefined) update.tenureMonths = parsed.data.tenureMonths;
   if (parsed.data.startDate !== undefined) update.startDate = toDateStr(parsed.data.startDate);
+  if (parsed.data.bankName !== undefined) update.bankName = parsed.data.bankName;
+  if (parsed.data.bankLogoUrl !== undefined) update.bankLogoUrl = parsed.data.bankLogoUrl;
+  if (parsed.data.disbursementDocUrl !== undefined) update.disbursementDocUrl = parsed.data.disbursementDocUrl;
+  if (parsed.data.repaymentScheduleDocUrl !== undefined) update.repaymentScheduleDocUrl = parsed.data.repaymentScheduleDocUrl;
+  if (parsed.data.penaltyRate !== undefined) update.penaltyRate = parsed.data.penaltyRate;
+  if (parsed.data.status !== undefined) update.status = parsed.data.status;
 
   const [loan] = await db
     .update(loansTable)

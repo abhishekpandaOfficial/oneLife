@@ -163,6 +163,15 @@ export interface Loan {
   monthsRemaining: number;
   startDate: string;
   status: LoanStatus;
+  /** @nullable */
+  bankName?: string | null;
+  /** @nullable */
+  bankLogoUrl?: string | null;
+  /** @nullable */
+  disbursementDocUrl?: string | null;
+  /** @nullable */
+  repaymentScheduleDocUrl?: string | null;
+  penaltyRate?: number;
   createdAt: string;
 }
 
@@ -175,6 +184,8 @@ export interface Emi {
   paidDate: string | null;
   amount: number;
   status: EmiStatus;
+  penaltyAmount?: number;
+  overdueDays?: number;
 }
 
 export type LoanDetail = Loan & {
@@ -198,6 +209,12 @@ export interface LoanInput {
   /** @minimum 1 */
   tenureMonths: number;
   startDate: string;
+  bankName?: string;
+  bankLogoUrl?: string;
+  disbursementDocUrl?: string;
+  repaymentScheduleDocUrl?: string;
+  /** @minimum 0 */
+  penaltyRate?: number;
 }
 
 export interface LoanUpdate {
@@ -215,6 +232,16 @@ export interface LoanUpdate {
   /** @minimum 1 */
   tenureMonths?: number;
   startDate?: string;
+  /** @nullable */
+  bankName?: string | null;
+  /** @nullable */
+  bankLogoUrl?: string | null;
+  /** @nullable */
+  disbursementDocUrl?: string | null;
+  /** @nullable */
+  repaymentScheduleDocUrl?: string | null;
+  /** @minimum 0 */
+  penaltyRate?: number;
   status?: LoanStatus;
 }
 
@@ -222,6 +249,8 @@ export interface EmiUpdate {
   status?: EmiStatus;
   /** @nullable */
   paidDate?: string | null;
+  penaltyAmount?: number;
+  overdueDays?: number;
 }
 
 export interface Insurance {
@@ -394,6 +423,7 @@ export interface DashboardSummary {
   totalSavings: number;
   netWorth: number;
   totalLoanOutstanding: number;
+  totalCreditCardOutstanding: number;
   totalInvestmentValue: number;
   totalInsuranceCoverage: number;
   emisDueCount: number;
@@ -410,6 +440,50 @@ export interface ReportSummary {
   categoryBreakdown: CategoryAmount[];
   trend: TrendPoint[];
   netWorthTrend: NetWorthPoint[];
+}
+
+export interface CreditCard {
+  id: number;
+  name: string;
+  bankName: string;
+  /** @nullable */
+  bankLogoUrl?: string | null;
+  creditLimit: number;
+  outstandingAmount: number;
+  dueDate: string;
+  minimumDue: number;
+  createdAt: string;
+}
+
+export interface CreditCardInput {
+  /** @minLength 1 */
+  name: string;
+  /** @minLength 1 */
+  bankName: string;
+  bankLogoUrl?: string;
+  /** @minimum 0 */
+  creditLimit: number;
+  /** @minimum 0 */
+  outstandingAmount?: number;
+  dueDate: string;
+  /** @minimum 0 */
+  minimumDue?: number;
+}
+
+export interface CreditCardUpdate {
+  /** @minLength 1 */
+  name?: string;
+  /** @minLength 1 */
+  bankName?: string;
+  /** @nullable */
+  bankLogoUrl?: string | null;
+  /** @minimum 0 */
+  creditLimit?: number;
+  /** @minimum 0 */
+  outstandingAmount?: number;
+  dueDate?: string;
+  /** @minimum 0 */
+  minimumDue?: number;
 }
 
 export type ListCategoriesParams = {

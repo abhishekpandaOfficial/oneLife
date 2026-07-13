@@ -21,6 +21,7 @@ import {
   PanelLeftOpen,
   Zap,
   LogOut,
+  CreditCard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -63,6 +64,7 @@ const navItems = [
   { label: "Expenses",     href: "/expenses",     icon: ArrowUpFromLine },
   { label: "Transactions", href: "/transactions", icon: ArrowLeftRight },
   { label: "Loans",        href: "/loans",        icon: Wallet },
+  { label: "Credit Cards", href: "/credit-cards", icon: CreditCard },
   { label: "Insurance",    href: "/insurance",    icon: ShieldCheck },
   { label: "Investments",  href: "/investments",  icon: TrendingUp },
   { label: "Goals",        href: "/goals",        icon: Target },

@@ -16,6 +16,7 @@ export interface DashboardSummary {
   totalSavings: number;
   netWorth: number;
   totalLoanOutstanding: number;
+  totalCreditCardOutstanding: number;
   totalInvestmentValue: number;
   totalInsuranceCoverage: number;
   emisDueCount: number;

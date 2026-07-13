@@ -11,6 +11,7 @@ import goalsRouter from "./goals";
 import budgetsRouter from "./budgets";
 import reportsRouter from "./reports";
 import dbRouter from "./db";
+import creditCardsRouter from "./credit_cards";
 
 const router: IRouter = Router();
 
@@ -26,6 +27,7 @@ router.use(goalsRouter);
 router.use(budgetsRouter);
 router.use(reportsRouter);
 router.use(dbRouter);
+router.use(creditCardsRouter);
 
 export default router;
 

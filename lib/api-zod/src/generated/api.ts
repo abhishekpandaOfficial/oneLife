@@ -28,6 +28,7 @@ export const GetDashboardSummaryResponse = zod.object({
   "totalSavings": zod.number(),
   "netWorth": zod.number(),
   "totalLoanOutstanding": zod.number(),
+  "totalCreditCardOutstanding": zod.number(),
   "totalInvestmentValue": zod.number(),
   "totalInsuranceCoverage": zod.number(),
   "emisDueCount": zod.number(),
@@ -242,6 +243,11 @@ export const ListLoansResponseItem = zod.object({
   "monthsRemaining": zod.number(),
   "startDate": zod.coerce.date(),
   "status": zod.enum(['active', 'closed']),
+  "bankName": zod.string().nullish(),
+  "bankLogoUrl": zod.string().nullish(),
+  "disbursementDocUrl": zod.string().nullish(),
+  "repaymentScheduleDocUrl": zod.string().nullish(),
+  "penaltyRate": zod.number().optional(),
   "createdAt": zod.coerce.date()
 })
 export const ListLoansResponse = zod.array(ListLoansResponseItem)
@@ -260,6 +266,9 @@ export const createLoanBodyInterestRateMin = 0;
 export const createLoanBodyEmiAmountMin = 0;
 
 
+export const createLoanBodyPenaltyRateDefault = 2;
+export const createLoanBodyPenaltyRateMin = 0;
+
 
 
 export const CreateLoanBody = zod.object({
@@ -270,7 +279,12 @@ export const CreateLoanBody = zod.object({
   "interestRate": zod.number().min(createLoanBodyInterestRateMin),
   "emiAmount": zod.number().min(createLoanBodyEmiAmountMin),
   "tenureMonths": zod.number().min(1),
-  "startDate": zod.coerce.date()
+  "startDate": zod.coerce.date(),
+  "bankName": zod.string().optional(),
+  "bankLogoUrl": zod.string().optional(),
+  "disbursementDocUrl": zod.string().optional(),
+  "repaymentScheduleDocUrl": zod.string().optional(),
+  "penaltyRate": zod.number().min(createLoanBodyPenaltyRateMin).default(createLoanBodyPenaltyRateDefault)
 })
 
 export const CreateLoanResponse = zod.object({
@@ -285,6 +299,11 @@ export const CreateLoanResponse = zod.object({
   "monthsRemaining": zod.number(),
   "startDate": zod.coerce.date(),
   "status": zod.enum(['active', 'closed']),
+  "bankName": zod.string().nullish(),
+  "bankLogoUrl": zod.string().nullish(),
+  "disbursementDocUrl": zod.string().nullish(),
+  "repaymentScheduleDocUrl": zod.string().nullish(),
+  "penaltyRate": zod.number().optional(),
   "createdAt": zod.coerce.date()
 })
 
@@ -308,6 +327,11 @@ export const GetLoanResponse = zod.object({
   "monthsRemaining": zod.number(),
   "startDate": zod.coerce.date(),
   "status": zod.enum(['active', 'closed']),
+  "bankName": zod.string().nullish(),
+  "bankLogoUrl": zod.string().nullish(),
+  "disbursementDocUrl": zod.string().nullish(),
+  "repaymentScheduleDocUrl": zod.string().nullish(),
+  "penaltyRate": zod.number().optional(),
   "createdAt": zod.coerce.date()
 }).and(zod.object({
   "principalPaid": zod.number(),
@@ -319,7 +343,9 @@ export const GetLoanResponse = zod.object({
   "dueDate": zod.coerce.date(),
   "paidDate": zod.coerce.date().nullable(),
   "amount": zod.number(),
-  "status": zod.enum(['paid', 'pending', 'overdue', 'partial'])
+  "status": zod.enum(['paid', 'pending', 'overdue', 'partial']),
+  "penaltyAmount": zod.number().optional(),
+  "overdueDays": zod.number().optional()
 }))
 }))
 
@@ -341,6 +367,8 @@ export const updateLoanBodyInterestRateMin = 0;
 export const updateLoanBodyEmiAmountMin = 0;
 
 
+export const updateLoanBodyPenaltyRateMin = 0;
+
 
 
 export const UpdateLoanBody = zod.object({
@@ -352,6 +380,11 @@ export const UpdateLoanBody = zod.object({
   "emiAmount": zod.number().min(updateLoanBodyEmiAmountMin).optional(),
   "tenureMonths": zod.number().min(1).optional(),
   "startDate": zod.coerce.date().optional(),
+  "bankName": zod.string().nullish(),
+  "bankLogoUrl": zod.string().nullish(),
+  "disbursementDocUrl": zod.string().nullish(),
+  "repaymentScheduleDocUrl": zod.string().nullish(),
+  "penaltyRate": zod.number().min(updateLoanBodyPenaltyRateMin).optional(),
   "status": zod.enum(['active', 'closed']).optional()
 })
 
@@ -367,6 +400,11 @@ export const UpdateLoanResponse = zod.object({
   "monthsRemaining": zod.number(),
   "startDate": zod.coerce.date(),
   "status": zod.enum(['active', 'closed']),
+  "bankName": zod.string().nullish(),
+  "bankLogoUrl": zod.string().nullish(),
+  "disbursementDocUrl": zod.string().nullish(),
+  "repaymentScheduleDocUrl": zod.string().nullish(),
+  "penaltyRate": zod.number().optional(),
   "createdAt": zod.coerce.date()
 })
 
@@ -396,7 +434,9 @@ export const ListEmisResponseItem = zod.object({
   "dueDate": zod.coerce.date(),
   "paidDate": zod.coerce.date().nullable(),
   "amount": zod.number(),
-  "status": zod.enum(['paid', 'pending', 'overdue', 'partial'])
+  "status": zod.enum(['paid', 'pending', 'overdue', 'partial']),
+  "penaltyAmount": zod.number().optional(),
+  "overdueDays": zod.number().optional()
 })
 export const ListEmisResponse = zod.array(ListEmisResponseItem)
 
@@ -410,7 +450,9 @@ export const UpdateEmiParams = zod.object({
 
 export const UpdateEmiBody = zod.object({
   "status": zod.enum(['paid', 'pending', 'overdue', 'partial']).optional(),
-  "paidDate": zod.coerce.date().nullish()
+  "paidDate": zod.coerce.date().nullish(),
+  "penaltyAmount": zod.number().optional(),
+  "overdueDays": zod.number().optional()
 })
 
 export const UpdateEmiResponse = zod.object({
@@ -420,7 +462,9 @@ export const UpdateEmiResponse = zod.object({
   "dueDate": zod.coerce.date(),
   "paidDate": zod.coerce.date().nullable(),
   "amount": zod.number(),
-  "status": zod.enum(['paid', 'pending', 'overdue', 'partial'])
+  "status": zod.enum(['paid', 'pending', 'overdue', 'partial']),
+  "penaltyAmount": zod.number().optional(),
+  "overdueDays": zod.number().optional()
 })
 
 
@@ -815,5 +859,110 @@ export const GetReportSummaryResponse = zod.object({
   "netWorth": zod.number()
 }))
 })
+
+
+/**
+ * @summary List credit cards
+ */
+export const ListCreditCardsResponseItem = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "bankName": zod.string(),
+  "bankLogoUrl": zod.string().nullish(),
+  "creditLimit": zod.number(),
+  "outstandingAmount": zod.number(),
+  "dueDate": zod.coerce.date(),
+  "minimumDue": zod.number(),
+  "createdAt": zod.coerce.date()
+})
+export const ListCreditCardsResponse = zod.array(ListCreditCardsResponseItem)
+
+
+/**
+ * @summary Create a credit card
+ */
+
+
+export const createCreditCardBodyCreditLimitMin = 0;
+
+export const createCreditCardBodyOutstandingAmountDefault = 0;
+export const createCreditCardBodyOutstandingAmountMin = 0;
+
+export const createCreditCardBodyMinimumDueDefault = 0;
+export const createCreditCardBodyMinimumDueMin = 0;
+
+
+
+export const CreateCreditCardBody = zod.object({
+  "name": zod.string().min(1),
+  "bankName": zod.string().min(1),
+  "bankLogoUrl": zod.string().optional(),
+  "creditLimit": zod.number().min(createCreditCardBodyCreditLimitMin),
+  "outstandingAmount": zod.number().min(createCreditCardBodyOutstandingAmountMin).default(createCreditCardBodyOutstandingAmountDefault),
+  "dueDate": zod.coerce.date(),
+  "minimumDue": zod.number().min(createCreditCardBodyMinimumDueMin).default(createCreditCardBodyMinimumDueDefault)
+})
+
+export const CreateCreditCardResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "bankName": zod.string(),
+  "bankLogoUrl": zod.string().nullish(),
+  "creditLimit": zod.number(),
+  "outstandingAmount": zod.number(),
+  "dueDate": zod.coerce.date(),
+  "minimumDue": zod.number(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Update a credit card
+ */
+export const UpdateCreditCardParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+
+export const updateCreditCardBodyCreditLimitMin = 0;
+
+export const updateCreditCardBodyOutstandingAmountMin = 0;
+
+export const updateCreditCardBodyMinimumDueMin = 0;
+
+
+
+export const UpdateCreditCardBody = zod.object({
+  "name": zod.string().min(1).optional(),
+  "bankName": zod.string().min(1).optional(),
+  "bankLogoUrl": zod.string().nullish(),
+  "creditLimit": zod.number().min(updateCreditCardBodyCreditLimitMin).optional(),
+  "outstandingAmount": zod.number().min(updateCreditCardBodyOutstandingAmountMin).optional(),
+  "dueDate": zod.coerce.date().optional(),
+  "minimumDue": zod.number().min(updateCreditCardBodyMinimumDueMin).optional()
+})
+
+export const UpdateCreditCardResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "bankName": zod.string(),
+  "bankLogoUrl": zod.string().nullish(),
+  "creditLimit": zod.number(),
+  "outstandingAmount": zod.number(),
+  "dueDate": zod.coerce.date(),
+  "minimumDue": zod.number(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Delete a credit card
+ */
+export const DeleteCreditCardParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteCreditCardResponse = zod.void()
 
 

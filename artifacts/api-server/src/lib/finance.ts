@@ -8,6 +8,7 @@ import {
   insurancesTable,
   investmentsTable,
   goalsTable,
+  creditCardsTable,
 } from "@workspace/db";
 import { monthRange, monthKey, lastMonthKeys, yearRange, lastYears } from "./dates";
 
@@ -100,6 +101,11 @@ export async function totalLoanOutstanding(): Promise<number> {
   return loans.reduce((sum, l) => sum + Number(l.outstandingAmount), 0);
 }
 
+export async function totalCreditCardOutstanding(): Promise<number> {
+  const cards = await db.select().from(creditCardsTable);
+  return cards.reduce((sum, c) => sum + Number(c.outstandingAmount), 0);
+}
+
 export async function totalInvestmentValue(): Promise<number> {
   const investments = await db.select().from(investmentsTable);
   return investments.reduce((sum, i) => sum + Number(i.currentValue), 0);
@@ -159,6 +165,10 @@ export async function upcomingPayments(limit = 8): Promise<UpcomingPayment[]> {
     .from(insurancesTable)
     .where(eq(insurancesTable.status, "active"));
 
+  const cards = await db
+    .select()
+    .from(creditCardsTable);
+
   const payments: UpcomingPayment[] = [
     ...emis.map((e) => ({
       id: e.id,
@@ -173,6 +183,13 @@ export async function upcomingPayments(limit = 8): Promise<UpcomingPayment[]> {
       type: "insurance",
       dueDate: i.renewalDate,
       amount: Number(i.premiumAmount),
+    })),
+    ...cards.filter(c => Number(c.outstandingAmount) > 0).map((c) => ({
+      id: c.id,
+      name: `${c.bankName} ${c.name} bill`,
+      type: "credit_card",
+      dueDate: c.dueDate,
+      amount: Number(c.minimumDue ?? 0) || Number(c.outstandingAmount),
     })),
   ];
 

@@ -5,6 +5,7 @@ import Transactions from "@/pages/Transactions";
 import TransactionForm from "@/pages/TransactionForm";
 import Loans from "@/pages/Loans";
 import LoanDetail from "@/pages/LoanDetail";
+import CreditCards from "@/pages/CreditCards";
 import Insurance from "@/pages/Insurance";
 import Investments from "@/pages/Investments";
 import Goals from "@/pages/Goals";
@@ -47,6 +48,7 @@ function Router() {
 
         <Route path="/loans" component={Loans} />
         <Route path="/loans/:id" component={LoanDetail} />
+        <Route path="/credit-cards" component={CreditCards} />
 
         <Route path="/insurance" component={Insurance} />
         <Route path="/investments" component={Investments} />

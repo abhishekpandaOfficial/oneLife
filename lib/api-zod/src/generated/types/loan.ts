@@ -20,5 +20,14 @@ export interface Loan {
   monthsRemaining: number;
   startDate: Date;
   status: LoanStatus;
+  /** @nullable */
+  bankName?: string | null;
+  /** @nullable */
+  bankLogoUrl?: string | null;
+  /** @nullable */
+  disbursementDocUrl?: string | null;
+  /** @nullable */
+  repaymentScheduleDocUrl?: string | null;
+  penaltyRate?: number;
   createdAt: Date;
 }

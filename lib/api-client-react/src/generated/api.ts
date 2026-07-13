@@ -25,6 +25,9 @@ import type {
   BudgetUpdate,
   Category,
   CategoryInput,
+  CreditCard,
+  CreditCardInput,
+  CreditCardUpdate,
   DashboardSummary,
   Emi,
   EmiUpdate,
@@ -2616,4 +2619,295 @@ export function useGetReportSummary<TData = Awaited<ReturnType<typeof getReportS
 
 
 
+
+export const getListCreditCardsUrl = () => {
+
+
+
+
+  return `/api/credit-cards`
+}
+
+/**
+ * @summary List credit cards
+ */
+export const listCreditCards = async ( options?: RequestInit): Promise<CreditCard[]> => {
+
+  return customFetch<CreditCard[]>(getListCreditCardsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListCreditCardsQueryKey = () => {
+    return [
+    `/api/credit-cards`
+    ] as const;
+    }
+
+
+export const getListCreditCardsQueryOptions = <TData = Awaited<ReturnType<typeof listCreditCards>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCreditCards>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListCreditCardsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listCreditCards>>> = ({ signal }) => listCreditCards({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listCreditCards>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListCreditCardsQueryResult = NonNullable<Awaited<ReturnType<typeof listCreditCards>>>
+export type ListCreditCardsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List credit cards
+ */
+
+export function useListCreditCards<TData = Awaited<ReturnType<typeof listCreditCards>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCreditCards>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListCreditCardsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateCreditCardUrl = () => {
+
+
+
+
+  return `/api/credit-cards`
+}
+
+/**
+ * @summary Create a credit card
+ */
+export const createCreditCard = async (creditCardInput: CreditCardInput, options?: RequestInit): Promise<CreditCard> => {
+
+  return customFetch<CreditCard>(getCreateCreditCardUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(creditCardInput)
+  }
+);}
+
+
+
+
+
+export const getCreateCreditCardMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCreditCard>>, TError,{data: BodyType<CreditCardInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createCreditCard>>, TError,{data: BodyType<CreditCardInput>}, TContext> => {
+
+const mutationKey = ['createCreditCard'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createCreditCard>>, {data: BodyType<CreditCardInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createCreditCard(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateCreditCardMutationResult = NonNullable<Awaited<ReturnType<typeof createCreditCard>>>
+    export type CreateCreditCardMutationBody = BodyType<CreditCardInput>
+    export type CreateCreditCardMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Create a credit card
+ */
+export const useCreateCreditCard = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCreditCard>>, TError,{data: BodyType<CreditCardInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createCreditCard>>,
+        TError,
+        {data: BodyType<CreditCardInput>},
+        TContext
+      > => {
+      return useMutation(getCreateCreditCardMutationOptions(options));
+    }
+
+export const getUpdateCreditCardUrl = (id: number,) => {
+
+
+
+
+  return `/api/credit-cards/${id}`
+}
+
+/**
+ * @summary Update a credit card
+ */
+export const updateCreditCard = async (id: number,
+    creditCardUpdate: CreditCardUpdate, options?: RequestInit): Promise<CreditCard> => {
+
+  return customFetch<CreditCard>(getUpdateCreditCardUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(creditCardUpdate)
+  }
+);}
+
+
+
+
+
+export const getUpdateCreditCardMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCreditCard>>, TError,{id: number;data: BodyType<CreditCardUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateCreditCard>>, TError,{id: number;data: BodyType<CreditCardUpdate>}, TContext> => {
+
+const mutationKey = ['updateCreditCard'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateCreditCard>>, {id: number;data: BodyType<CreditCardUpdate>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateCreditCard(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateCreditCardMutationResult = NonNullable<Awaited<ReturnType<typeof updateCreditCard>>>
+    export type UpdateCreditCardMutationBody = BodyType<CreditCardUpdate>
+    export type UpdateCreditCardMutationError = ErrorType<void>
+
+    /**
+ * @summary Update a credit card
+ */
+export const useUpdateCreditCard = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCreditCard>>, TError,{id: number;data: BodyType<CreditCardUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateCreditCard>>,
+        TError,
+        {id: number;data: BodyType<CreditCardUpdate>},
+        TContext
+      > => {
+      return useMutation(getUpdateCreditCardMutationOptions(options));
+    }
+
+export const getDeleteCreditCardUrl = (id: number,) => {
+
+
+
+
+  return `/api/credit-cards/${id}`
+}
+
+/**
+ * @summary Delete a credit card
+ */
+export const deleteCreditCard = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteCreditCardUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteCreditCardMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteCreditCard>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteCreditCard>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteCreditCard'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteCreditCard>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteCreditCard(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteCreditCardMutationResult = NonNullable<Awaited<ReturnType<typeof deleteCreditCard>>>
+
+    export type DeleteCreditCardMutationError = ErrorType<void>
+
+    /**
+ * @summary Delete a credit card
+ */
+export const useDeleteCreditCard = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteCreditCard>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteCreditCard>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteCreditCardMutationOptions(options));
+    }
 

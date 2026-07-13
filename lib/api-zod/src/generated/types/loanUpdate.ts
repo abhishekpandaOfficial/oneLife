@@ -23,5 +23,15 @@ export interface LoanUpdate {
   /** @minimum 1 */
   tenureMonths?: number;
   startDate?: Date;
+  /** @nullable */
+  bankName?: string | null;
+  /** @nullable */
+  bankLogoUrl?: string | null;
+  /** @nullable */
+  disbursementDocUrl?: string | null;
+  /** @nullable */
+  repaymentScheduleDocUrl?: string | null;
+  /** @minimum 0 */
+  penaltyRate?: number;
   status?: LoanStatus;
 }

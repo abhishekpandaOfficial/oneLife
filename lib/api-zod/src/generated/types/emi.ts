@@ -16,4 +16,6 @@ export interface Emi {
   paidDate: Date | null;
   amount: number;
   status: EmiStatus;
+  penaltyAmount?: number;
+  overdueDays?: number;
 }

@@ -12,6 +12,8 @@ export const emisTable = pgTable("emis", {
   status: text("status", { enum: ["paid", "pending", "overdue", "partial"] })
     .notNull()
     .default("pending"),
+  penaltyAmount: numeric("penalty_amount", { precision: 14, scale: 2, mode: "number" }).notNull().default(0),
+  overdueDays: integer("overdue_days").notNull().default(0),
 });
 
 export const insertEmiSchema = createInsertSchema(emisTable).omit({ id: true });

@@ -11,4 +11,6 @@ export interface EmiUpdate {
   status?: EmiStatus;
   /** @nullable */
   paidDate?: Date | null;
+  penaltyAmount?: number;
+  overdueDays?: number;
 }

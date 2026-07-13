@@ -16,6 +16,8 @@ function emiSelect() {
       paidDate: emisTable.paidDate,
       amount: emisTable.amount,
       status: emisTable.status,
+      penaltyAmount: emisTable.penaltyAmount,
+      overdueDays: emisTable.overdueDays,
     })
     .from(emisTable)
     .innerJoin(loansTable, eq(emisTable.loanId, loansTable.id));
@@ -52,10 +54,54 @@ router.patch("/emis/:id", async (req, res): Promise<void> => {
     return;
   }
 
+  const [existingEmi] = await db
+    .select()
+    .from(emisTable)
+    .where(eq(emisTable.id, params.data.id));
+
+  if (!existingEmi) {
+    res.status(404).json({ error: "EMI not found" });
+    return;
+  }
+
+  const [loan] = await db
+    .select()
+    .from(loansTable)
+    .where(eq(loansTable.id, existingEmi.loanId));
+
   const update: Record<string, unknown> = {};
-  if (parsed.data.status !== undefined) update.status = parsed.data.status;
-  if (parsed.data.paidDate !== undefined) {
-    update.paidDate = parsed.data.paidDate ? toDateStr(parsed.data.paidDate) : null;
+  
+  if (parsed.data.status !== undefined) {
+    let newStatus = parsed.data.status;
+    let paidDate = parsed.data.paidDate ? toDateStr(parsed.data.paidDate) : null;
+    let penaltyAmount = 0;
+    let overdueDays = 0;
+
+    if (newStatus === "paid") {
+      paidDate = paidDate ?? toDateStr(new Date());
+    } else {
+      // Unmarked (pending/overdue)
+      paidDate = null;
+      const now = new Date();
+      const due = new Date(existingEmi.dueDate);
+      if (due < now) {
+        const diffTime = Math.abs(now.getTime() - due.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays > 0) {
+          overdueDays = diffDays;
+          const rate = loan ? Number(loan.penaltyRate) : 2.0;
+          penaltyAmount = Number((existingEmi.amount * (rate / 100) * (diffDays / 30)).toFixed(2));
+          newStatus = "overdue";
+        }
+      } else {
+        newStatus = "pending";
+      }
+    }
+    
+    update.status = newStatus;
+    update.paidDate = paidDate;
+    update.penaltyAmount = penaltyAmount;
+    update.overdueDays = overdueDays;
   }
 
   const [updated] = await db
@@ -71,15 +117,21 @@ router.patch("/emis/:id", async (req, res): Promise<void> => {
 
   const [emi] = await emiSelect().where(eq(emisTable.id, updated.id));
 
-  if (update.status === "paid" && emi.status === "paid") {
-    const [loan] = await db.select().from(loansTable).where(eq(loansTable.id, emi.loanId));
-    if (loan) {
-      const nextOutstanding = Math.max(0, loan.outstandingAmount - loan.emiAmount);
-      await db
-        .update(loansTable)
-        .set({ outstandingAmount: nextOutstanding })
-        .where(eq(loansTable.id, loan.id));
-    }
+  // If newly marked as paid, update loan outstanding
+  if (parsed.data.status === "paid" && existingEmi.status !== "paid" && loan) {
+    const nextOutstanding = Math.max(0, loan.outstandingAmount - loan.emiAmount);
+    await db
+      .update(loansTable)
+      .set({ outstandingAmount: nextOutstanding })
+      .where(eq(loansTable.id, loan.id));
+  }
+  // If unmarked from paid to unpaid, restore loan outstanding
+  else if (parsed.data.status !== "paid" && existingEmi.status === "paid" && loan) {
+    const nextOutstanding = loan.outstandingAmount + loan.emiAmount;
+    await db
+      .update(loansTable)
+      .set({ outstandingAmount: nextOutstanding })
+      .where(eq(loansTable.id, loan.id));
   }
 
   res.json(UpdateEmiResponse.parse(emi));

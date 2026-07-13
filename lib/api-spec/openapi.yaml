@@ -30,6 +30,8 @@ tags:
     description: Monthly budgets
   - name: reports
     description: Financial reports
+  - name: credit_cards
+    description: Credit card management
 paths:
   /healthz:
     get:
@@ -695,6 +697,80 @@ paths:
               schema:
                 $ref: "#/components/schemas/ReportSummary"
 
+  /credit-cards:
+    get:
+      operationId: listCreditCards
+      tags: [credit_cards]
+      summary: List credit cards
+      responses:
+        "200":
+          description: List of credit cards
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CreditCard"
+    post:
+      operationId: createCreditCard
+      tags: [credit_cards]
+      summary: Create a credit card
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreditCardInput"
+      responses:
+        "201":
+          description: Created credit card
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreditCard"
+
+  /credit-cards/{id}:
+    patch:
+      operationId: updateCreditCard
+      tags: [credit_cards]
+      summary: Update a credit card
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreditCardUpdate"
+      responses:
+        "200":
+          description: Updated credit card
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreditCard"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteCreditCard
+      tags: [credit_cards]
+      summary: Delete a credit card
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
 components:
   schemas:
     HealthStatus:
@@ -817,6 +893,11 @@ components:
         startDate: { type: string, format: date }
         status:
           $ref: "#/components/schemas/LoanStatus"
+        bankName: { type: ["string", "null"] }
+        bankLogoUrl: { type: ["string", "null"] }
+        disbursementDocUrl: { type: ["string", "null"] }
+        repaymentScheduleDocUrl: { type: ["string", "null"] }
+        penaltyRate: { type: number }
         createdAt: { type: string, format: date-time }
 
     LoanDetail:
@@ -845,6 +926,11 @@ components:
         emiAmount: { type: number, minimum: 0 }
         tenureMonths: { type: integer, minimum: 1 }
         startDate: { type: string, format: date }
+        bankName: { type: string }
+        bankLogoUrl: { type: string }
+        disbursementDocUrl: { type: string }
+        repaymentScheduleDocUrl: { type: string }
+        penaltyRate: { type: number, minimum: 0, default: 2.0 }
 
     LoanUpdate:
       type: object
@@ -858,6 +944,11 @@ components:
         emiAmount: { type: number, minimum: 0 }
         tenureMonths: { type: integer, minimum: 1 }
         startDate: { type: string, format: date }
+        bankName: { type: ["string", "null"] }
+        bankLogoUrl: { type: ["string", "null"] }
+        disbursementDocUrl: { type: ["string", "null"] }
+        repaymentScheduleDocUrl: { type: ["string", "null"] }
+        penaltyRate: { type: number, minimum: 0 }
         status:
           $ref: "#/components/schemas/LoanStatus"
 
@@ -873,6 +964,8 @@ components:
         amount: { type: number }
         status:
           $ref: "#/components/schemas/EmiStatus"
+        penaltyAmount: { type: number }
+        overdueDays: { type: integer }
 
     EmiUpdate:
       type: object
@@ -880,6 +973,8 @@ components:
         status:
           $ref: "#/components/schemas/EmiStatus"
         paidDate: { type: ["string", "null"], format: date }
+        penaltyAmount: { type: number }
+        overdueDays: { type: integer }
 
     Insurance:
       type: object
@@ -1061,7 +1156,7 @@ components:
       type: object
       required:
         [monthlyIncome, monthlyExpenses, remainingBalance, totalSavings,
-         netWorth, totalLoanOutstanding, totalInvestmentValue, totalInsuranceCoverage,
+         netWorth, totalLoanOutstanding, totalCreditCardOutstanding, totalInvestmentValue, totalInsuranceCoverage,
          emisDueCount, emergencyFundAmount, expenseByCategory, incomeVsExpenseTrend,
          upcomingPayments]
       properties:
@@ -1071,6 +1166,7 @@ components:
         totalSavings: { type: number }
         netWorth: { type: number }
         totalLoanOutstanding: { type: number }
+        totalCreditCardOutstanding: { type: number }
         totalInvestmentValue: { type: number }
         totalInsuranceCoverage: { type: number }
         emisDueCount: { type: integer }
@@ -1108,3 +1204,40 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/NetWorthPoint"
+
+    CreditCard:
+      type: object
+      required: [id, name, bankName, creditLimit, outstandingAmount, dueDate, minimumDue, createdAt]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        bankName: { type: string }
+        bankLogoUrl: { type: ["string", "null"] }
+        creditLimit: { type: number }
+        outstandingAmount: { type: number }
+        dueDate: { type: string, format: date }
+        minimumDue: { type: number }
+        createdAt: { type: string, format: date-time }
+
+    CreditCardInput:
+      type: object
+      required: [name, bankName, creditLimit, dueDate]
+      properties:
+        name: { type: string, minLength: 1 }
+        bankName: { type: string, minLength: 1 }
+        bankLogoUrl: { type: string }
+        creditLimit: { type: number, minimum: 0 }
+        outstandingAmount: { type: number, minimum: 0, default: 0 }
+        dueDate: { type: string, format: date }
+        minimumDue: { type: number, minimum: 0, default: 0 }
+
+    CreditCardUpdate:
+      type: object
+      properties:
+        name: { type: string, minLength: 1 }
+        bankName: { type: string, minLength: 1 }
+        bankLogoUrl: { type: ["string", "null"] }
+        creditLimit: { type: number, minimum: 0 }
+        outstandingAmount: { type: number, minimum: 0 }
+        dueDate: { type: string, format: date }
+        minimumDue: { type: number, minimum: 0 }

@@ -22,4 +22,10 @@ export interface LoanInput {
   /** @minimum 1 */
   tenureMonths: number;
   startDate: Date;
+  bankName?: string;
+  bankLogoUrl?: string;
+  disbursementDocUrl?: string;
+  repaymentScheduleDocUrl?: string;
+  /** @minimum 0 */
+  penaltyRate?: number;
 }

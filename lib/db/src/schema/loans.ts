@@ -15,6 +15,11 @@ export const loansTable = pgTable("loans", {
   tenureMonths: integer("tenure_months").notNull(),
   startDate: date("start_date", { mode: "string" }).notNull(),
   status: text("status", { enum: ["active", "closed"] }).notNull().default("active"),
+  bankName: text("bank_name"),
+  bankLogoUrl: text("bank_logo_url"),
+  disbursementDocUrl: text("disbursement_doc_url"),
+  repaymentScheduleDocUrl: text("repayment_schedule_doc_url"),
+  penaltyRate: numeric("penalty_rate", { precision: 6, scale: 3, mode: "number" }).notNull().default(2.0),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

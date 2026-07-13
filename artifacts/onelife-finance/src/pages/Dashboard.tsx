@@ -76,6 +76,8 @@ export default function Dashboard() {
   }
 
   const rates = getGlobalRates();
+  const totalAssets = summary.totalSavings + summary.totalInvestmentValue;
+  const totalLiabilities = summary.totalLoanOutstanding + summary.totalCreditCardOutstanding;
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-12">
@@ -171,6 +173,89 @@ export default function Dashboard() {
           icon={<ShieldCheck className="h-5 w-5 text-teal-500" />} 
         />
       </div>
+
+      {/* Assets vs Liabilities Net Worth Breakdown */}
+      <Card className="rounded-2xl border-primary/5 shadow-sm overflow-hidden bg-card">
+        <CardHeader>
+          <CardTitle>Net Worth Structure</CardTitle>
+          <CardDescription>Breakdown of your assets and liabilities comparing investments and savings.</CardDescription>
+        </CardHeader>
+        <CardContent className="p-6">
+          <div className="grid gap-6 md:grid-cols-12 items-center">
+            {/* Net Worth Graph & Meter */}
+            <div className="md:col-span-5 space-y-4">
+              <div className="flex justify-between text-xs font-semibold uppercase tracking-wider">
+                <span className="text-emerald-500">Total Assets</span>
+                <span className="text-destructive">Total Liabilities</span>
+              </div>
+              <div className="h-5 w-full rounded-full bg-muted overflow-hidden flex">
+                <div 
+                  className="bg-emerald-500 h-full transition-all duration-1000 ease-out" 
+                  style={{ width: `${(totalAssets / (totalAssets + totalLiabilities || 1)) * 100}%` }}
+                />
+                <div 
+                  className="bg-destructive h-full transition-all duration-1000 ease-out" 
+                  style={{ width: `${(totalLiabilities / (totalAssets + totalLiabilities || 1)) * 100}%` }}
+                />
+              </div>
+              <div className="flex justify-between font-mono font-bold text-base">
+                <span className="text-emerald-500">{formatCurrency(totalAssets)}</span>
+                <span className="text-destructive">{formatCurrency(totalLiabilities)}</span>
+              </div>
+              <div className="pt-4 text-center border-t border-dashed">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Calculated Net Worth</p>
+                <p className="text-3xl font-extrabold font-mono text-primary mt-1">
+                  {formatCurrency(summary.netWorth)}
+                </p>
+              </div>
+            </div>
+
+            {/* Assets List */}
+            <div className="md:col-span-3.5 space-y-4 md:border-l border-dashed pl-0 md:pl-6">
+              <h4 className="font-semibold text-emerald-500 flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                Assets
+              </h4>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-muted-foreground">Savings (from Goals)</span>
+                  <span className="font-mono font-medium">{formatCurrency(summary.totalSavings)}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-muted-foreground">Investments</span>
+                  <span className="font-mono font-medium">{formatCurrency(summary.totalInvestmentValue)}</span>
+                </div>
+                <div className="flex justify-between items-center border-t pt-2 text-sm">
+                  <span className="font-semibold text-foreground">Total Assets</span>
+                  <span className="font-mono font-bold text-emerald-500">{formatCurrency(totalAssets)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Liabilities List */}
+            <div className="md:col-span-3.5 space-y-4 md:border-l border-dashed pl-0 md:pl-6">
+              <h4 className="font-semibold text-destructive flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-destructive" />
+                Liabilities
+              </h4>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-muted-foreground">Active Loans</span>
+                  <span className="font-mono font-medium">{formatCurrency(summary.totalLoanOutstanding)}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-muted-foreground">Credit Card Bills</span>
+                  <span className="font-mono font-medium">{formatCurrency(summary.totalCreditCardOutstanding)}</span>
+                </div>
+                <div className="flex justify-between items-center border-t pt-2 text-sm">
+                  <span className="font-semibold text-foreground">Total Liabilities</span>
+                  <span className="font-mono font-bold text-destructive">{formatCurrency(totalLiabilities)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid gap-6 md:grid-cols-7">
         <Card className="md:col-span-4 rounded-2xl shadow-sm border-primary/5">

@@ -16,10 +16,10 @@ import {
   Menu,
   Bell,
   Search,
-  Command,
   Database,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -35,18 +35,18 @@ import {
 } from "@/components/ui/command";
 
 const navItems = [
-  { label: "Dashboard",  href: "/",          icon: LayoutDashboard },
-  { label: "Income",     href: "/income",     icon: ArrowDownToLine },
-  { label: "Expenses",   href: "/expenses",   icon: ArrowUpFromLine },
-  { label: "Transactions",href: "/transactions",icon: ArrowLeftRight },
-  { label: "Loans",      href: "/loans",      icon: Wallet },
-  { label: "Insurance",  href: "/insurance",  icon: ShieldCheck },
-  { label: "Investments",href: "/investments",icon: TrendingUp },
-  { label: "Goals",      href: "/goals",      icon: Target },
-  { label: "Budget",     href: "/budget",     icon: PieChart },
-  { label: "Reports",    href: "/reports",    icon: BarChart3 },
-  { label: "Categories", href: "/categories", icon: Tags },
-  { label: "Settings",   href: "/settings",   icon: Settings },
+  { label: "Dashboard",    href: "/",             icon: LayoutDashboard },
+  { label: "Income",       href: "/income",        icon: ArrowDownToLine },
+  { label: "Expenses",     href: "/expenses",      icon: ArrowUpFromLine },
+  { label: "Transactions", href: "/transactions",  icon: ArrowLeftRight },
+  { label: "Loans",        href: "/loans",         icon: Wallet },
+  { label: "Insurance",    href: "/insurance",     icon: ShieldCheck },
+  { label: "Investments",  href: "/investments",   icon: TrendingUp },
+  { label: "Goals",        href: "/goals",         icon: Target },
+  { label: "Budget",       href: "/budget",        icon: PieChart },
+  { label: "Reports",      href: "/reports",       icon: BarChart3 },
+  { label: "Categories",   href: "/categories",    icon: Tags },
+  { label: "Settings",     href: "/settings",      icon: Settings },
 ];
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
@@ -140,6 +140,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     setSearchQuery("");
   };
 
+  const isDbActive    = location === "/database"    || location.startsWith("/database");
+  const isApiActive   = location === "/api-monitor" || location.startsWith("/api-monitor");
+
   return (
     <div className="flex min-h-[100dvh] w-full bg-background/50">
       
@@ -154,12 +157,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             {/* Sidebar Logo */}
             <div className="flex h-16 items-center px-4 border-b shrink-0">
               <Link href="/" className="flex items-center gap-2 overflow-hidden">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-xs">
                   OL
                 </div>
                 <span className={cn(
                   "text-xl font-bold tracking-tight transition-all duration-300",
-                  isCollapsed ? "opacity-0 md:w-0" : "opacity-100"
+                  isCollapsed ? "opacity-0 md:w-0 hidden" : "opacity-100"
                 )}>
                   OneLife
                 </span>
@@ -194,7 +197,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 );
               })}
 
-              {/* ── System Nav ────────────────────────────────────────── */}
+              {/* ── System Section ───────────────────────────────────── */}
               <div className="pt-4 pb-1 overflow-hidden">
                 <p className={cn(
                   "px-3 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60 transition-all",
@@ -204,48 +207,67 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 </p>
                 {isCollapsed && <div className="h-px bg-border/50 mx-1 my-2" />}
               </div>
-              {(() => {
-                const isActive = location === "/database" || location.startsWith("/database");
-                return (
-                  <Link 
-                    href="/database" 
-                    title={isCollapsed ? "Database Monitor" : undefined}
-                    className={cn(
-                      "flex items-center gap-3 rounded-lg py-2.5 text-sm font-medium transition-all duration-200",
-                      isCollapsed ? "justify-center px-0 h-10" : "px-3",
-                      isActive
-                        ? "bg-primary text-primary-foreground shadow-sm"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                    )}
-                  >
-                    <Database className="h-4 w-4 shrink-0" />
-                    <span className={cn(
-                      "flex-1 transition-all duration-300 truncate",
-                      isCollapsed ? "opacity-0 md:w-0 hidden" : "opacity-100 block"
-                    )}>
-                      Database
-                    </span>
-                    <span className={cn(
-                      "h-2 w-2 rounded-full ring-2 shrink-0 transition-all",
-                      isCollapsed ? "absolute top-1 right-2" : "",
-                      dbStatus === "connected"
-                        ? "bg-emerald-500 ring-emerald-500/20"
-                        : dbStatus === "error"
-                        ? "bg-destructive ring-destructive/20"
-                        : "bg-muted ring-muted/20 animate-pulse"
-                    )} />
-                  </Link>
-                );
-              })()}
+
+              {/* Database Monitor */}
+              <Link 
+                href="/database" 
+                title={isCollapsed ? "Database Monitor" : undefined}
+                className={cn(
+                  "flex items-center gap-3 rounded-lg py-2.5 text-sm font-medium transition-all duration-200",
+                  isCollapsed ? "justify-center px-0 h-10" : "px-3",
+                  isDbActive
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
+              >
+                <Database className="h-4 w-4 shrink-0" />
+                <span className={cn(
+                  "flex-1 transition-all duration-300 truncate",
+                  isCollapsed ? "opacity-0 md:w-0 hidden" : "opacity-100 block"
+                )}>
+                  Database
+                </span>
+                {/* DB connection status dot */}
+                <span className={cn(
+                  "h-2 w-2 rounded-full ring-2 shrink-0",
+                  isCollapsed ? "" : "",
+                  dbStatus === "connected"
+                    ? "bg-emerald-500 ring-emerald-500/20 animate-pulse"
+                    : dbStatus === "error"
+                    ? "bg-red-500 ring-red-500/20"
+                    : "bg-muted ring-muted/20 animate-pulse"
+                )} />
+              </Link>
+
+              {/* API Monitor */}
+              <Link
+                href="/api-monitor"
+                title={isCollapsed ? "API Monitor" : undefined}
+                className={cn(
+                  "flex items-center gap-3 rounded-lg py-2.5 text-sm font-medium transition-all duration-200",
+                  isCollapsed ? "justify-center px-0 h-10" : "px-3",
+                  isApiActive
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
+              >
+                <Zap className="h-4 w-4 shrink-0" />
+                <span className={cn(
+                  "flex-1 transition-all duration-300 truncate",
+                  isCollapsed ? "opacity-0 md:w-0 hidden" : "opacity-100 block"
+                )}>
+                  API Monitor
+                </span>
+              </Link>
             </div>
           </div>
           
-          {/* Collapse sidebar controller & user profile */}
+          {/* Collapse toggle + User profile */}
           <div className="border-t shrink-0">
             {/* Collapse toggle button */}
             <button 
               onClick={toggleCollapse}
-              className="hidden md:flex w-full items-center justify-center h-10 text-muted-foreground hover:text-foreground hover:bg-muted/50 border-b transition-colors"
+              className="hidden md:flex w-full items-center justify-center h-9 text-muted-foreground hover:text-foreground hover:bg-muted/50 border-b transition-colors"
               title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
             >
               {isCollapsed ? (
@@ -258,21 +280,32 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               )}
             </button>
 
-            {/* Profile */}
+            {/* Profile — fixed layout, no overlap */}
             <div className={cn(
-              "flex items-center gap-3 py-3 px-3",
+              "flex items-center gap-2.5 py-3 px-3",
               isCollapsed ? "justify-center" : ""
             )}>
-              <Avatar className="h-9 w-9 border-2 border-primary/10 shrink-0">
-                <AvatarFallback className="bg-primary/5 text-primary font-semibold">CFO</AvatarFallback>
-              </Avatar>
-              <div className={cn(
-                "flex flex-col transition-all duration-300 overflow-hidden",
-                isCollapsed ? "opacity-0 w-0 hidden" : "opacity-100 block"
-              )}>
-                <span className="text-sm font-medium leading-none">CFOWorkspace</span>
-                <span className="text-[10px] text-muted-foreground mt-1">Live Production</span>
+              {/* Avatar with blinking green live dot */}
+              <div className="relative shrink-0">
+                <Avatar className="h-8 w-8 border-2 border-primary/20">
+                  <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">AP</AvatarFallback>
+                </Avatar>
+                {/* Live / online indicator dot */}
+                <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 border-2 border-card animate-pulse" />
               </div>
+
+              {/* Name + status — only visible when expanded */}
+              {!isCollapsed && (
+                <div className="flex flex-col min-w-0 flex-1">
+                  <span className="text-sm font-semibold leading-none truncate">Abhishek</span>
+                  <div className="flex items-center gap-1 mt-1">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium leading-none">
+                      Live Production
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -296,7 +329,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <Menu className="h-5 w-5" />
             </Button>
             
-            {/* Dynamic Search Bar (Styled Trigger Button) */}
+            {/* Global Search Bar */}
             <button 
               onClick={() => setIsSearchOpen(true)}
               className="h-9 w-64 rounded-lg border border-input bg-muted/30 hover:bg-muted/50 px-3 text-sm text-muted-foreground flex items-center justify-between outline-none transition-all shadow-sm"
@@ -366,11 +399,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <span>Go to Database Monitor</span>
               </CommandItem>
             )}
+            {searchQuery.toLowerCase().includes("api") && (
+              <CommandItem onSelect={() => handleSelectNav("/api-monitor")} className="cursor-pointer">
+                <Zap className="mr-2 h-4 w-4 text-muted-foreground" />
+                <span>Go to API Monitor</span>
+              </CommandItem>
+            )}
           </CommandGroup>
 
           <CommandSeparator />
 
-          {/* Database search results */}
+          {/* Live transaction search results */}
           {searchResults && searchResults.length > 0 && (
             <CommandGroup heading="Transactions Found">
               {searchResults.map((tx) => (
@@ -385,13 +424,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                       tx.type === "income" ? "bg-emerald-500" : "bg-destructive"
                     )} />
                     <span className="font-medium truncate max-w-[200px]">{tx.description}</span>
-                    <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.2 rounded font-mono">{tx.categoryName || "Uncategorized"}</span>
+                    <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-mono">{tx.categoryName || "Uncategorized"}</span>
                   </div>
                   <span className={cn(
                     "font-mono text-xs font-semibold",
                     tx.type === "income" ? "text-emerald-500" : "text-destructive"
                   )}>
-                    {tx.type === "income" ? "+" : "-"}{tx.amount.toLocaleString()} INR
+                    {tx.type === "income" ? "+" : "-"}₹{tx.amount.toLocaleString("en-IN")}
                   </span>
                 </CommandItem>
               ))}

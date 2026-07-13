@@ -13,6 +13,7 @@ import Reports from "@/pages/Reports";
 import Categories from "@/pages/Categories";
 import Settings from "@/pages/Settings";
 import DatabaseMonitor from "@/pages/DatabaseMonitor";
+import ApiMonitor from "@/pages/ApiMonitor";
 import NotFound from "@/pages/not-found";
 import { Toaster } from "@/components/ui/toaster";
 import { Route, Switch, Router as WouterRouter } from "wouter";
@@ -47,6 +48,7 @@ function Router() {
         <Route path="/categories" component={Categories} />
         <Route path="/settings" component={Settings} />
         <Route path="/database" component={DatabaseMonitor} />
+        <Route path="/api-monitor" component={ApiMonitor} />
         
         <Route component={NotFound} />
       </Switch>

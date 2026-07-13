@@ -60,12 +60,12 @@ const SECTION_ICONS: Record<Section, React.ElementType> = {
 };
 
 const CURRENCIES = [
-  { code: "INR", symbol: "₹", label: "Indian Rupee" },
-  { code: "USD", symbol: "$", label: "US Dollar" },
-  { code: "EUR", symbol: "€", label: "Euro" },
+  { code: "INR", symbol: "₹",   label: "Indian Rupee" },
+  { code: "USD", symbol: "$",   label: "US Dollar" },
+  { code: "EUR", symbol: "€",   label: "Euro" },
   { code: "AED", symbol: "د.إ", label: "UAE Dirham" },
-  { code: "SAR", symbol: "﷼", label: "Saudi Riyal" },
-  { code: "QAR", symbol: "﷼", label: "Qatari Riyal" },
+  { code: "SAR", symbol: "ر.س", label: "Saudi Riyal" },
+  { code: "QAR", symbol: "ر.ق", label: "Qatari Riyal" },
 ];
 
 export default function Settings() {
@@ -88,6 +88,9 @@ export default function Settings() {
       // Persist to localStorage immediately
       savePrefsLocal(draft);
       setPrefs({ ...draft });
+
+      // Notify AppLayout (same tab) to refresh display name
+      window.dispatchEvent(new CustomEvent("onelife:prefs-updated"));
 
       // Attempt to persist to DB via a generic settings endpoint
       // (graceful fail — localStorage is the source of truth)

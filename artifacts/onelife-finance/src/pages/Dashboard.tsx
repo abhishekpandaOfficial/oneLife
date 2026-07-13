@@ -174,88 +174,166 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* Assets vs Liabilities Net Worth Breakdown */}
-      <Card className="rounded-2xl border-primary/5 shadow-sm overflow-hidden bg-card">
-        <CardHeader>
-          <CardTitle>Net Worth Structure</CardTitle>
-          <CardDescription>Breakdown of your assets and liabilities comparing investments and savings.</CardDescription>
-        </CardHeader>
-        <CardContent className="p-6">
-          <div className="grid gap-6 md:grid-cols-12 items-center">
-            {/* Net Worth Graph & Meter */}
-            <div className="md:col-span-5 space-y-4">
-              <div className="flex justify-between text-xs font-semibold uppercase tracking-wider">
-                <span className="text-emerald-500">Total Assets</span>
-                <span className="text-destructive">Total Liabilities</span>
-              </div>
-              <div className="h-5 w-full rounded-full bg-muted overflow-hidden flex">
-                <div 
-                  className="bg-emerald-500 h-full transition-all duration-1000 ease-out" 
-                  style={{ width: `${(totalAssets / (totalAssets + totalLiabilities || 1)) * 100}%` }}
-                />
-                <div 
-                  className="bg-destructive h-full transition-all duration-1000 ease-out" 
-                  style={{ width: `${(totalLiabilities / (totalAssets + totalLiabilities || 1)) * 100}%` }}
-                />
-              </div>
-              <div className="flex justify-between font-mono font-bold text-base">
-                <span className="text-emerald-500">{formatCurrency(totalAssets)}</span>
-                <span className="text-destructive">{formatCurrency(totalLiabilities)}</span>
-              </div>
-              <div className="pt-4 text-center border-t border-dashed">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Calculated Net Worth</p>
-                <p className="text-3xl font-extrabold font-mono text-primary mt-1">
-                  {formatCurrency(summary.netWorth)}
-                </p>
-              </div>
+      {/* Assets vs Liabilities Net Worth Breakdown — Premium Redesign */}
+      <div className="rounded-2xl overflow-hidden border border-primary/10 shadow-lg bg-gradient-to-br from-card via-card to-muted/30">
+        {/* Header */}
+        <div className="px-6 pt-6 pb-4 border-b border-border/40">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold tracking-tight">Net Worth Structure</h2>
+              <p className="text-sm text-muted-foreground mt-0.5">Breakdown of assets vs liabilities — your true financial health.</p>
             </div>
-
-            {/* Assets List */}
-            <div className="md:col-span-3.5 space-y-4 md:border-l border-dashed pl-0 md:pl-6">
-              <h4 className="font-semibold text-emerald-500 flex items-center gap-2">
-                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                Assets
-              </h4>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground">Savings (from Goals)</span>
-                  <span className="font-mono font-medium">{formatCurrency(summary.totalSavings)}</span>
-                </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground">Investments</span>
-                  <span className="font-mono font-medium">{formatCurrency(summary.totalInvestmentValue)}</span>
-                </div>
-                <div className="flex justify-between items-center border-t pt-2 text-sm">
-                  <span className="font-semibold text-foreground">Total Assets</span>
-                  <span className="font-mono font-bold text-emerald-500">{formatCurrency(totalAssets)}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Liabilities List */}
-            <div className="md:col-span-3.5 space-y-4 md:border-l border-dashed pl-0 md:pl-6">
-              <h4 className="font-semibold text-destructive flex items-center gap-2">
-                <span className="h-2.5 w-2.5 rounded-full bg-destructive" />
-                Liabilities
-              </h4>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground">Active Loans</span>
-                  <span className="font-mono font-medium">{formatCurrency(summary.totalLoanOutstanding)}</span>
-                </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground">Credit Card Bills</span>
-                  <span className="font-mono font-medium">{formatCurrency(summary.totalCreditCardOutstanding)}</span>
-                </div>
-                <div className="flex justify-between items-center border-t pt-2 text-sm">
-                  <span className="font-semibold text-foreground">Total Liabilities</span>
-                  <span className="font-mono font-bold text-destructive">{formatCurrency(totalLiabilities)}</span>
-                </div>
-              </div>
+            <div className="text-right">
+              <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-0.5">Net Worth</p>
+              <p className={`text-2xl font-extrabold font-mono ${summary.netWorth >= 0 ? "text-emerald-500" : "text-destructive"}`}>
+                {formatCurrency(summary.netWorth)}
+              </p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+
+          {/* Stacked progress bar */}
+          <div className="mt-5 space-y-2">
+            <div className="flex justify-between text-[11px] font-semibold uppercase tracking-wider">
+              <span className="text-emerald-500 flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 inline-block" />
+                Assets · {formatCurrency(totalAssets)}
+              </span>
+              <span className="text-rose-500 flex items-center gap-1.5">
+                Liabilities · {formatCurrency(totalLiabilities)}
+                <span className="h-2 w-2 rounded-full bg-rose-500 inline-block" />
+              </span>
+            </div>
+            <div className="h-4 w-full rounded-full bg-muted/60 overflow-hidden flex shadow-inner">
+              {totalAssets + totalLiabilities > 0 ? (
+                <>
+                  <div
+                    className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all duration-1000 ease-out rounded-l-full"
+                    style={{ width: `${Math.round((totalAssets / (totalAssets + totalLiabilities)) * 100)}%` }}
+                  />
+                  <div
+                    className="h-full bg-gradient-to-r from-rose-500 to-rose-400 transition-all duration-1000 ease-out rounded-r-full"
+                    style={{ width: `${Math.round((totalLiabilities / (totalAssets + totalLiabilities)) * 100)}%` }}
+                  />
+                </>
+              ) : (
+                <div className="h-full w-full bg-muted rounded-full" />
+              )}
+            </div>
+            <div className="flex justify-between text-[11px] text-muted-foreground">
+              <span>{totalAssets + totalLiabilities > 0 ? Math.round((totalAssets / (totalAssets + totalLiabilities)) * 100) : 0}% Assets</span>
+              <span>{totalAssets + totalLiabilities > 0 ? Math.round((totalLiabilities / (totalAssets + totalLiabilities)) * 100) : 0}% Liabilities</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Assets & Liabilities panels side by side */}
+        <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-border/40">
+
+          {/* ── ASSETS ── */}
+          <div className="p-6 space-y-4">
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-xl bg-emerald-500/15 flex items-center justify-center">
+                <TrendingUp className="h-4 w-4 text-emerald-500" />
+              </div>
+              <span className="font-bold text-emerald-500 text-base tracking-tight">Assets</span>
+            </div>
+
+            <div className="space-y-3">
+              {/* Savings */}
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="flex items-center gap-2 text-muted-foreground">
+                    <PiggyBank className="h-3.5 w-3.5" />
+                    Savings (from Goals)
+                  </span>
+                  <span className="font-mono font-semibold text-foreground">{formatCurrency(summary.totalSavings)}</span>
+                </div>
+                <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full bg-blue-400 rounded-full transition-all duration-700"
+                    style={{ width: totalAssets > 0 ? `${Math.min(100, (summary.totalSavings / totalAssets) * 100)}%` : "0%" }}
+                  />
+                </div>
+              </div>
+
+              {/* Investments */}
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="flex items-center gap-2 text-muted-foreground">
+                    <TrendingUp className="h-3.5 w-3.5" />
+                    Investments
+                  </span>
+                  <span className="font-mono font-semibold text-foreground">{formatCurrency(summary.totalInvestmentValue)}</span>
+                </div>
+                <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full bg-indigo-400 rounded-full transition-all duration-700"
+                    style={{ width: totalAssets > 0 ? `${Math.min(100, (summary.totalInvestmentValue / totalAssets) * 100)}%` : "0%" }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Total Assets footer */}
+            <div className="flex justify-between items-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 px-4 py-3 mt-2">
+              <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">Total Assets</span>
+              <span className="font-mono font-extrabold text-emerald-500 text-lg">{formatCurrency(totalAssets)}</span>
+            </div>
+          </div>
+
+          {/* ── LIABILITIES ── */}
+          <div className="p-6 space-y-4">
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-xl bg-rose-500/15 flex items-center justify-center">
+                <CreditCard className="h-4 w-4 text-rose-500" />
+              </div>
+              <span className="font-bold text-rose-500 text-base tracking-tight">Liabilities</span>
+            </div>
+
+            <div className="space-y-3">
+              {/* Active Loans */}
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="flex items-center gap-2 text-muted-foreground">
+                    <Wallet className="h-3.5 w-3.5" />
+                    Active Loans
+                  </span>
+                  <span className="font-mono font-semibold text-foreground">{formatCurrency(summary.totalLoanOutstanding)}</span>
+                </div>
+                <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full bg-orange-400 rounded-full transition-all duration-700"
+                    style={{ width: totalLiabilities > 0 ? `${Math.min(100, (summary.totalLoanOutstanding / totalLiabilities) * 100)}%` : "0%" }}
+                  />
+                </div>
+              </div>
+
+              {/* Credit Card Bills */}
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="flex items-center gap-2 text-muted-foreground">
+                    <CreditCard className="h-3.5 w-3.5" />
+                    Credit Card Bills
+                  </span>
+                  <span className="font-mono font-semibold text-foreground">{formatCurrency(summary.totalCreditCardOutstanding)}</span>
+                </div>
+                <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full bg-rose-400 rounded-full transition-all duration-700"
+                    style={{ width: totalLiabilities > 0 ? `${Math.min(100, (summary.totalCreditCardOutstanding / totalLiabilities) * 100)}%` : "0%" }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Total Liabilities footer */}
+            <div className="flex justify-between items-center rounded-xl bg-rose-500/10 border border-rose-500/20 px-4 py-3 mt-2">
+              <span className="text-sm font-bold text-rose-600 dark:text-rose-400">Total Liabilities</span>
+              <span className="font-mono font-extrabold text-rose-500 text-lg">{formatCurrency(totalLiabilities)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div className="grid gap-6 md:grid-cols-7">
         <Card className="md:col-span-4 rounded-2xl shadow-sm border-primary/5">

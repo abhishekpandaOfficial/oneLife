@@ -198,9 +198,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             {/* Logo */}
             <div className="flex h-16 items-center px-4 border-b shrink-0">
               <Link href="/" className="flex items-center gap-2 overflow-hidden">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-xs">
-                  OL
-                </div>
+                <img
+                  src="/onelife-logo.svg"
+                  alt="OneLife"
+                  className="h-9 w-9 shrink-0 rounded-xl"
+                />
                 <span className={cn(
                   "text-xl font-bold tracking-tight transition-all duration-300",
                   isCollapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100"

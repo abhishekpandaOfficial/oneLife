@@ -1,3 +1,21 @@
 <svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="180" height="180" rx="36" fill="#FF3C00"/>
+  <defs>
+    <linearGradient id="ringGradient" x1="34" y1="137" x2="146" y2="43" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#20D6E7"/>
+      <stop offset="0.22" stop-color="#19D69D"/>
+      <stop offset="0.43" stop-color="#FFD048"/>
+      <stop offset="0.62" stop-color="#FF5A2A"/>
+      <stop offset="0.79" stop-color="#EA3DF7"/>
+      <stop offset="1" stop-color="#355DFF"/>
+    </linearGradient>
+    <linearGradient id="personGradient" x1="90" y1="74" x2="90" y2="142" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#69E9FF"/>
+      <stop offset="1" stop-color="#0BBBD6"/>
+    </linearGradient>
+  </defs>
+  <rect width="180" height="180" rx="40" fill="#0B1220"/>
+  <path d="M90 21C51.892 21 21 51.892 21 90C21 128.108 51.892 159 90 159C128.108 159 159 128.108 159 90C159 51.892 128.108 21 90 21ZM90 55C109.33 55 125 70.67 125 90C125 109.33 109.33 125 90 125C70.67 125 55 109.33 55 90C55 70.67 70.67 55 90 55Z" fill="url(#ringGradient)"/>
+  <circle cx="90" cy="77" r="16" fill="url(#personGradient)"/>
+  <path d="M58 142C62.153 119.644 74.404 106 90 106C105.596 106 117.847 119.644 122 142C112.661 147.459 101.745 151 90 151C78.255 151 67.339 147.459 58 142Z" fill="url(#personGradient)"/>
+  <path d="M40 90C40 62.386 62.386 40 90 40C106.311 40 120.797 47.813 129.93 59.898" stroke="white" stroke-opacity="0.28" stroke-width="6" stroke-linecap="round"/>
 </svg>

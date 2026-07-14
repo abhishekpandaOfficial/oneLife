@@ -101,15 +101,29 @@ export async function totalSavings() {
 export async function monthlyBudgetSummary(month) {
     const { start, end } = monthRange(month);
     const [budgetRows, expenseRows] = await Promise.all([
-        db.select({ plannedAmount: budgetsTable.plannedAmount }).from(budgetsTable).where(eq(budgetsTable.month, month)),
         db
-            .select({ amount: transactionsTable.amount, date: transactionsTable.date })
+            .select({
+            categoryId: budgetsTable.categoryId,
+            plannedAmount: budgetsTable.plannedAmount,
+        })
+            .from(budgetsTable)
+            .where(eq(budgetsTable.month, month)),
+        db
+            .select({
+            amount: transactionsTable.amount,
+            date: transactionsTable.date,
+            categoryId: transactionsTable.categoryId,
+        })
             .from(transactionsTable)
             .where(eq(transactionsTable.type, "expense")),
     ]);
     const plannedAmount = budgetRows.reduce((sum, row) => sum + Number(row.plannedAmount), 0);
+    const budgetedCategoryIds = new Set(budgetRows.map((row) => row.categoryId));
     const actualAmount = expenseRows
-        .filter((row) => row.date >= start && row.date <= end)
+        .filter((row) => (row.date >= start &&
+        row.date <= end &&
+        row.categoryId !== null &&
+        budgetedCategoryIds.has(row.categoryId)))
         .reduce((sum, row) => sum + Number(row.amount), 0);
     const utilizationPercent = plannedAmount > 0 ? (actualAmount / plannedAmount) * 100 : 0;
     const status = plannedAmount === 0

@@ -53,7 +53,7 @@ function Router() {
           {() => <TransactionForm key="new" />}
         </Route>
         <Route path="/transactions/:id/edit">
-          {(params) => <TransactionForm key={`edit-${params.id}`} />}
+          {(params) => <TransactionForm key={`edit-${params.id}`} params={params} />}
         </Route>
 
         <Route path="/loans" component={Loans} />

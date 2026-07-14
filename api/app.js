@@ -57071,11 +57071,19 @@ async function totalSavings() {
 async function monthlyBudgetSummary(month) {
   const { start, end } = monthRange(month);
   const [budgetRows, expenseRows] = await Promise.all([
-    db.select({ plannedAmount: budgetsTable.plannedAmount }).from(budgetsTable).where(eq(budgetsTable.month, month)),
-    db.select({ amount: transactionsTable.amount, date: transactionsTable.date }).from(transactionsTable).where(eq(transactionsTable.type, "expense"))
+    db.select({
+      categoryId: budgetsTable.categoryId,
+      plannedAmount: budgetsTable.plannedAmount
+    }).from(budgetsTable).where(eq(budgetsTable.month, month)),
+    db.select({
+      amount: transactionsTable.amount,
+      date: transactionsTable.date,
+      categoryId: transactionsTable.categoryId
+    }).from(transactionsTable).where(eq(transactionsTable.type, "expense"))
   ]);
   const plannedAmount = budgetRows.reduce((sum, row) => sum + Number(row.plannedAmount), 0);
-  const actualAmount = expenseRows.filter((row) => row.date >= start && row.date <= end).reduce((sum, row) => sum + Number(row.amount), 0);
+  const budgetedCategoryIds = new Set(budgetRows.map((row) => row.categoryId));
+  const actualAmount = expenseRows.filter((row) => row.date >= start && row.date <= end && row.categoryId !== null && budgetedCategoryIds.has(row.categoryId)).reduce((sum, row) => sum + Number(row.amount), 0);
   const utilizationPercent = plannedAmount > 0 ? actualAmount / plannedAmount * 100 : 0;
   const status = plannedAmount === 0 ? "none" : utilizationPercent > 100 ? "over" : utilizationPercent >= 90 ? "warning" : "under";
   return {
@@ -57797,7 +57805,11 @@ router10.post("/budgets", async (req, res) => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  const [budget] = await db.insert(budgetsTable).values({
+  const [existing] = await db.select().from(budgetsTable).where(and(
+    eq(budgetsTable.categoryId, parsed.data.categoryId),
+    eq(budgetsTable.month, parsed.data.month)
+  ));
+  const [budget] = existing ? await db.update(budgetsTable).set({ plannedAmount: parsed.data.plannedAmount }).where(eq(budgetsTable.id, existing.id)).returning() : await db.insert(budgetsTable).values({
     categoryId: parsed.data.categoryId,
     month: parsed.data.month,
     plannedAmount: parsed.data.plannedAmount

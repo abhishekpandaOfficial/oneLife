@@ -5,7 +5,8 @@ import {
   useUpdateBudget,
   useDeleteBudget,
   useListCategories,
-  getListBudgetsQueryKey 
+  getListBudgetsQueryKey,
+  getGetDashboardSummaryQueryKey
 } from "@workspace/api-client-react";
 import type { Budget } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -55,6 +56,7 @@ export default function Budget() {
       onSuccess: () => {
         toast({ title: "Budget set" });
         queryClient.invalidateQueries({ queryKey: getListBudgetsQueryKey({ month: monthStr }) });
+        queryClient.invalidateQueries({ queryKey: getGetDashboardSummaryQueryKey() });
         setIsDialogOpen(false);
         setEditingBudget(null);
         form.reset();
@@ -68,6 +70,7 @@ export default function Budget() {
       onSuccess: () => {
         toast({ title: "Budget updated" });
         queryClient.invalidateQueries({ queryKey: getListBudgetsQueryKey({ month: monthStr }) });
+        queryClient.invalidateQueries({ queryKey: getGetDashboardSummaryQueryKey() });
         setIsDialogOpen(false);
         setEditingBudget(null);
         form.reset();
@@ -81,6 +84,7 @@ export default function Budget() {
       onSuccess: () => {
         toast({ title: "Budget deleted" });
         queryClient.invalidateQueries({ queryKey: getListBudgetsQueryKey({ month: monthStr }) });
+        queryClient.invalidateQueries({ queryKey: getGetDashboardSummaryQueryKey() });
         setDeleteId(null);
       },
       onError: () => {

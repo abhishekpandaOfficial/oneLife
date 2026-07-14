@@ -59,14 +59,28 @@ router.post("/budgets", async (req, res): Promise<void> => {
     return;
   }
 
-  const [budget] = await db
-    .insert(budgetsTable)
-    .values({
-      categoryId: parsed.data.categoryId,
-      month: parsed.data.month,
-      plannedAmount: parsed.data.plannedAmount,
-    })
-    .returning();
+  const [existing] = await db
+    .select()
+    .from(budgetsTable)
+    .where(and(
+      eq(budgetsTable.categoryId, parsed.data.categoryId),
+      eq(budgetsTable.month, parsed.data.month),
+    ));
+
+  const [budget] = existing
+    ? await db
+        .update(budgetsTable)
+        .set({ plannedAmount: parsed.data.plannedAmount })
+        .where(eq(budgetsTable.id, existing.id))
+        .returning()
+    : await db
+        .insert(budgetsTable)
+        .values({
+          categoryId: parsed.data.categoryId,
+          month: parsed.data.month,
+          plannedAmount: parsed.data.plannedAmount,
+        })
+        .returning();
 
   res.status(201).json(CreateBudgetResponse.parse(await toResponseRow(budget)));
 });

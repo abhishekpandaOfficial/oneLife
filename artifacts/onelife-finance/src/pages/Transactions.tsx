@@ -112,6 +112,13 @@ export default function Transactions({ type }: { type?: TransactionType }) {
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const returnTo = type === "income" ? "/income" : type === "expense" ? "/expenses" : "/transactions";
+  const addTransactionHref =
+    type === "income"
+      ? `/transactions/new?type=income&returnTo=${encodeURIComponent(returnTo)}`
+      : type === "expense"
+        ? `/transactions/new?type=expense&returnTo=${encodeURIComponent(returnTo)}`
+        : `/transactions/new?returnTo=${encodeURIComponent(returnTo)}`;
 
   // ← KEY FIX: Whenever the route-level `type` prop changes (income ↔ expense ↔ all),
   // immediately sync filterType so data refetches without needing a refresh.
@@ -214,7 +221,7 @@ export default function Transactions({ type }: { type?: TransactionType }) {
               </SelectContent>
             </Select>
           )}
-          <Link href={type === "income" ? "/transactions/new?type=income" : type === "expense" ? "/transactions/new?type=expense" : "/transactions/new"}>
+          <Link href={addTransactionHref}>
             <Button className="rounded-full shadow-md">
               <Plus className="mr-2 h-4 w-4" />
               Add New
@@ -412,7 +419,7 @@ export default function Transactions({ type }: { type?: TransactionType }) {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-[160px]">
-                          <DropdownMenuItem onClick={() => setLocation(`/transactions/${tx.id}/edit`)}>
+                          <DropdownMenuItem onClick={() => setLocation(`/transactions/${tx.id}/edit?returnTo=${encodeURIComponent(returnTo)}`)}>
                             <Edit2 className="mr-2 h-4 w-4" /> Edit
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />

@@ -44,16 +44,15 @@ function Router() {
         <Route path="/expenses">
           {() => <Transactions key="expense" type="expense" />}
         </Route>
-        <Route path="/transactions">
-          {() => <Transactions key="all" />}
-        </Route>
-
         {/* key forces remount between /new and /edit */}
         <Route path="/transactions/new">
           {() => <TransactionForm key="new" />}
         </Route>
         <Route path="/transactions/:id/edit">
           {(params) => <TransactionForm key={`edit-${params.id}`} params={params} />}
+        </Route>
+        <Route path="/transactions">
+          {() => <Transactions key="all" />}
         </Route>
 
         <Route path="/loans" component={Loans} />

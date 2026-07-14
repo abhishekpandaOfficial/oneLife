@@ -48,13 +48,19 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
+const LIST_PATHS = new Set(["/income", "/expenses", "/transactions"]);
+
 export default function TransactionForm({ params }: { params?: { id?: string } }) {
   const isEditing = !!params?.id;
   const transactionId = isEditing ? parseInt(params.id!) : undefined;
   
   const [, setLocation] = useLocation();
   const searchParams = new URLSearchParams(useSearch());
-  const defaultType = (searchParams.get("type") as TransactionType) || "expense";
+  const requestedType = searchParams.get("type");
+  const defaultType: TransactionType = requestedType === "income" || requestedType === "expense" ? requestedType : "expense";
+  const fallbackPath = requestedType === "income" ? "/income" : requestedType === "expense" ? "/expenses" : "/transactions";
+  const requestedReturnTo = searchParams.get("returnTo");
+  const returnTo = requestedReturnTo && LIST_PATHS.has(requestedReturnTo) ? requestedReturnTo : fallbackPath;
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -77,7 +83,7 @@ export default function TransactionForm({ params }: { params?: { id?: string } }
         toast({ title: "Transaction added successfully" });
         queryClient.invalidateQueries({ queryKey: getListTransactionsQueryKey() });
         queryClient.invalidateQueries({ queryKey: getGetDashboardSummaryQueryKey() });
-        setLocation(-1 as unknown as string); // go back
+        navigateBack();
       },
       onError: (err) => {
         toast({ title: "Error saving transaction", variant: "destructive" });
@@ -91,13 +97,17 @@ export default function TransactionForm({ params }: { params?: { id?: string } }
         toast({ title: "Transaction updated" });
         queryClient.invalidateQueries({ queryKey: getListTransactionsQueryKey() });
         queryClient.invalidateQueries({ queryKey: getGetDashboardSummaryQueryKey() });
-        setLocation(-1 as unknown as string);
+        navigateBack();
       },
       onError: () => {
         toast({ title: "Error updating transaction", variant: "destructive" });
       }
     }
   });
+
+  const navigateBack = () => {
+    setLocation(returnTo);
+  };
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -155,7 +165,7 @@ export default function TransactionForm({ params }: { params?: { id?: string } }
   return (
     <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => setLocation(-1 as unknown as string)}>
+        <Button variant="ghost" size="icon" onClick={navigateBack}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
@@ -324,7 +334,7 @@ export default function TransactionForm({ params }: { params?: { id?: string } }
               </div>
 
               <div className="pt-4 flex justify-end gap-3">
-                <Button variant="outline" type="button" onClick={() => setLocation(-1 as unknown as string)}>
+                <Button variant="outline" type="button" onClick={navigateBack}>
                   Cancel
                 </Button>
                 <Button type="submit" disabled={isPending} className="min-w-[120px]">

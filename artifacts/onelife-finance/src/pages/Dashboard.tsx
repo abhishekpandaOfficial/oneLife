@@ -534,7 +534,7 @@ function BudgetKpiCard({ budget }: { budget: {
   const progress = Math.min(Math.max(budget.utilizationPercent, 0), 100);
   const isOver = budget.status === "over";
   const isWarning = budget.status === "warning";
-  const hasBudget = budget.status !== "none";
+  const hasBudget = budget.plannedAmount > 0;
   const statusLabel = !hasBudget
     ? "No budget set"
     : isOver
@@ -575,10 +575,10 @@ function BudgetKpiCard({ budget }: { budget: {
       <CardContent className="space-y-3">
         <div>
           <div className="text-2xl font-bold font-mono tracking-tight">
-            <AnimatedNumber value={budget.actualAmount} format={formatCurrency} />
+            <AnimatedNumber value={budget.plannedAmount} format={formatCurrency} />
           </div>
           <p className="mt-1 text-xs text-muted-foreground">
-            spent of {formatCurrency(budget.plannedAmount)}
+            {formatCurrency(budget.actualAmount)} spent this month
           </p>
         </div>
 

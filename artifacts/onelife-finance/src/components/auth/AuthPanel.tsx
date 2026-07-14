@@ -72,76 +72,66 @@ export function AuthPanel({ mode = "modal" }: AuthPanelProps) {
 
   return (
     <div className={cn("w-full", mode === "page" && "mx-auto max-w-md")}>
-      <div className="mb-6 flex items-center gap-3">
-        <img src="/onelife-logo.svg" alt="OneLife" className="h-12 w-12 rounded-2xl shadow-lg" />
-        <div>
-          <p className="text-sm font-semibold text-muted-foreground">Welcome to</p>
-          <h1 className="text-2xl font-extrabold tracking-normal">OneLife OS</h1>
+      <div className="mb-8 text-center">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-md ring-1 ring-slate-900/5">
+          <img src="/onelife-logo.svg" alt="OneLife" className="h-10 w-10" />
         </div>
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Welcome to OneLife</h1>
+        <p className="mt-2 text-sm font-medium text-slate-500">Your personal command center</p>
       </div>
 
       <Tabs defaultValue="social" className="w-full">
-        <TabsList className="grid h-11 w-full grid-cols-2 rounded-2xl bg-muted/70">
-          <TabsTrigger value="social" className="rounded-xl">
+        <TabsList className="mb-6 grid h-12 w-full grid-cols-2 rounded-xl bg-slate-100 p-1">
+          <TabsTrigger value="social" className="rounded-lg text-sm font-semibold transition-all data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm">
             <LockKeyhole className="mr-2 h-4 w-4" />
             Sign in
           </TabsTrigger>
-          <TabsTrigger value="mobile" className="rounded-xl">
+          <TabsTrigger value="mobile" className="rounded-lg text-sm font-semibold transition-all data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow-sm">
             <Smartphone className="mr-2 h-4 w-4" />
             Mobile OTP
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="social" className="mt-5 space-y-3">
+        <TabsContent value="social" className="mt-0 space-y-3">
           <Button
             type="button"
             variant="outline"
-            className="group h-14 w-full justify-between rounded-2xl border-[#d0d5dd] bg-white text-base font-bold shadow-sm transition-all hover:-translate-y-0.5 hover:border-cyan-200 hover:bg-cyan-50/40 hover:shadow-lg"
+            className="group relative flex h-12 w-full items-center justify-center overflow-hidden rounded-xl border-slate-200 bg-white text-base font-semibold text-slate-700 shadow-sm transition-all hover:border-slate-300 hover:bg-slate-50"
             onClick={() => handleProvider("google")}
           >
-            <span className="flex items-center">
-              <span className="mr-3 flex h-9 w-9 items-center justify-center rounded-xl bg-white shadow-sm ring-1 ring-[#eaecf0]">
-                <FaGoogle className="h-5 w-5 text-[#4285F4]" />
-              </span>
-              Continue with Google
-            </span>
-            <ArrowRight className="h-4 w-4 text-[#98a2b3] transition group-hover:translate-x-1 group-hover:text-cyan-600" />
+            <FaGoogle className="absolute left-4 h-5 w-5 text-[#4285F4]" />
+            Continue with Google
           </Button>
           <Button
             type="button"
             variant="outline"
-            className="group h-14 w-full justify-between rounded-2xl border-[#111827] bg-[#111827] text-base font-bold text-white shadow-lg transition-all hover:-translate-y-0.5 hover:bg-black hover:shadow-xl"
+            className="group relative flex h-12 w-full items-center justify-center overflow-hidden rounded-xl border-slate-900 bg-slate-900 text-base font-semibold text-white shadow-sm transition-all hover:bg-slate-800"
             onClick={() => handleProvider("apple")}
           >
-            <span className="flex items-center">
-              <span className="mr-3 flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/15">
-                <FaApple className="h-5 w-5" />
-              </span>
-              Continue with Apple
-            </span>
-            <ArrowRight className="h-4 w-4 text-white/50 transition group-hover:translate-x-1 group-hover:text-white" />
+            <FaApple className="absolute left-4 h-5 w-5" />
+            Continue with Apple
           </Button>
         </TabsContent>
 
-        <TabsContent value="mobile" className="mt-5 space-y-4">
+        <TabsContent value="mobile" className="mt-0 space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="phone">Mobile number</Label>
+            <Label htmlFor="phone" className="text-sm font-semibold text-slate-700">Mobile number</Label>
             <Input
               id="phone"
               value={phone}
               onChange={(event) => setPhone(event.target.value)}
-              className="h-12 rounded-2xl text-base"
+              className="h-12 rounded-xl border-slate-200 bg-white px-4 text-base font-medium shadow-sm transition-colors focus:border-indigo-500 focus:ring-indigo-500"
               placeholder="+91 98765 43210"
             />
           </div>
 
           {otpSent && (
-            <div className="space-y-2">
-              <Label>One-time password</Label>
+            <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
+              <Label className="text-sm font-semibold text-slate-700">One-time password</Label>
               <InputOTP maxLength={6} value={otp} onChange={setOtp} containerClassName="justify-between">
                 <InputOTPGroup className="gap-2">
                   {[0, 1, 2, 3, 4, 5].map((index) => (
-                    <InputOTPSlot key={index} index={index} className="h-11 w-10 rounded-xl border bg-background text-base" />
+                    <InputOTPSlot key={index} index={index} className="h-12 w-11 rounded-xl border-slate-200 bg-white text-lg font-bold shadow-sm transition-colors focus:border-indigo-500 focus:ring-indigo-500" />
                   ))}
                 </InputOTPGroup>
               </InputOTP>
@@ -150,22 +140,39 @@ export function AuthPanel({ mode = "modal" }: AuthPanelProps) {
 
           <Button
             type="button"
-            className="h-12 w-full rounded-2xl bg-[#111827] text-white hover:bg-[#0b1220]"
+            className="h-12 w-full rounded-xl bg-indigo-600 text-base font-semibold text-white shadow-sm hover:bg-indigo-700"
             onClick={otpSent ? handleVerifyOtp : handleSendOtp}
             disabled={isBusy || (otpSent && otp.length < 6)}
           >
-            <MessageCircle className="mr-2 h-4 w-4" />
-            {otpSent ? "Verify OTP" : "Send OTP"}
+            {isBusy ? (
+              <span className="flex items-center gap-2">
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                Processing...
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                {otpSent ? "Verify securely" : "Send secure code"}
+                <ArrowRight className="h-4 w-4" />
+              </span>
+            )}
           </Button>
         </TabsContent>
       </Tabs>
 
       {(status || error) && (
-        <p className={cn("mt-4 rounded-2xl px-4 py-3 text-sm", error ? "bg-red-50 text-red-700" : "bg-emerald-50 text-emerald-700")}>
+        <div className={cn(
+          "mt-6 rounded-xl p-4 text-sm font-medium animate-in fade-in slide-in-from-top-2",
+          error ? "bg-red-50 text-red-600 border border-red-100" : "bg-emerald-50 text-emerald-600 border border-emerald-100"
+        )}>
           {error || status}
-        </p>
+        </div>
       )}
 
+      <div className="mt-8 text-center">
+        <p className="text-xs font-medium text-slate-500">
+          By signing in, you agree to our Terms of Service and Privacy Policy. Securely encrypted.
+        </p>
+      </div>
     </div>
   );
 }

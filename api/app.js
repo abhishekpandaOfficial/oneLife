@@ -37777,6 +37777,23 @@ var CreateCategoryResponse = objectType({
   "icon": stringType().nullish(),
   "createdAt": coerce.date()
 });
+var UpdateCategoryParams = objectType({
+  "id": coerce.number()
+});
+var UpdateCategoryBody = objectType({
+  "name": stringType().min(1).optional(),
+  "type": enumType(["income", "expense"]).optional(),
+  "color": stringType().min(1).optional(),
+  "icon": stringType().optional()
+});
+var UpdateCategoryResponse = objectType({
+  "id": numberType(),
+  "name": stringType(),
+  "type": enumType(["income", "expense"]),
+  "color": stringType(),
+  "icon": stringType().nullish(),
+  "createdAt": coerce.date()
+});
 var DeleteCategoryParams = objectType({
   "id": coerce.number()
 });
@@ -57189,6 +57206,24 @@ router3.post("/categories", async (req, res) => {
   }
   const [category] = await db.insert(categoriesTable).values(parsed.data).returning();
   res.status(201).json(CreateCategoryResponse.parse(category));
+});
+router3.patch("/categories/:id", async (req, res) => {
+  const params = UpdateCategoryParams.safeParse(req.params);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  const parsed = UpdateCategoryBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [category] = await db.update(categoriesTable).set(parsed.data).where(eq(categoriesTable.id, params.data.id)).returning();
+  if (!category) {
+    res.status(404).json({ error: "Category not found" });
+    return;
+  }
+  res.json(UpdateCategoryResponse.parse(category));
 });
 router3.delete("/categories/:id", async (req, res) => {
   const params = DeleteCategoryParams.safeParse(req.params);

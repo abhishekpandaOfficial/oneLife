@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { useListGoals, useCreateGoal, useDeleteGoal, GoalType, getListGoalsQueryKey, getGetDashboardSummaryQueryKey } from "@workspace/api-client-react";
+import { useListGoals, useCreateGoal, useUpdateGoal, useDeleteGoal, Goal, GoalType, getListGoalsQueryKey, getGetDashboardSummaryQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Target, Plane, Car, Home, GraduationCap, Flame, AlertCircle, Trash2, CalendarIcon } from "lucide-react";
+import { Plus, Target, Plane, Car, Home, GraduationCap, Flame, AlertCircle, Trash2, CalendarIcon, Pencil } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,7 +18,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -47,6 +46,7 @@ const formSchema = z.object({
 export default function Goals() {
   const { data: goals, isLoading } = useListGoals();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   
   const queryClient = useQueryClient();
@@ -59,9 +59,24 @@ export default function Goals() {
         queryClient.invalidateQueries({ queryKey: getListGoalsQueryKey() });
         queryClient.invalidateQueries({ queryKey: getGetDashboardSummaryQueryKey() });
         setIsDialogOpen(false);
+        setEditingGoal(null);
         form.reset();
       },
       onError: () => toast({ title: "Failed to create", variant: "destructive" })
+    }
+  });
+
+  const updateMutation = useUpdateGoal({
+    mutation: {
+      onSuccess: () => {
+        toast({ title: "Goal updated" });
+        queryClient.invalidateQueries({ queryKey: getListGoalsQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetDashboardSummaryQueryKey() });
+        setIsDialogOpen(false);
+        setEditingGoal(null);
+        form.reset();
+      },
+      onError: () => toast({ title: "Failed to update", variant: "destructive" })
     }
   });
 
@@ -70,6 +85,7 @@ export default function Goals() {
       onSuccess: () => {
         toast({ title: "Goal deleted" });
         queryClient.invalidateQueries({ queryKey: getListGoalsQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetDashboardSummaryQueryKey() });
         setDeleteId(null);
       }
     }
@@ -87,7 +103,37 @@ export default function Goals() {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    createMutation.mutate({ data: { ...values, targetDate: values.targetDate || undefined } });
+    const data = { ...values, targetDate: values.targetDate || undefined };
+    if (editingGoal) {
+      updateMutation.mutate({ id: editingGoal.id, data });
+      return;
+    }
+
+    createMutation.mutate({ data });
+  };
+
+  const openAddDialog = () => {
+    setEditingGoal(null);
+    form.reset({
+      name: "",
+      goalType: "vacation",
+      targetAmount: 0,
+      currentAmount: 0,
+      targetDate: ""
+    });
+    setIsDialogOpen(true);
+  };
+
+  const handleEdit = (goal: Goal) => {
+    setEditingGoal(goal);
+    form.reset({
+      name: goal.name,
+      goalType: goal.goalType,
+      targetAmount: goal.targetAmount,
+      currentAmount: goal.currentAmount,
+      targetDate: goal.targetDate || ""
+    });
+    setIsDialogOpen(true);
   };
 
   return (
@@ -97,17 +143,18 @@ export default function Goals() {
           <h1 className="text-3xl font-bold tracking-tight">Savings Goals</h1>
           <p className="text-muted-foreground mt-1">Set targets and track your progress.</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="rounded-full shadow-md">
-              <Plus className="mr-2 h-4 w-4" />
-              New Goal
-            </Button>
-          </DialogTrigger>
+        <Dialog open={isDialogOpen} onOpenChange={(open) => {
+          setIsDialogOpen(open);
+          if (!open) setEditingGoal(null);
+        }}>
+          <Button className="rounded-full shadow-md" onClick={openAddDialog}>
+            <Plus className="mr-2 h-4 w-4" />
+            New Goal
+          </Button>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Create Goal</DialogTitle>
-              <DialogDescription>What are you saving for?</DialogDescription>
+              <DialogTitle>{editingGoal ? "Edit Goal" : "Create Goal"}</DialogTitle>
+              <DialogDescription>{editingGoal ? "Update your target and saved amount." : "What are you saving for?"}</DialogDescription>
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
@@ -160,8 +207,10 @@ export default function Goals() {
                   </FormItem>
                 )} />
                 <div className="pt-4 flex justify-end">
-                  <Button type="submit" disabled={createMutation.isPending}>
-                    {createMutation.isPending ? "Creating..." : "Create Goal"}
+                  <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
+                    {editingGoal
+                      ? updateMutation.isPending ? "Saving..." : "Save Changes"
+                      : createMutation.isPending ? "Creating..." : "Create Goal"}
                   </Button>
                 </div>
               </form>
@@ -206,14 +255,24 @@ export default function Goals() {
                         )}
                       </div>
                     </div>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-8 w-8 -mt-2 -mr-2 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:text-destructive hover:bg-destructive/10"
-                      onClick={() => setDeleteId(goal.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity -mt-2 -mr-2">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10"
+                        onClick={() => handleEdit(goal)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => setDeleteId(goal.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                   
                   <div className="space-y-2">

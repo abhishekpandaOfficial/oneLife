@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
+import type { Variants } from "framer-motion";
 import {
   ArrowRight,
   BookOpenCheck,
@@ -99,12 +100,14 @@ const pricing = [
   },
 ];
 
-const fadeUp = {
+const springEase = [0.16, 1, 0.3, 1] as const;
+
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: springEase } }
 };
 
-const staggerContainer = {
+const staggerContainer: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -248,7 +251,7 @@ export default function Landing() {
             <motion.div 
               initial={{ opacity: 0, scale: 0.95, x: 20 }}
               animate={{ opacity: 1, scale: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.8, delay: 0.2, ease: springEase }}
               className="relative lg:ml-auto w-full max-w-[600px]"
             >
               {/* Floating detail cards */}

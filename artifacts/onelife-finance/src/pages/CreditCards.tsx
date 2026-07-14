@@ -7,6 +7,7 @@ import {
   getListCreditCardsQueryKey,
   getGetDashboardSummaryQueryKey,
 } from "@workspace/api-client-react";
+import type { CreditCard } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Plus, CreditCard as CardIcon, Trash2, Calendar, AlertTriangle, CheckCircle, Pencil } from "lucide-react";
 import { format, parseISO, differenceInDays } from "date-fns";
@@ -25,7 +26,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -67,7 +67,7 @@ export default function CreditCards() {
   const { data: cards, isLoading } = useListCreditCards();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
-  const [editingCard, setEditingCard] = useState<any | null>(null);
+  const [editingCard, setEditingCard] = useState<CreditCard | null>(null);
   const [customBank, setCustomBank] = useState(false);
 
   const queryClient = useQueryClient();
@@ -131,7 +131,7 @@ export default function CreditCards() {
     }
   };
 
-  const handleEdit = (card: any) => {
+  const handleEdit = (card: CreditCard) => {
     setEditingCard(card);
     const hasPredefinedBank = INDIAN_BANKS.some(b => b.name === card.bankName);
     setCustomBank(!hasPredefinedBank);
@@ -171,10 +171,10 @@ export default function CreditCards() {
     return bank ? bank.logoText : bankName.slice(0, 3).toUpperCase();
   };
 
-  const totalOutstanding = cards?.reduce((acc: number, card: any) => acc + card.outstandingAmount, 0) || 0;
-  const totalLimit = cards?.reduce((acc: number, card: any) => acc + card.creditLimit, 0) || 0;
+  const totalOutstanding = cards?.reduce((acc, card) => acc + card.outstandingAmount, 0) || 0;
+  const totalLimit = cards?.reduce((acc, card) => acc + card.creditLimit, 0) || 0;
   const availableCredit = Math.max(0, totalLimit - totalOutstanding);
-  const totalMinDue = cards?.reduce((acc: number, card: any) => acc + card.minimumDue, 0) || 0;
+  const totalMinDue = cards?.reduce((acc, card) => acc + card.minimumDue, 0) || 0;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-12">
@@ -266,7 +266,7 @@ export default function CreditCards() {
         </Card>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {cards?.map((card: any) => {
+          {cards?.map((card) => {
             const daysToDue = differenceInDays(parseISO(card.dueDate), new Date());
             const isOverdue = daysToDue < 0 && card.outstandingAmount > 0;
             const isDueSoon = daysToDue >= 0 && daysToDue <= 5 && card.outstandingAmount > 0;
@@ -368,7 +368,13 @@ export default function CreditCards() {
       )}
 
       {/* Add / Edit Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={(open) => {
+        setIsDialogOpen(open);
+        if (!open) {
+          setEditingCard(null);
+          setCustomBank(false);
+        }
+      }}>
         <DialogContent className="sm:max-w-[425px] glass-card">
           <DialogHeader>
             <DialogTitle>{editingCard ? "Edit Credit Card" : "Add Credit Card"}</DialogTitle>
@@ -410,7 +416,7 @@ export default function CreditCards() {
                             field.onChange(val);
                           }
                         }}
-                        defaultValue={customBank ? "custom" : field.value || INDIAN_BANKS[0].name}
+                        value={customBank ? "custom" : field.value || INDIAN_BANKS[0].name}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Select bank" />

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { useListInsurances, useCreateInsurance, useDeleteInsurance, InsuranceType, getListInsurancesQueryKey, getGetDashboardSummaryQueryKey } from "@workspace/api-client-react";
+import { useListInsurances, useCreateInsurance, useUpdateInsurance, useDeleteInsurance, InsuranceType, getListInsurancesQueryKey, getGetDashboardSummaryQueryKey } from "@workspace/api-client-react";
+import type { Insurance } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Shield, ShieldAlert, ShieldCheck, ShieldPlus, Heart, Home, Car, HeartPulse, Trash2 } from "lucide-react";
+import { Plus, Shield, ShieldAlert, ShieldCheck, ShieldPlus, Heart, Home, Car, HeartPulse, Trash2, Pencil } from "lucide-react";
 import { format, parseISO, differenceInDays } from "date-fns";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,7 +19,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -47,6 +47,7 @@ const formSchema = z.object({
 export default function Insurance() {
   const { data: insurances, isLoading } = useListInsurances();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingInsurance, setEditingInsurance] = useState<Insurance | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   
   const queryClient = useQueryClient();
@@ -59,9 +60,24 @@ export default function Insurance() {
         queryClient.invalidateQueries({ queryKey: getListInsurancesQueryKey() });
         queryClient.invalidateQueries({ queryKey: getGetDashboardSummaryQueryKey() });
         setIsDialogOpen(false);
+        setEditingInsurance(null);
         form.reset();
       },
       onError: () => toast({ title: "Failed to add policy", variant: "destructive" })
+    }
+  });
+
+  const updateMutation = useUpdateInsurance({
+    mutation: {
+      onSuccess: () => {
+        toast({ title: "Policy updated" });
+        queryClient.invalidateQueries({ queryKey: getListInsurancesQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetDashboardSummaryQueryKey() });
+        setIsDialogOpen(false);
+        setEditingInsurance(null);
+        form.reset();
+      },
+      onError: () => toast({ title: "Failed to update policy", variant: "destructive" })
     }
   });
 
@@ -90,7 +106,40 @@ export default function Insurance() {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
+    if (editingInsurance) {
+      updateMutation.mutate({ id: editingInsurance.id, data: values });
+      return;
+    }
+
     createMutation.mutate({ data: values });
+  };
+
+  const openAddDialog = () => {
+    setEditingInsurance(null);
+    form.reset({
+      name: "",
+      insuranceType: "health",
+      provider: "",
+      premiumAmount: 0,
+      coverageAmount: 0,
+      renewalDate: format(new Date(), "yyyy-MM-dd"),
+      policyNumber: ""
+    });
+    setIsDialogOpen(true);
+  };
+
+  const handleEdit = (policy: Insurance) => {
+    setEditingInsurance(policy);
+    form.reset({
+      name: policy.name,
+      insuranceType: policy.insuranceType,
+      provider: policy.provider,
+      premiumAmount: policy.premiumAmount,
+      coverageAmount: policy.coverageAmount,
+      renewalDate: policy.renewalDate,
+      policyNumber: policy.policyNumber || ""
+    });
+    setIsDialogOpen(true);
   };
 
   const totalCoverage = insurances?.reduce((acc, pol) => acc + (pol.status === 'active' ? pol.coverageAmount : 0), 0) || 0;
@@ -103,17 +152,18 @@ export default function Insurance() {
           <h1 className="text-3xl font-bold tracking-tight">Insurance Portfolio</h1>
           <p className="text-muted-foreground mt-1">Manage your coverage and upcoming renewals.</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="rounded-full shadow-md">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Policy
-            </Button>
-          </DialogTrigger>
+        <Dialog open={isDialogOpen} onOpenChange={(open) => {
+          setIsDialogOpen(open);
+          if (!open) setEditingInsurance(null);
+        }}>
+          <Button className="rounded-full shadow-md" onClick={openAddDialog}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Policy
+          </Button>
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
-              <DialogTitle>Add New Policy</DialogTitle>
-              <DialogDescription>Track your insurance coverage and premiums.</DialogDescription>
+              <DialogTitle>{editingInsurance ? "Edit Policy" : "Add New Policy"}</DialogTitle>
+              <DialogDescription>{editingInsurance ? "Update your coverage and renewal details." : "Track your insurance coverage and premiums."}</DialogDescription>
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
@@ -182,8 +232,10 @@ export default function Insurance() {
                   </FormItem>
                 )} />
                 <div className="pt-4 flex justify-end">
-                  <Button type="submit" disabled={createMutation.isPending}>
-                    {createMutation.isPending ? "Adding..." : "Add Policy"}
+                  <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
+                    {editingInsurance
+                      ? updateMutation.isPending ? "Saving..." : "Save Changes"
+                      : createMutation.isPending ? "Adding..." : "Add Policy"}
                   </Button>
                 </div>
               </form>
@@ -251,14 +303,24 @@ export default function Insurance() {
                         <p className="text-xs text-muted-foreground">{policy.provider}</p>
                       </div>
                     </div>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-8 w-8 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:text-destructive hover:bg-destructive/10"
-                      onClick={() => setDeleteId(policy.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10"
+                        onClick={() => handleEdit(policy)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => setDeleteId(policy.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-4 mb-4 bg-muted/30 p-3 rounded-lg">

@@ -14,6 +14,7 @@ export * from './budgetUpdate';
 export * from './category';
 export * from './categoryAmount';
 export * from './categoryInput';
+export * from './categoryUpdate';
 export * from './creditCard';
 export * from './creditCardInput';
 export * from './creditCardUpdate';

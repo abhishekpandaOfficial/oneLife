@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { useListInvestments, useCreateInvestment, useDeleteInvestment, InvestmentType, getListInvestmentsQueryKey, getGetDashboardSummaryQueryKey } from "@workspace/api-client-react";
+import { useListInvestments, useCreateInvestment, useUpdateInvestment, useDeleteInvestment, Investment, InvestmentType, getListInvestmentsQueryKey, getGetDashboardSummaryQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, TrendingUp, TrendingDown, Landmark, PieChart, Coins, Briefcase, Bitcoin, Trash2, ArrowRight } from "lucide-react";
+import { Plus, TrendingUp, TrendingDown, Landmark, PieChart, Coins, Briefcase, Bitcoin, Trash2, Pencil } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,7 +17,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -48,6 +47,7 @@ const formSchema = z.object({
 export default function Investments() {
   const { data: investments, isLoading } = useListInvestments();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingInvestment, setEditingInvestment] = useState<Investment | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   
   const queryClient = useQueryClient();
@@ -60,9 +60,24 @@ export default function Investments() {
         queryClient.invalidateQueries({ queryKey: getListInvestmentsQueryKey() });
         queryClient.invalidateQueries({ queryKey: getGetDashboardSummaryQueryKey() });
         setIsDialogOpen(false);
+        setEditingInvestment(null);
         form.reset();
       },
       onError: () => toast({ title: "Failed to add", variant: "destructive" })
+    }
+  });
+
+  const updateMutation = useUpdateInvestment({
+    mutation: {
+      onSuccess: () => {
+        toast({ title: "Investment updated" });
+        queryClient.invalidateQueries({ queryKey: getListInvestmentsQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetDashboardSummaryQueryKey() });
+        setIsDialogOpen(false);
+        setEditingInvestment(null);
+        form.reset();
+      },
+      onError: () => toast({ title: "Failed to update", variant: "destructive" })
     }
   });
 
@@ -90,7 +105,38 @@ export default function Investments() {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
+    if (editingInvestment) {
+      updateMutation.mutate({ id: editingInvestment.id, data: values });
+      return;
+    }
+
     createMutation.mutate({ data: values });
+  };
+
+  const openAddDialog = () => {
+    setEditingInvestment(null);
+    form.reset({
+      name: "",
+      investmentType: "mutual_fund",
+      investedAmount: 0,
+      currentValue: 0,
+      purchaseDate: format(new Date(), "yyyy-MM-dd"),
+      xirr: 0
+    });
+    setIsDialogOpen(true);
+  };
+
+  const handleEdit = (investment: Investment) => {
+    setEditingInvestment(investment);
+    form.reset({
+      name: investment.name,
+      investmentType: investment.investmentType,
+      investedAmount: investment.investedAmount,
+      currentValue: investment.currentValue,
+      purchaseDate: investment.purchaseDate,
+      xirr: investment.xirr ?? 0
+    });
+    setIsDialogOpen(true);
   };
 
   const totalInvested = investments?.reduce((acc, inv) => acc + inv.investedAmount, 0) || 0;
@@ -106,17 +152,18 @@ export default function Investments() {
           <h1 className="text-3xl font-bold tracking-tight">Investments</h1>
           <p className="text-muted-foreground mt-1">Monitor your portfolio and wealth growth.</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="rounded-full shadow-md">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Investment
-            </Button>
-          </DialogTrigger>
+        <Dialog open={isDialogOpen} onOpenChange={(open) => {
+          setIsDialogOpen(open);
+          if (!open) setEditingInvestment(null);
+        }}>
+          <Button className="rounded-full shadow-md" onClick={openAddDialog}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Investment
+          </Button>
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
-              <DialogTitle>Add Asset</DialogTitle>
-              <DialogDescription>Record a new investment to track its performance.</DialogDescription>
+              <DialogTitle>{editingInvestment ? "Edit Asset" : "Add Asset"}</DialogTitle>
+              <DialogDescription>{editingInvestment ? "Update this investment's values and details." : "Record a new investment to track its performance."}</DialogDescription>
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
@@ -180,8 +227,10 @@ export default function Investments() {
                   )} />
                 </div>
                 <div className="pt-4 flex justify-end">
-                  <Button type="submit" disabled={createMutation.isPending}>
-                    {createMutation.isPending ? "Adding..." : "Add Asset"}
+                  <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
+                    {editingInvestment
+                      ? updateMutation.isPending ? "Saving..." : "Save Changes"
+                      : createMutation.isPending ? "Adding..." : "Add Asset"}
                   </Button>
                 </div>
               </form>
@@ -252,14 +301,24 @@ export default function Investments() {
                         </Badge>
                       </div>
                     </div>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-8 w-8 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:text-destructive hover:bg-destructive/10"
-                      onClick={() => setDeleteId(inv.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10"
+                        onClick={() => handleEdit(inv)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => setDeleteId(inv.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                   
                   <div className="flex justify-between items-end mb-4">

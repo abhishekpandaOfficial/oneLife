@@ -99,6 +99,31 @@ paths:
                 $ref: "#/components/schemas/Category"
 
   /categories/{id}:
+    patch:
+      operationId: updateCategory
+      tags: [categories]
+      summary: Update a category
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryUpdate"
+      responses:
+        "200":
+          description: Updated category
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        "404":
+          description: Not found
     delete:
       operationId: deleteCategory
       tags: [categories]
@@ -828,6 +853,15 @@ components:
     CategoryInput:
       type: object
       required: [name, type, color]
+      properties:
+        name: { type: string, minLength: 1 }
+        type:
+          $ref: "#/components/schemas/TransactionType"
+        color: { type: string, minLength: 1 }
+        icon: { type: string }
+
+    CategoryUpdate:
+      type: object
       properties:
         name: { type: string, minLength: 1 }
         type:

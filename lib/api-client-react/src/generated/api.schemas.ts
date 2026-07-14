@@ -111,6 +111,15 @@ export interface CategoryInput {
   icon?: string;
 }
 
+export interface CategoryUpdate {
+  /** @minLength 1 */
+  name?: string;
+  type?: TransactionType;
+  /** @minLength 1 */
+  color?: string;
+  icon?: string;
+}
+
 export interface Transaction {
   id: number;
   type: TransactionType;

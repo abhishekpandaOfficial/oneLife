@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { 
   useListCategories, 
   useCreateCategory, 
+  useUpdateCategory,
   useDeleteCategory, 
+  Category,
   TransactionType, 
   getListCategoriesQueryKey 
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Tags, Trash2, ArrowUpRight, ArrowDownRight, CheckCircle2 } from "lucide-react";
+import { Plus, Tags, Trash2, ArrowUpRight, ArrowDownRight, CheckCircle2, Pencil } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -21,12 +23,12 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 const COLORS = [
   "#f43f5e", "#ec4899", "#d946ef", "#a855f7", "#8b5cf6", 
@@ -46,6 +48,8 @@ export default function Categories() {
   const { data: categories, isLoading } = useListCategories();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<TransactionType>("expense");
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
   
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -62,13 +66,30 @@ export default function Categories() {
     }
   });
 
+  const updateMutation = useUpdateCategory({
+    mutation: {
+      onSuccess: () => {
+        toast({ title: "Category updated" });
+        queryClient.invalidateQueries({ queryKey: getListCategoriesQueryKey() });
+        setIsDialogOpen(false);
+        setEditingCategory(null);
+        form.reset();
+      },
+      onError: () => toast({ title: "Failed to update category", variant: "destructive" })
+    }
+  });
+
   const deleteMutation = useDeleteCategory({
     mutation: {
       onSuccess: () => {
         toast({ title: "Category deleted" });
         queryClient.invalidateQueries({ queryKey: getListCategoriesQueryKey() });
+        setDeleteId(null);
       },
-      onError: () => toast({ title: "Failed to delete. It might be in use.", variant: "destructive" })
+      onError: () => {
+        toast({ title: "Failed to delete. It might be in use.", variant: "destructive" });
+        setDeleteId(null);
+      }
     }
   });
 
@@ -82,7 +103,32 @@ export default function Categories() {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
+    if (editingCategory) {
+      updateMutation.mutate({ id: editingCategory.id, data: values });
+      return;
+    }
+
     createMutation.mutate({ data: values });
+  };
+
+  const openAddDialog = () => {
+    setEditingCategory(null);
+    form.reset({
+      name: "",
+      type: activeTab,
+      color: "#6366f1",
+    });
+    setIsDialogOpen(true);
+  };
+
+  const handleEdit = (category: Category) => {
+    setEditingCategory(category);
+    form.reset({
+      name: category.name,
+      type: category.type,
+      color: category.color,
+    });
+    setIsDialogOpen(true);
   };
 
   const filteredCategories = categories?.filter(c => c.type === activeTab) || [];
@@ -94,16 +140,17 @@ export default function Categories() {
           <h1 className="text-3xl font-bold tracking-tight">Categories</h1>
           <p className="text-muted-foreground mt-1">Organize your transactions for better reporting.</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="rounded-full shadow-md">
-              <Plus className="mr-2 h-4 w-4" />
-              New Category
-            </Button>
-          </DialogTrigger>
+        <Dialog open={isDialogOpen} onOpenChange={(open) => {
+          setIsDialogOpen(open);
+          if (!open) setEditingCategory(null);
+        }}>
+          <Button className="rounded-full shadow-md" onClick={openAddDialog}>
+            <Plus className="mr-2 h-4 w-4" />
+            New Category
+          </Button>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Create Category</DialogTitle>
+              <DialogTitle>{editingCategory ? "Edit Category" : "Create Category"}</DialogTitle>
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
@@ -149,8 +196,10 @@ export default function Categories() {
                   </FormItem>
                 )} />
                 <div className="pt-4 flex justify-end">
-                  <Button type="submit" disabled={createMutation.isPending}>
-                    {createMutation.isPending ? "Creating..." : "Save Category"}
+                  <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
+                    {editingCategory
+                      ? updateMutation.isPending ? "Saving..." : "Save Changes"
+                      : createMutation.isPending ? "Creating..." : "Save Category"}
                   </Button>
                 </div>
               </form>
@@ -195,19 +244,49 @@ export default function Categories() {
                   </div>
                   <span className="font-medium text-sm">{cat.name}</span>
                 </div>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-8 w-8 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:text-destructive hover:bg-destructive/10"
-                  onClick={() => deleteMutation.mutate({ id: cat.id })}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10"
+                    onClick={() => handleEdit(cat)}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                    onClick={() => setDeleteId(cat.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             ))
           )}
         </div>
       </div>
+
+      <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Category?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This removes the category. Transactions using it may keep their history without this category.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteId && deleteMutation.mutate({ id: deleteId })}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

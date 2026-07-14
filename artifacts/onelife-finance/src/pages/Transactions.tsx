@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { 
   useListTransactions, 
+  useListCategories,
   useDeleteTransaction, 
   TransactionType,
   getListTransactionsQueryKey,
@@ -17,14 +18,18 @@ import {
   Trash2, 
   Edit2, 
   Filter,
-  ArrowLeftRight
+  ArrowLeftRight,
+  CalendarDays,
+  IndianRupee,
+  RotateCcw
 } from "lucide-react";
-import { format, parseISO } from "date-fns";
+import { endOfMonth, endOfWeek, format, isWithinInterval, parseISO, startOfMonth, startOfWeek } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { formatCurrency, useCurrencyRefresh } from "@/components/ui/animated-number";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -51,11 +56,57 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 
+type DatePreset = "all" | "today" | "week" | "month" | "custom";
+
+const toInputDate = (date: Date) => format(date, "yyyy-MM-dd");
+
+function getPresetRange(preset: DatePreset) {
+  const today = new Date();
+
+  if (preset === "today") {
+    return { from: toInputDate(today), to: toInputDate(today) };
+  }
+
+  if (preset === "week") {
+    return {
+      from: toInputDate(startOfWeek(today, { weekStartsOn: 1 })),
+      to: toInputDate(endOfWeek(today, { weekStartsOn: 1 })),
+    };
+  }
+
+  if (preset === "month") {
+    return {
+      from: toInputDate(startOfMonth(today)),
+      to: toInputDate(endOfMonth(today)),
+    };
+  }
+
+  return { from: "", to: "" };
+}
+
+function sumExpenses(transactions: Transaction[] | undefined, from?: Date, to?: Date) {
+  return (transactions || []).reduce((total, tx) => {
+    if (tx.type !== "expense") return total;
+
+    if (from && to) {
+      const txDate = parseISO(tx.date);
+      if (!isWithinInterval(txDate, { start: from, end: to })) return total;
+    }
+
+    return total + tx.amount;
+  }, 0);
+}
+
 export default function Transactions({ type }: { type?: TransactionType }) {
   useCurrencyRefresh();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filterType, setFilterType] = useState<TransactionType | "all">(type || "all");
+  const [categoryId, setCategoryId] = useState<number | "all">("all");
+  const [datePreset, setDatePreset] = useState<DatePreset>(type === "expense" ? "month" : "all");
+  const initialRange = React.useMemo(() => getPresetRange(type === "expense" ? "month" : "all"), [type]);
+  const [fromDate, setFromDate] = useState(initialRange.from);
+  const [toDate, setToDate] = useState(initialRange.to);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   
   const [, setLocation] = useLocation();
@@ -68,16 +119,34 @@ export default function Transactions({ type }: { type?: TransactionType }) {
     setFilterType(type || "all");
     setSearch("");
     setDebouncedSearch("");
+    setCategoryId("all");
+    const nextPreset = type === "expense" ? "month" : "all";
+    const nextRange = getPresetRange(nextPreset);
+    setDatePreset(nextPreset);
+    setFromDate(nextRange.from);
+    setToDate(nextRange.to);
   }, [type]);
 
-  const { data: transactions, isLoading } = useListTransactions({
+  const queryParams = {
     type: filterType === "all" ? undefined : filterType,
+    categoryId: categoryId === "all" ? undefined : categoryId,
+    from: fromDate || undefined,
+    to: toDate || undefined,
     search: debouncedSearch || undefined,
-  }, {
+  };
+  const todayRange = getPresetRange("today");
+  const weekRange = getPresetRange("week");
+  const monthRange = getPresetRange("month");
+
+  const { data: transactions, isLoading } = useListTransactions(queryParams, {
     query: {
-      queryKey: getListTransactionsQueryKey({ type: filterType === "all" ? undefined : filterType, search: debouncedSearch || undefined })
+      queryKey: getListTransactionsQueryKey(queryParams)
     }
   });
+  const { data: todayExpenses } = useListTransactions({ type: "expense", ...todayRange });
+  const { data: weekExpenses } = useListTransactions({ type: "expense", ...weekRange });
+  const { data: monthExpenses } = useListTransactions({ type: "expense", ...monthRange });
+  const { data: categories } = useListCategories({ type: filterType === "all" ? undefined : filterType });
 
   const deleteTx = useDeleteTransaction({
     mutation: {
@@ -99,6 +168,29 @@ export default function Transactions({ type }: { type?: TransactionType }) {
     return () => clearTimeout(timer);
   }, [search]);
 
+  const handlePresetChange = (preset: DatePreset) => {
+    setDatePreset(preset);
+    if (preset === "custom") return;
+
+    const range = getPresetRange(preset);
+    setFromDate(range.from);
+    setToDate(range.to);
+  };
+
+  const clearFilters = () => {
+    setSearch("");
+    setDebouncedSearch("");
+    setCategoryId("all");
+    setFilterType(type || "all");
+    const preset = type === "expense" ? "month" : "all";
+    handlePresetChange(preset);
+  };
+
+  const todayTotal = sumExpenses(todayExpenses);
+  const weekTotal = sumExpenses(weekExpenses);
+  const monthTotal = sumExpenses(monthExpenses);
+  const filteredExpenseTotal = sumExpenses(transactions);
+  const showExpenseSummary = filterType === "expense" || type === "expense";
   const pageTitle = type === "income" ? "Income" : type === "expense" ? "Expenses" : "All Transactions";
   
   return (
@@ -131,8 +223,33 @@ export default function Transactions({ type }: { type?: TransactionType }) {
         </div>
       </div>
 
+      {showExpenseSummary && (
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {[
+            { label: "Spent Today", value: todayTotal, tone: "text-destructive" },
+            { label: "Spent This Week", value: weekTotal, tone: "text-amber-600" },
+            { label: "Spent This Month", value: monthTotal, tone: "text-primary" },
+            { label: "Visible Expenses", value: filteredExpenseTotal, tone: "text-foreground" },
+          ].map((item) => (
+            <Card key={item.label} className="glass-card">
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm text-muted-foreground">{item.label}</p>
+                    <p className={`mt-1 text-2xl font-bold font-mono ${item.tone}`}>{formatCurrency(item.value)}</p>
+                  </div>
+                  <div className="h-9 w-9 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                    <IndianRupee className="h-4 w-4" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
       <div className="bg-card rounded-2xl border shadow-sm overflow-hidden flex flex-col">
-        <div className="p-4 border-b bg-muted/20 flex flex-col sm:flex-row gap-3">
+        <div className="p-4 border-b bg-muted/20 flex flex-col gap-3">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input 
@@ -141,6 +258,74 @@ export default function Transactions({ type }: { type?: TransactionType }) {
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9 bg-background"
             />
+          </div>
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex flex-wrap gap-2">
+              {[
+                { value: "all", label: "All Dates" },
+                { value: "today", label: "Today" },
+                { value: "week", label: "This Week" },
+                { value: "month", label: "This Month" },
+                { value: "custom", label: "Custom" },
+              ].map((preset) => (
+                <Button
+                  key={preset.value}
+                  type="button"
+                  variant={datePreset === preset.value ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => handlePresetChange(preset.value as DatePreset)}
+                >
+                  <CalendarDays className="mr-2 h-3.5 w-3.5" />
+                  {preset.label}
+                </Button>
+              ))}
+            </div>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 lg:min-w-[520px]">
+              <Input
+                type="date"
+                value={fromDate}
+                onChange={(event) => {
+                  setDatePreset("custom");
+                  setFromDate(event.target.value);
+                }}
+                className="bg-background"
+                aria-label="From date"
+              />
+              <Input
+                type="date"
+                value={toDate}
+                onChange={(event) => {
+                  setDatePreset("custom");
+                  setToDate(event.target.value);
+                }}
+                className="bg-background"
+                aria-label="To date"
+              />
+              <Select value={categoryId === "all" ? "all" : categoryId.toString()} onValueChange={(value) => setCategoryId(value === "all" ? "all" : Number(value))}>
+                <SelectTrigger className="bg-background">
+                  <SelectValue placeholder="Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {(categories || []).map((category) => (
+                    <SelectItem key={category.id} value={category.id.toString()}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-sm text-muted-foreground">
+              {showExpenseSummary
+                ? `Showing ${transactions?.length || 0} expenses/transactions. Total visible spend: ${formatCurrency(filteredExpenseTotal)}`
+                : `Showing ${transactions?.length || 0} transactions.`}
+            </p>
+            <Button type="button" variant="ghost" size="sm" onClick={clearFilters}>
+              <RotateCcw className="mr-2 h-3.5 w-3.5" />
+              Clear
+            </Button>
           </div>
         </div>
 

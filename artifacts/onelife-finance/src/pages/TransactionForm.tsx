@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useLocation, useSearch } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -63,6 +63,7 @@ export default function TransactionForm({ params }: { params?: { id?: string } }
   const rates = getGlobalRates();
   const activeRate = rates[activeCurrency as keyof typeof rates] || 1.0;
   const currencySymbol = CURRENCY_SYMBOLS[activeCurrency] || "₹";
+  const hydratedTransactionId = useRef<number | null>(null);
 
   const { data: transaction, isLoading: isTxLoading } = useGetTransaction(transactionId!, {
     query: { enabled: isEditing } as any
@@ -112,7 +113,7 @@ export default function TransactionForm({ params }: { params?: { id?: string } }
 
   // Reset form when editing data loads
   useEffect(() => {
-    if (transaction) {
+    if (transaction && hydratedTransactionId.current !== transaction.id) {
       const amountInActiveCurrency = Number((transaction.amount * activeRate).toFixed(2));
       form.reset({
         type: transaction.type,
@@ -122,6 +123,7 @@ export default function TransactionForm({ params }: { params?: { id?: string } }
         categoryId: transaction.categoryId,
         isRecurring: transaction.isRecurring,
       });
+      hydratedTransactionId.current = transaction.id;
     }
   }, [transaction, form, activeRate]);
 

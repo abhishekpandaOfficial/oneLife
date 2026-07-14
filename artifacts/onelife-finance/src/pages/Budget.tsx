@@ -3,11 +3,13 @@ import {
   useListBudgets, 
   useCreateBudget, 
   useUpdateBudget,
+  useDeleteBudget,
   useListCategories,
   getListBudgetsQueryKey 
 } from "@workspace/api-client-react";
+import type { Budget } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, PieChart, ChevronLeft, ChevronRight, AlertTriangle } from "lucide-react";
+import { Plus, PieChart, ChevronLeft, ChevronRight, AlertTriangle, Pencil, Trash2 } from "lucide-react";
 import { format, subMonths, addMonths } from "date-fns";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,12 +25,12 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 const formSchema = z.object({
   categoryId: z.coerce.number().min(1, "Select a category"),
@@ -43,6 +45,8 @@ export default function Budget() {
   const { data: categories } = useListCategories({ type: "expense" });
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -52,9 +56,37 @@ export default function Budget() {
         toast({ title: "Budget set" });
         queryClient.invalidateQueries({ queryKey: getListBudgetsQueryKey({ month: monthStr }) });
         setIsDialogOpen(false);
+        setEditingBudget(null);
         form.reset();
       },
       onError: () => toast({ title: "Failed to set budget", variant: "destructive" })
+    }
+  });
+
+  const updateMutation = useUpdateBudget({
+    mutation: {
+      onSuccess: () => {
+        toast({ title: "Budget updated" });
+        queryClient.invalidateQueries({ queryKey: getListBudgetsQueryKey({ month: monthStr }) });
+        setIsDialogOpen(false);
+        setEditingBudget(null);
+        form.reset();
+      },
+      onError: () => toast({ title: "Failed to update budget", variant: "destructive" })
+    }
+  });
+
+  const deleteMutation = useDeleteBudget({
+    mutation: {
+      onSuccess: () => {
+        toast({ title: "Budget deleted" });
+        queryClient.invalidateQueries({ queryKey: getListBudgetsQueryKey({ month: monthStr }) });
+        setDeleteId(null);
+      },
+      onError: () => {
+        toast({ title: "Failed to delete budget", variant: "destructive" });
+        setDeleteId(null);
+      }
     }
   });
 
@@ -67,11 +99,34 @@ export default function Budget() {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
+    if (editingBudget) {
+      updateMutation.mutate({ id: editingBudget.id, data: { plannedAmount: values.plannedAmount } });
+      return;
+    }
+
     createMutation.mutate({ data: { ...values, month: monthStr } });
   };
 
   const handlePrevMonth = () => setCurrentMonth(prev => subMonths(prev, 1));
   const handleNextMonth = () => setCurrentMonth(prev => addMonths(prev, 1));
+
+  const openAddDialog = () => {
+    setEditingBudget(null);
+    form.reset({
+      categoryId: 0,
+      plannedAmount: 0,
+    });
+    setIsDialogOpen(true);
+  };
+
+  const handleEdit = (budget: Budget) => {
+    setEditingBudget(budget);
+    form.reset({
+      categoryId: budget.categoryId,
+      plannedAmount: budget.plannedAmount,
+    });
+    setIsDialogOpen(true);
+  };
 
   const totalPlanned = budgets?.reduce((acc, b) => acc + b.plannedAmount, 0) || 0;
   const totalActual = budgets?.reduce((acc, b) => acc + b.actualAmount, 0) || 0;
@@ -98,26 +153,29 @@ export default function Budget() {
           </Button>
         </div>
 
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="rounded-full shadow-md">
-              <Plus className="mr-2 h-4 w-4" />
-              Set Budget
-            </Button>
-          </DialogTrigger>
+        <Dialog open={isDialogOpen} onOpenChange={(open) => {
+          setIsDialogOpen(open);
+          if (!open) setEditingBudget(null);
+        }}>
+          <Button className="rounded-full shadow-md" onClick={openAddDialog}>
+            <Plus className="mr-2 h-4 w-4" />
+            Set Budget
+          </Button>
           <DialogContent className="sm:max-w-[400px]">
             <DialogHeader>
-              <DialogTitle>Set Category Budget</DialogTitle>
+              <DialogTitle>{editingBudget ? "Edit Category Budget" : "Set Category Budget"}</DialogTitle>
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
                 <FormField control={form.control} name="categoryId" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Expense Category</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value ? field.value.toString() : ""}>
+                    <Select onValueChange={field.onChange} value={field.value ? field.value.toString() : ""} disabled={!!editingBudget}>
                       <FormControl><SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger></FormControl>
                       <SelectContent>
-                        {availableCategories.length === 0 ? (
+                        {editingBudget ? (
+                          <SelectItem value={editingBudget.categoryId.toString()}>{editingBudget.categoryName}</SelectItem>
+                        ) : availableCategories.length === 0 ? (
                           <SelectItem value="0" disabled>All categories have budgets</SelectItem>
                         ) : (
                           availableCategories.map(c => (
@@ -137,8 +195,10 @@ export default function Budget() {
                   </FormItem>
                 )} />
                 <div className="pt-4 flex justify-end">
-                  <Button type="submit" disabled={createMutation.isPending || availableCategories.length === 0}>
-                    Save Budget
+                  <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending || (!editingBudget && availableCategories.length === 0)}>
+                    {editingBudget
+                      ? updateMutation.isPending ? "Saving..." : "Save Changes"
+                      : createMutation.isPending ? "Saving..." : "Save Budget"}
                   </Button>
                 </div>
               </form>
@@ -208,14 +268,24 @@ export default function Budget() {
               const isWarning = pct >= 85 && !isOver;
 
               return (
-                <Card key={budget.id} className={`rounded-xl border-primary/5 hover:shadow-md transition-shadow ${isOver ? 'border-destructive/30 bg-destructive/5' : ''}`}>
+                <Card key={budget.id} className={`rounded-xl border-primary/5 hover:shadow-md transition-shadow group ${isOver ? 'border-destructive/30 bg-destructive/5' : ''}`}>
                   <CardContent className="p-5">
                     <div className="flex justify-between items-center mb-3">
                       <div className="flex items-center gap-2">
                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: budget.categoryColor }} />
                         <span className="font-semibold">{budget.categoryName}</span>
                       </div>
-                      {isOver && <AlertTriangle className="h-4 w-4 text-destructive" />}
+                      <div className="flex items-center gap-1">
+                        {isOver && <AlertTriangle className="h-4 w-4 text-destructive" />}
+                        <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10" onClick={() => handleEdit(budget)}>
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10" onClick={() => setDeleteId(budget.id)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
                     </div>
                     
                     <div className="flex justify-between items-end mb-2">
@@ -248,6 +318,21 @@ export default function Budget() {
           </div>
         )}
       </div>
+
+      <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Budget?</AlertDialogTitle>
+            <AlertDialogDescription>This removes the category limit for {format(currentMonth, "MMMM yyyy")}.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteId && deleteMutation.mutate({ id: deleteId })} className="bg-destructive hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

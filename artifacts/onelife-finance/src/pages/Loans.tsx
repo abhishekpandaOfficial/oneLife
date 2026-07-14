@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "wouter";
-import { useListLoans, useCreateLoan, LoanType, getListLoansQueryKey, getGetDashboardSummaryQueryKey } from "@workspace/api-client-react";
+import { useListLoans, useCreateLoan, useUpdateLoan, useDeleteLoan, Loan, LoanType, getListLoansQueryKey, getGetDashboardSummaryQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Plus, Wallet, Car, Home, GraduationCap, Coins, CreditCard, ChevronRight } from "lucide-react";
+import { Plus, Wallet, Car, Home, GraduationCap, Coins, CreditCard, ChevronRight, Pencil, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,12 +19,12 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 const loanTypeIcons: Record<string, React.ReactNode> = {
   home: <Home className="h-5 w-5" />,
@@ -65,6 +65,8 @@ const INDIAN_BANKS = [
 export default function Loans() {
   const { data: loans, isLoading } = useListLoans();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingLoan, setEditingLoan] = useState<Loan | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
   const [customBank, setCustomBank] = useState(false);
   const [disbursementFile, setDisbursementFile] = useState<string | null>(null);
   const [repaymentFile, setRepaymentFile] = useState<string | null>(null);
@@ -79,12 +81,46 @@ export default function Loans() {
         queryClient.invalidateQueries({ queryKey: getListLoansQueryKey() });
         queryClient.invalidateQueries({ queryKey: getGetDashboardSummaryQueryKey() });
         setIsDialogOpen(false);
+        setEditingLoan(null);
         setDisbursementFile(null);
         setRepaymentFile(null);
         form.reset();
       },
       onError: () => {
         toast({ title: "Failed to add loan", variant: "destructive" });
+      }
+    }
+  });
+
+  const updateMutation = useUpdateLoan({
+    mutation: {
+      onSuccess: () => {
+        toast({ title: "Loan updated successfully" });
+        queryClient.invalidateQueries({ queryKey: getListLoansQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetDashboardSummaryQueryKey() });
+        setIsDialogOpen(false);
+        setEditingLoan(null);
+        setDisbursementFile(null);
+        setRepaymentFile(null);
+        form.reset();
+      },
+      onError: () => {
+        toast({ title: "Failed to update loan", variant: "destructive" });
+      }
+    }
+  });
+
+  const deleteMutation = useDeleteLoan({
+    mutation: {
+      onSuccess: () => {
+        toast({ title: "Loan deleted" });
+        queryClient.invalidateQueries({ queryKey: getListLoansQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetDashboardSummaryQueryKey() });
+        setDeleteId(null);
+      },
+      onError: () => {
+        toast({ title: "Failed to delete loan", variant: "destructive" });
+        setDeleteId(null);
       }
     }
   });
@@ -109,14 +145,67 @@ export default function Loans() {
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    createMutation.mutate({
-      data: {
-        ...values,
-        outstandingAmount: values.outstandingAmount || values.principalAmount,
-        disbursementDocUrl: disbursementFile || undefined,
-        repaymentScheduleDocUrl: repaymentFile || undefined,
-      }
+    const data = {
+      ...values,
+      outstandingAmount: values.outstandingAmount || values.principalAmount,
+      disbursementDocUrl: disbursementFile || undefined,
+      repaymentScheduleDocUrl: repaymentFile || undefined,
+    };
+
+    if (editingLoan) {
+      updateMutation.mutate({ id: editingLoan.id, data });
+      return;
+    }
+
+    createMutation.mutate({ data });
+  };
+
+  const openAddDialog = () => {
+    setEditingLoan(null);
+    setCustomBank(false);
+    setDisbursementFile(null);
+    setRepaymentFile(null);
+    form.reset({
+      name: "",
+      loanType: "personal",
+      principalAmount: 0,
+      outstandingAmount: 0,
+      interestRate: 0,
+      emiAmount: 0,
+      tenureMonths: 12,
+      startDate: format(new Date(), "yyyy-MM-dd"),
+      bankName: INDIAN_BANKS[0].name,
+      bankLogoUrl: "",
+      disbursementDocUrl: "",
+      repaymentScheduleDocUrl: "",
+      penaltyRate: 2.0,
     });
+    setIsDialogOpen(true);
+  };
+
+  const handleEdit = (loan: Loan) => {
+    setEditingLoan(loan);
+    const bankName = loan.bankName || INDIAN_BANKS[0].name;
+    const knownBank = INDIAN_BANKS.some((bank) => bank.name === bankName);
+    setCustomBank(!knownBank);
+    setDisbursementFile(loan.disbursementDocUrl || null);
+    setRepaymentFile(loan.repaymentScheduleDocUrl || null);
+    form.reset({
+      name: loan.name,
+      loanType: loan.loanType,
+      principalAmount: loan.principalAmount,
+      outstandingAmount: loan.outstandingAmount,
+      interestRate: loan.interestRate,
+      emiAmount: loan.emiAmount,
+      tenureMonths: loan.tenureMonths,
+      startDate: loan.startDate,
+      bankName,
+      bankLogoUrl: loan.bankLogoUrl || "",
+      disbursementDocUrl: loan.disbursementDocUrl || "",
+      repaymentScheduleDocUrl: loan.repaymentScheduleDocUrl || "",
+      penaltyRate: loan.penaltyRate ?? 2.0,
+    });
+    setIsDialogOpen(true);
   };
 
   const handleFileDrop = (e: React.DragEvent<HTMLDivElement>, type: "disbursement" | "repayment") => {
@@ -143,22 +232,18 @@ export default function Loans() {
           <h1 className="text-3xl font-bold tracking-tight">Active Loans</h1>
           <p className="text-muted-foreground mt-1">Track your debt, EMIs, and amortization.</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="rounded-full shadow-md" onClick={() => {
-              setCustomBank(false);
-              setDisbursementFile(null);
-              setRepaymentFile(null);
-              form.reset();
-            }}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Loan
-            </Button>
-          </DialogTrigger>
+        <Dialog open={isDialogOpen} onOpenChange={(open) => {
+          setIsDialogOpen(open);
+          if (!open) setEditingLoan(null);
+        }}>
+          <Button className="rounded-full shadow-md" onClick={openAddDialog}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Loan
+          </Button>
           <DialogContent className="sm:max-w-[550px] max-h-[85vh] overflow-y-auto glass-card">
             <DialogHeader>
-              <DialogTitle>Add New Loan</DialogTitle>
-              <DialogDescription>Enter the details of your loan to track its progress.</DialogDescription>
+              <DialogTitle>{editingLoan ? "Edit Loan" : "Add New Loan"}</DialogTitle>
+              <DialogDescription>{editingLoan ? "Update the details of this loan." : "Enter the details of your loan to track its progress."}</DialogDescription>
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
@@ -185,7 +270,7 @@ export default function Loans() {
                               field.onChange(val);
                             }
                           }}
-                          defaultValue={field.value || INDIAN_BANKS[0].name}
+                          value={customBank ? "custom" : field.value || INDIAN_BANKS[0].name}
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Select bank" />
@@ -344,8 +429,10 @@ export default function Loans() {
                 </div>
 
                 <div className="pt-4 flex justify-end">
-                  <Button type="submit" disabled={createMutation.isPending}>
-                    {createMutation.isPending ? "Adding..." : "Add Loan"}
+                  <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
+                    {editingLoan
+                      ? updateMutation.isPending ? "Saving..." : "Save Changes"
+                      : createMutation.isPending ? "Adding..." : "Add Loan"}
                   </Button>
                 </div>
               </form>
@@ -400,7 +487,31 @@ export default function Loans() {
                           <p className="text-xs text-muted-foreground capitalize">{loan.loanType} Loan • {loan.interestRate}% ROI</p>
                         </div>
                       </div>
-                      <ChevronRight className="h-5 w-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1" />
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:text-primary hover:bg-primary/10"
+                          onClick={(event) => {
+                            event.preventDefault();
+                            handleEdit(loan);
+                          }}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:text-destructive hover:bg-destructive/10"
+                          onClick={(event) => {
+                            event.preventDefault();
+                            setDeleteId(loan.id);
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                        <ChevronRight className="h-5 w-5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1" />
+                      </div>
                     </div>
                     
                     <div className="space-y-4">
@@ -434,6 +545,23 @@ export default function Loans() {
           })
         )}
       </div>
+
+      <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Loan?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This removes the loan and its EMI schedule from tracking. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteId && deleteMutation.mutate({ id: deleteId })} className="bg-destructive hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

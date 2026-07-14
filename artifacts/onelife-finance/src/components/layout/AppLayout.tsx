@@ -59,7 +59,7 @@ function getInitials(name: string): string {
 }
 
 const navItems = [
-  { label: "Dashboard",    href: "/",            icon: LayoutDashboard },
+  { label: "Dashboard",    href: "/app",         icon: LayoutDashboard },
   { label: "Income",       href: "/income",       icon: ArrowDownToLine },
   { label: "Expenses",     href: "/expenses",     icon: ArrowUpFromLine },
   { label: "Transactions", href: "/transactions", icon: ArrowLeftRight },

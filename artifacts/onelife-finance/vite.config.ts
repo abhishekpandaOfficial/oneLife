@@ -15,6 +15,7 @@ const apiPort = process.env.API_PORT || '5001';
 
 export default defineConfig({
   base: basePath,
+  envDir: path.resolve(import.meta.dirname, '..', '..'),
   plugins: [
     react(),
     tailwindcss(),

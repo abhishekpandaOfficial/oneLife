@@ -1,5 +1,7 @@
 import React from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
+import Landing from "@/pages/Landing";
+import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
 import Transactions from "@/pages/Transactions";
 import TransactionForm from "@/pages/TransactionForm";
@@ -22,10 +24,18 @@ import { Route, Switch, Router as WouterRouter, useLocation } from "wouter";
 function Router() {
   const [location] = useLocation();
 
+  if (location === "/") {
+    return <Landing />;
+  }
+
+  if (location === "/login") {
+    return <Login />;
+  }
+
   return (
     <AppLayout>
       <Switch>
-        <Route path="/" component={Dashboard} />
+        <Route path="/app" component={Dashboard} />
 
         {/* key forces full remount when switching income ↔ expenses ↔ transactions */}
         <Route path="/income">

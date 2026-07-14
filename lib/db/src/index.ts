@@ -10,20 +10,34 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-const isLocal = 
-  !process.env.DATABASE_URL || 
-  process.env.DATABASE_URL.includes("localhost") || 
-  process.env.DATABASE_URL.includes("127.0.0.1");
+const rawConnectionString = process.env.DATABASE_URL;
 
-let connectionString = process.env.DATABASE_URL;
-if (connectionString) {
-  // Strip any sslmode query params so pg-connection-string doesn't override Pool constructor options
-  connectionString = connectionString.replace(/[\?&]sslmode=[^&]*/g, "");
-}
+// Honor the connection string's own sslmode (Replit's managed Postgres sets
+// sslmode=disable since it doesn't support SSL; external providers like
+// Neon/Supabase typically set sslmode=require). Fall back to disabling SSL
+// for localhost/127.0.0.1 and enabling it otherwise when no sslmode is given.
+const sslModeMatch = rawConnectionString?.match(/[\?&]sslmode=([^&]*)/i);
+const sslMode = sslModeMatch?.[1]?.toLowerCase();
+
+const isLocalHost =
+  !rawConnectionString ||
+  rawConnectionString.includes("localhost") ||
+  rawConnectionString.includes("127.0.0.1");
+
+const useSsl =
+  sslMode === "disable"
+    ? false
+    : sslMode === "require" || sslMode === "verify-full" || sslMode === "verify-ca"
+      ? true
+      : !isLocalHost;
+
+// Strip sslmode query params so pg-connection-string doesn't override the
+// Pool constructor's own `ssl` option below.
+const connectionString = rawConnectionString?.replace(/[\?&]sslmode=[^&]*/g, "");
 
 export const pool = new Pool({ 
   connectionString,
-  ssl: isLocal ? false : { rejectUnauthorized: false }
+  ssl: useSsl ? { rejectUnauthorized: false } : false
 });
 export const db = drizzle(pool, { schema });
 

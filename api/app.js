@@ -56897,14 +56897,15 @@ if (!process.env.DATABASE_URL) {
     "DATABASE_URL must be set. Did you forget to provision a database?"
   );
 }
-var isLocal = !process.env.DATABASE_URL || process.env.DATABASE_URL.includes("localhost") || process.env.DATABASE_URL.includes("127.0.0.1");
-var connectionString = process.env.DATABASE_URL;
-if (connectionString) {
-  connectionString = connectionString.replace(/[\?&]sslmode=[^&]*/g, "");
-}
+var rawConnectionString = process.env.DATABASE_URL;
+var sslModeMatch = rawConnectionString?.match(/[\?&]sslmode=([^&]*)/i);
+var sslMode = sslModeMatch?.[1]?.toLowerCase();
+var isLocalHost = !rawConnectionString || rawConnectionString.includes("localhost") || rawConnectionString.includes("127.0.0.1");
+var useSsl = sslMode === "disable" ? false : sslMode === "require" || sslMode === "verify-full" || sslMode === "verify-ca" ? true : !isLocalHost;
+var connectionString = rawConnectionString?.replace(/[\?&]sslmode=[^&]*/g, "");
 var pool = new Pool3({
   connectionString,
-  ssl: isLocal ? false : { rejectUnauthorized: false }
+  ssl: useSsl ? { rejectUnauthorized: false } : false
 });
 var db = drizzle(pool, { schema: schema_exports });
 

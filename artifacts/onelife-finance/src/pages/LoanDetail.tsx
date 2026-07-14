@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "wouter";
-import { useGetLoan, useUpdateEmi, useUpdateLoan, EmiStatus, getGetLoanQueryKey } from "@workspace/api-client-react";
+import {
+  useGetLoan,
+  useUpdateEmi,
+  useUpdateLoan,
+  EmiStatus,
+  getGetLoanQueryKey,
+  getListLoansQueryKey,
+  getGetDashboardSummaryQueryKey,
+} from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, CheckCircle2, Clock, AlertCircle, RefreshCw, FileText, Download, Upload, ChevronDown, ChevronUp, AlertTriangle } from "lucide-react";
 import { format, parseISO } from "date-fns";
@@ -26,6 +34,8 @@ export default function LoanDetail({ params }: { params: { id: string } }) {
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getGetLoanQueryKey(loanId) });
+        queryClient.invalidateQueries({ queryKey: getListLoansQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetDashboardSummaryQueryKey() });
       },
       onError: () => {
         toast({ title: "Failed to update EMI status", variant: "destructive" });

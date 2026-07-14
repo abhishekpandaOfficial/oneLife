@@ -2,11 +2,13 @@ import { Router } from "express";
 import { GetDashboardSummaryResponse } from "@workspace/api-zod";
 import { monthKey, monthRange, lastMonthKeys } from "../lib/dates";
 import { incomeExpenseTotals, expenseByCategory, monthlyTrend, totalLoanOutstanding, totalInvestmentValue, totalInsuranceCoverage, emisDueCount, emergencyFundAmount, totalSavings, upcomingPayments, totalCreditCardOutstanding, monthlyBudgetSummary, } from "../lib/finance";
+import { syncPaidEmiExpenseTransactions } from "../lib/emi-transactions";
 const router = Router();
 router.get("/dashboard/summary", async (_req, res) => {
     const now = new Date();
     const key = monthKey(now);
     const { start, end } = monthRange(key);
+    await syncPaidEmiExpenseTransactions(start, end);
     const [{ income, expense }, categoryBreakdown, trend, loanOutstanding, investmentValue, insuranceCoverage, dueCount, emergencyFund, savings, payments, creditCardOutstanding, budgetSummary,] = await Promise.all([
         incomeExpenseTotals(start, end),
         expenseByCategory(start, end),

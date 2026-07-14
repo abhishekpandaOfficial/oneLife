@@ -3,8 +3,31 @@ import { and, eq } from "drizzle-orm";
 import { db, emisTable, loansTable } from "@workspace/db";
 import { ListEmisResponse, UpdateEmiParams, UpdateEmiBody, UpdateEmiResponse } from "@workspace/api-zod";
 import { toDateStr } from "../lib/dates";
+import { deleteEmiExpenseTransaction, upsertEmiExpenseTransaction } from "../lib/emi-transactions";
 
 const router: IRouter = Router();
+
+function roundMoney(value: number): number {
+  return Number(value.toFixed(2));
+}
+
+function monthlyRate(annualRate: number): number {
+  return Number(annualRate) / 100 / 12;
+}
+
+function principalPaidByPayment(outstandingBeforePayment: number, paymentAmount: number, annualRate: number): number {
+  const interestForPeriod = outstandingBeforePayment * monthlyRate(annualRate);
+  return roundMoney(Math.min(outstandingBeforePayment, Math.max(0, paymentAmount - interestForPeriod)));
+}
+
+function outstandingBeforeReversedPayment(outstandingAfterPayment: number, paymentAmount: number, annualRate: number): number {
+  const rate = monthlyRate(annualRate);
+  if (rate === 0) {
+    return outstandingAfterPayment + paymentAmount;
+  }
+
+  return roundMoney((outstandingAfterPayment + paymentAmount) / (1 + rate));
+}
 
 function emiSelect() {
   return db
@@ -116,22 +139,55 @@ router.patch("/emis/:id", async (req, res): Promise<void> => {
   }
 
   const [emi] = await emiSelect().where(eq(emisTable.id, updated.id));
+  const wasPaid = existingEmi.status === "paid";
+  const isPaid = emi.status === "paid";
 
   // If newly marked as paid, update loan outstanding
-  if (parsed.data.status === "paid" && existingEmi.status !== "paid" && loan) {
-    const nextOutstanding = Math.max(0, loan.outstandingAmount - loan.emiAmount);
+  if (!wasPaid && isPaid && loan) {
+    const principalComponent = principalPaidByPayment(
+      Number(loan.outstandingAmount),
+      Number(existingEmi.amount),
+      Number(loan.interestRate),
+    );
+    const nextOutstanding = Math.max(0, roundMoney(Number(loan.outstandingAmount) - principalComponent));
+    await upsertEmiExpenseTransaction(
+      existingEmi.id,
+      loan.name,
+      Number(existingEmi.amount),
+      emi.paidDate ?? toDateStr(new Date()),
+    );
     await db
       .update(loansTable)
-      .set({ outstandingAmount: nextOutstanding })
+      .set({
+        outstandingAmount: nextOutstanding,
+        status: nextOutstanding === 0 ? "closed" : "active",
+      })
       .where(eq(loansTable.id, loan.id));
   }
   // If unmarked from paid to unpaid, restore loan outstanding
-  else if (parsed.data.status !== "paid" && existingEmi.status === "paid" && loan) {
-    const nextOutstanding = loan.outstandingAmount + loan.emiAmount;
+  else if (wasPaid && !isPaid && loan) {
+    const outstandingBeforePayment = outstandingBeforeReversedPayment(
+      Number(loan.outstandingAmount),
+      Number(existingEmi.amount),
+      Number(loan.interestRate),
+    );
+    const principalComponent = Math.max(0, roundMoney(outstandingBeforePayment - Number(loan.outstandingAmount)));
+    const nextOutstanding = Math.min(Number(loan.principalAmount), roundMoney(Number(loan.outstandingAmount) + principalComponent));
+    await deleteEmiExpenseTransaction(existingEmi.id);
     await db
       .update(loansTable)
-      .set({ outstandingAmount: nextOutstanding })
+      .set({
+        outstandingAmount: nextOutstanding,
+        status: "active",
+      })
       .where(eq(loansTable.id, loan.id));
+  } else if (wasPaid && isPaid && loan) {
+    await upsertEmiExpenseTransaction(
+      existingEmi.id,
+      loan.name,
+      Number(existingEmi.amount),
+      emi.paidDate ?? toDateStr(new Date()),
+    );
   }
 
   res.json(UpdateEmiResponse.parse(emi));

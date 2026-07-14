@@ -3,6 +3,7 @@ import { and, desc, eq, gte, ilike, lte } from "drizzle-orm";
 import { db, categoriesTable, transactionsTable } from "@workspace/db";
 import { ListTransactionsResponse, CreateTransactionBody, CreateTransactionResponse, GetTransactionParams, GetTransactionResponse, UpdateTransactionParams, UpdateTransactionBody, UpdateTransactionResponse, DeleteTransactionParams, } from "@workspace/api-zod";
 import { toDateStr } from "../lib/dates";
+import { syncPaidEmiExpenseTransactions } from "../lib/emi-transactions";
 const router = Router();
 function transactionSelect() {
     return db
@@ -23,6 +24,9 @@ function transactionSelect() {
 }
 router.get("/transactions", async (req, res) => {
     const { type, categoryId, from, to, search } = req.query;
+    const fromDate = typeof from === "string" && from.trim() !== "" ? toDateStr(new Date(from)) : undefined;
+    const toDate = typeof to === "string" && to.trim() !== "" ? toDateStr(new Date(to)) : undefined;
+    await syncPaidEmiExpenseTransactions(fromDate, toDate);
     const conditions = [];
     if (type === "income" || type === "expense") {
         conditions.push(eq(transactionsTable.type, type));
@@ -33,10 +37,10 @@ router.get("/transactions", async (req, res) => {
             conditions.push(eq(transactionsTable.categoryId, id));
     }
     if (typeof from === "string" && from.trim() !== "") {
-        conditions.push(gte(transactionsTable.date, toDateStr(new Date(from))));
+        conditions.push(gte(transactionsTable.date, fromDate));
     }
     if (typeof to === "string" && to.trim() !== "") {
-        conditions.push(lte(transactionsTable.date, toDateStr(new Date(to))));
+        conditions.push(lte(transactionsTable.date, toDate));
     }
     if (typeof search === "string" && search.trim() !== "") {
         conditions.push(ilike(transactionsTable.description, `%${search.trim()}%`));

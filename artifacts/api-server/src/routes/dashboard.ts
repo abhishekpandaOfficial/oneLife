@@ -15,6 +15,7 @@ import {
   totalCreditCardOutstanding,
   monthlyBudgetSummary,
 } from "../lib/finance";
+import { syncPaidEmiExpenseTransactions } from "../lib/emi-transactions";
 
 const router: IRouter = Router();
 
@@ -22,6 +23,8 @@ router.get("/dashboard/summary", async (_req, res): Promise<void> => {
   const now = new Date();
   const key = monthKey(now);
   const { start, end } = monthRange(key);
+
+  await syncPaidEmiExpenseTransactions(start, end);
 
   const [
     { income, expense },

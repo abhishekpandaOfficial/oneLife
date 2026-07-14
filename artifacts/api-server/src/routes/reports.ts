@@ -10,6 +10,7 @@ import {
   totalLoanOutstanding,
   totalSavings,
 } from "../lib/finance";
+import { syncPaidEmiExpenseTransactions } from "../lib/emi-transactions";
 
 const router: IRouter = Router();
 
@@ -25,6 +26,8 @@ router.get("/reports/summary", async (req, res): Promise<void> => {
   if (query.data.period === "monthly") {
     const key = monthKey(now);
     const { start, end } = monthRange(key);
+    await syncPaidEmiExpenseTransactions(start, end);
+
     const [totals, categoryBreakdown, trend] = await Promise.all([
       incomeExpenseTotals(start, end),
       expenseByCategory(start, end),
@@ -57,6 +60,8 @@ router.get("/reports/summary", async (req, res): Promise<void> => {
 
   const year = now.getFullYear();
   const { start, end } = yearRange(year);
+  await syncPaidEmiExpenseTransactions(start, end);
+
   const [totals, categoryBreakdown, trend] = await Promise.all([
     incomeExpenseTotals(start, end),
     expenseByCategory(start, end),

@@ -2,6 +2,8 @@ import React from "react";
 import { Link } from "wouter";
 import { 
   useGetDashboardSummary, 
+  useListTransactions,
+  type Transaction,
 } from "@workspace/api-client-react";
 import { 
   ArrowUpRight, 
@@ -19,6 +21,8 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatedNumber, formatCurrency, useCurrencyRefresh, getGlobalCurrency, setGlobalCurrency, getGlobalRates } from "@/components/ui/animated-number";
 import {
@@ -37,9 +41,32 @@ import {
 } from "recharts";
 import { format, parseISO } from "date-fns";
 
+function monthRangeFromKey(month: string) {
+  const [year, monthNumber] = month.split("-").map(Number);
+  const lastDay = new Date(year, monthNumber, 0).getDate();
+  return {
+    from: `${month}-01`,
+    to: `${month}-${String(lastDay).padStart(2, "0")}`,
+  };
+}
+
 export default function Dashboard() {
   const currentCurrency = useCurrencyRefresh();
   const { data: summary, isLoading, error } = useGetDashboardSummary();
+  const [isExpenseDialogOpen, setIsExpenseDialogOpen] = React.useState(false);
+  const expenseMonthRange = summary ? monthRangeFromKey(summary.budgetSummary.month) : undefined;
+  const { data: monthlyExpenseTransactions, isLoading: isExpensesLoading } = useListTransactions(
+    {
+      type: "expense",
+      from: expenseMonthRange?.from,
+      to: expenseMonthRange?.to,
+    },
+    {
+      query: {
+        enabled: !!summary,
+      } as any,
+    },
+  );
 
   if (isLoading) {
     return (
@@ -155,6 +182,7 @@ export default function Dashboard() {
           title="Monthly Expenses" 
           amount={summary.monthlyExpenses} 
           icon={<ArrowUpRight className="h-5 w-5 text-destructive" />} 
+          onClick={() => setIsExpenseDialogOpen(true)}
         />
         <BudgetKpiCard budget={summary.budgetSummary} />
         <KpiCard 
@@ -178,6 +206,15 @@ export default function Dashboard() {
           icon={<ShieldCheck className="h-5 w-5 text-teal-500" />} 
         />
       </div>
+
+      <MonthlyExpensesDialog
+        open={isExpenseDialogOpen}
+        onOpenChange={setIsExpenseDialogOpen}
+        month={summary.budgetSummary.month}
+        transactions={monthlyExpenseTransactions}
+        isLoading={isExpensesLoading}
+        total={summary.monthlyExpenses}
+      />
 
       {/* Assets vs Liabilities Net Worth Breakdown — Premium Redesign */}
       <div className="rounded-2xl overflow-hidden border border-primary/10 shadow-lg bg-gradient-to-br from-card via-card to-muted/30">
@@ -557,7 +594,8 @@ function BudgetKpiCard({ budget }: { budget: {
       : "border-emerald-500/20 bg-gradient-to-br from-card via-card to-emerald-500/5";
 
   return (
-    <Card className={`rounded-2xl overflow-hidden shadow-sm ${cardClass} transition-all duration-300 hover:shadow-md`}>
+    <Link href={`/budget?month=${budget.month}&action=create`}>
+      <Card className={`rounded-2xl overflow-hidden shadow-sm ${cardClass} transition-all duration-300 hover:shadow-md cursor-pointer`}>
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
         <div>
           <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -597,7 +635,121 @@ function BudgetKpiCard({ budget }: { budget: {
           </div>
         </div>
       </CardContent>
-    </Card>
+      </Card>
+    </Link>
+  );
+}
+
+function MonthlyExpensesDialog({
+  open,
+  onOpenChange,
+  month,
+  transactions,
+  isLoading,
+  total,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  month: string;
+  transactions: Transaction[] | undefined;
+  isLoading: boolean;
+  total: number;
+}) {
+  const monthLabel = format(parseISO(`${month}-01`), "MMMM yyyy");
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[85vh] overflow-hidden sm:max-w-3xl">
+        <DialogHeader>
+          <DialogTitle>Monthly Expenses</DialogTitle>
+          <DialogDescription>
+            {monthLabel} expense transactions synced from manual expenses and paid EMIs.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="rounded-xl border bg-muted/20 p-4">
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Total spent</p>
+              <p className="text-2xl font-bold font-mono">{formatCurrency(total)}</p>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {transactions?.length ?? 0} transactions
+            </p>
+          </div>
+        </div>
+
+        <div className="max-h-[52vh] overflow-y-auto rounded-xl border">
+          <table className="w-full text-left text-sm">
+            <thead className="sticky top-0 z-10 border-b bg-background text-muted-foreground">
+              <tr>
+                <th className="px-4 py-3 font-medium">Transaction</th>
+                <th className="px-4 py-3 font-medium">Category</th>
+                <th className="px-4 py-3 font-medium">Date</th>
+                <th className="px-4 py-3 text-right font-medium">Amount</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {isLoading ? (
+                Array.from({ length: 4 }).map((_, index) => (
+                  <tr key={index}>
+                    <td className="px-4 py-4"><Skeleton className="h-5 w-40" /></td>
+                    <td className="px-4 py-4"><Skeleton className="h-5 w-24 rounded-full" /></td>
+                    <td className="px-4 py-4"><Skeleton className="h-5 w-24" /></td>
+                    <td className="px-4 py-4"><Skeleton className="ml-auto h-5 w-20" /></td>
+                  </tr>
+                ))
+              ) : !transactions?.length ? (
+                <tr>
+                  <td colSpan={4} className="px-4 py-10 text-center text-muted-foreground">
+                    No expense transactions found for {monthLabel}.
+                  </td>
+                </tr>
+              ) : (
+                transactions.map((tx) => (
+                  <tr key={tx.id} className="hover:bg-muted/30">
+                    <td className="px-4 py-3">
+                      <p className="font-medium text-foreground">{tx.description}</p>
+                    </td>
+                    <td className="px-4 py-3">
+                      {tx.categoryName ? (
+                        <Badge
+                          variant="outline"
+                          className="font-normal"
+                          style={{
+                            borderColor: tx.categoryColor ? `${tx.categoryColor}40` : undefined,
+                            backgroundColor: tx.categoryColor ? `${tx.categoryColor}10` : undefined,
+                            color: tx.categoryColor || undefined,
+                          }}
+                        >
+                          {tx.categoryName}
+                        </Badge>
+                      ) : (
+                        <span className="text-xs italic text-muted-foreground">Uncategorized</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {format(parseISO(tx.date), "MMM dd, yyyy")}
+                    </td>
+                    <td className="px-4 py-3 text-right font-mono font-semibold text-destructive">
+                      -{formatCurrency(tx.amount)}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="flex justify-end">
+          <Link href="/expenses">
+            <Button variant="outline" onClick={() => onOpenChange(false)}>
+              View Expenses
+            </Button>
+          </Link>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -607,7 +759,8 @@ function KpiCard({
   icon, 
   trend, 
   trendUp, 
-  featured 
+  featured,
+  onClick,
 }: { 
   title: string; 
   amount: number; 
@@ -615,9 +768,22 @@ function KpiCard({
   trend?: string; 
   trendUp?: boolean;
   featured?: boolean;
+  onClick?: () => void;
 }) {
   return (
-    <Card className={`rounded-2xl transition-all duration-300 hover:shadow-md ${featured ? 'bg-primary text-primary-foreground border-transparent shadow-md' : 'shadow-sm border-primary/5'}`}>
+    <Card
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onClick={onClick}
+      onKeyDown={(event) => {
+        if (!onClick) return;
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onClick();
+        }
+      }}
+      className={`rounded-2xl transition-all duration-300 hover:shadow-md ${onClick ? "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" : ""} ${featured ? 'bg-primary text-primary-foreground border-transparent shadow-md' : 'shadow-sm border-primary/5'}`}
+    >
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
         <CardTitle className={`text-sm font-medium ${featured ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>
           {title}

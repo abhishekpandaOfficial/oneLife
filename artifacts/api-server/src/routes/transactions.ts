@@ -13,6 +13,7 @@ import {
   DeleteTransactionParams,
 } from "@workspace/api-zod";
 import { toDateStr } from "../lib/dates";
+import { syncPaidEmiExpenseTransactions } from "../lib/emi-transactions";
 
 const router: IRouter = Router();
 
@@ -36,6 +37,10 @@ function transactionSelect() {
 
 router.get("/transactions", async (req, res): Promise<void> => {
   const { type, categoryId, from, to, search } = req.query;
+  const fromDate = typeof from === "string" && from.trim() !== "" ? toDateStr(new Date(from)) : undefined;
+  const toDate = typeof to === "string" && to.trim() !== "" ? toDateStr(new Date(to)) : undefined;
+
+  await syncPaidEmiExpenseTransactions(fromDate, toDate);
 
   const conditions: SQL[] = [];
   if (type === "income" || type === "expense") {
@@ -46,10 +51,10 @@ router.get("/transactions", async (req, res): Promise<void> => {
     if (!Number.isNaN(id)) conditions.push(eq(transactionsTable.categoryId, id));
   }
   if (typeof from === "string" && from.trim() !== "") {
-    conditions.push(gte(transactionsTable.date, toDateStr(new Date(from))));
+    conditions.push(gte(transactionsTable.date, fromDate!));
   }
   if (typeof to === "string" && to.trim() !== "") {
-    conditions.push(lte(transactionsTable.date, toDateStr(new Date(to))));
+    conditions.push(lte(transactionsTable.date, toDate!));
   }
   if (typeof search === "string" && search.trim() !== "") {
     conditions.push(ilike(transactionsTable.description, `%${search.trim()}%`));

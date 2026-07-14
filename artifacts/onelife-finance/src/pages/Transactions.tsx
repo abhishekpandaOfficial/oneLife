@@ -6,6 +6,8 @@ import {
   useDeleteTransaction, 
   TransactionType,
   getListTransactionsQueryKey,
+  getGetDashboardSummaryQueryKey,
+  getListBudgetsQueryKey,
   Transaction
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -160,6 +162,8 @@ export default function Transactions({ type }: { type?: TransactionType }) {
       onSuccess: () => {
         toast({ title: "Transaction deleted" });
         queryClient.invalidateQueries({ queryKey: getListTransactionsQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetDashboardSummaryQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getListBudgetsQueryKey() });
         setDeleteId(null);
       },
       onError: () => {

@@ -10,7 +10,8 @@ import {
   useListCategories,
   TransactionType,
   getListTransactionsQueryKey,
-  getGetDashboardSummaryQueryKey
+  getGetDashboardSummaryQueryKey,
+  getListBudgetsQueryKey,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Loader2, CalendarIcon } from "lucide-react";
@@ -83,6 +84,7 @@ export default function TransactionForm({ params }: { params?: { id?: string } }
         toast({ title: "Transaction added successfully" });
         queryClient.invalidateQueries({ queryKey: getListTransactionsQueryKey() });
         queryClient.invalidateQueries({ queryKey: getGetDashboardSummaryQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getListBudgetsQueryKey() });
         navigateBack();
       },
       onError: (err) => {
@@ -97,6 +99,7 @@ export default function TransactionForm({ params }: { params?: { id?: string } }
         toast({ title: "Transaction updated" });
         queryClient.invalidateQueries({ queryKey: getListTransactionsQueryKey() });
         queryClient.invalidateQueries({ queryKey: getGetDashboardSummaryQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getListBudgetsQueryKey() });
         navigateBack();
       },
       onError: () => {

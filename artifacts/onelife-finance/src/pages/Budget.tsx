@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useLocation } from "wouter";
 import { 
   useListBudgets, 
   useCreateBudget, 
@@ -38,8 +39,20 @@ const formSchema = z.object({
   plannedAmount: z.coerce.number().min(1, "Amount required"),
 });
 
+function monthFromQuery(month: string | null): Date | null {
+  if (!month || !/^\d{4}-\d{2}$/.test(month)) return null;
+  const [year, monthNumber] = month.split("-").map(Number);
+  if (monthNumber < 1 || monthNumber > 12) return null;
+  return new Date(year, monthNumber - 1, 1);
+}
+
 export default function Budget() {
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [location, setLocation] = useLocation();
+  const consumedCreateAction = useRef<string | null>(null);
+  const [currentMonth, setCurrentMonth] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return monthFromQuery(params.get("month")) ?? new Date();
+  });
   const monthStr = format(currentMonth, "yyyy-MM");
   
   const { data: budgets, isLoading } = useListBudgets({ month: monthStr });
@@ -123,6 +136,27 @@ export default function Budget() {
     setIsDialogOpen(true);
   };
 
+  useEffect(() => {
+    const [, search = ""] = location.split("?");
+    const params = new URLSearchParams(search);
+    const requestedMonth = monthFromQuery(params.get("month"));
+    const shouldCreate = params.get("action") === "create";
+
+    if (requestedMonth && format(requestedMonth, "yyyy-MM") !== monthStr) {
+      setCurrentMonth(requestedMonth);
+    }
+
+    if (shouldCreate && consumedCreateAction.current !== location) {
+      consumedCreateAction.current = location;
+      setEditingBudget(null);
+      form.reset({
+        categoryId: 0,
+        plannedAmount: 0,
+      });
+      setIsDialogOpen(true);
+    }
+  }, [form, location, monthStr]);
+
   const handleEdit = (budget: Budget) => {
     setEditingBudget(budget);
     form.reset({
@@ -159,7 +193,14 @@ export default function Budget() {
 
         <Dialog open={isDialogOpen} onOpenChange={(open) => {
           setIsDialogOpen(open);
-          if (!open) setEditingBudget(null);
+          if (!open) {
+            setEditingBudget(null);
+            const [, search = ""] = location.split("?");
+            const params = new URLSearchParams(search);
+            if (params.get("action") === "create") {
+              setLocation(`/budget?month=${monthStr}`, { replace: true });
+            }
+          }
         }}>
           <Button className="rounded-full shadow-md" onClick={openAddDialog}>
             <Plus className="mr-2 h-4 w-4" />

@@ -62,6 +62,16 @@ const INDIAN_BANKS = [
   { name: "IDFC First Bank", color: "bg-red-800", logoText: "IDFC" },
 ];
 
+function getLoanPaymentStats(loan: Loan) {
+  const principalPaid = Math.max(0, loan.principalAmount - loan.outstandingAmount);
+  const paidEmiCount = Math.max(0, loan.tenureMonths - loan.monthsRemaining);
+  const totalPaid = paidEmiCount * loan.emiAmount;
+  const interestPaid = Math.max(0, totalPaid - principalPaid);
+  const progress = loan.principalAmount > 0 ? Math.min(100, Math.max(0, (principalPaid / loan.principalAmount) * 100)) : 0;
+
+  return { principalPaid, interestPaid, progress, paidEmiCount };
+}
+
 export default function Loans() {
   const { data: loans, isLoading } = useListLoans();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -224,6 +234,8 @@ export default function Loans() {
   };
 
   const totalOutstanding = loans?.reduce((acc, loan) => acc + loan.outstandingAmount, 0) || 0;
+  const totalPrincipalPaid = loans?.reduce((acc, loan) => acc + getLoanPaymentStats(loan).principalPaid, 0) || 0;
+  const totalInterestPaid = loans?.reduce((acc, loan) => acc + getLoanPaymentStats(loan).interestPaid, 0) || 0;
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-12">
@@ -456,6 +468,14 @@ export default function Loans() {
                   <span className="text-sm font-normal opacity-80">/mo</span>
                 </p>
               </div>
+              <div className="bg-primary-foreground/10 p-4 rounded-xl">
+                <p className="text-primary-foreground/70 text-xs uppercase tracking-wider mb-1 font-semibold">Principal Paid</p>
+                <p className="text-xl font-bold font-mono">{formatCurrency(totalPrincipalPaid)}</p>
+              </div>
+              <div className="bg-primary-foreground/10 p-4 rounded-xl">
+                <p className="text-primary-foreground/70 text-xs uppercase tracking-wider mb-1 font-semibold">Interest Paid</p>
+                <p className="text-xl font-bold font-mono">{formatCurrency(totalInterestPaid)}</p>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -472,19 +492,23 @@ export default function Loans() {
           </div>
         ) : (
           loans?.map((loan) => {
-            const progress = ((loan.principalAmount - loan.outstandingAmount) / loan.principalAmount) * 100;
+            const { principalPaid, interestPaid, progress, paidEmiCount } = getLoanPaymentStats(loan);
+            const isClosed = loan.status === "closed" || loan.outstandingAmount === 0;
             return (
               <Link key={loan.id} href={`/loans/${loan.id}`}>
-                <Card className="rounded-2xl hover:shadow-md transition-all duration-300 cursor-pointer group border-primary/5 hover:border-primary/20">
+                <Card className="overflow-hidden rounded-2xl border-primary/10 bg-gradient-to-br from-card via-card to-muted/30 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-lg cursor-pointer group">
+                  <div className={`h-1.5 ${isClosed ? "bg-emerald-500" : "bg-gradient-to-r from-orange-500 via-amber-500 to-primary"}`} />
                   <CardContent className="p-6">
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl bg-orange-500/10 text-orange-500 flex items-center justify-center shrink-0">
+                        <div className={`h-11 w-11 rounded-xl flex items-center justify-center shrink-0 ${isClosed ? "bg-emerald-500/10 text-emerald-500" : "bg-orange-500/10 text-orange-500"}`}>
                           {loanTypeIcons[loan.loanType] || loanTypeIcons.other}
                         </div>
-                        <div>
-                          <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">{loan.name}</h3>
-                          <p className="text-xs text-muted-foreground capitalize">{loan.loanType} Loan • {loan.interestRate}% ROI</p>
+                        <div className="min-w-0">
+                          <h3 className="truncate font-semibold text-foreground group-hover:text-primary transition-colors">{loan.name}</h3>
+                          <p className="text-xs text-muted-foreground capitalize">
+                            {loan.bankName ? `${loan.bankName} • ` : ""}{loan.loanType} Loan • {loan.interestRate}% ROI
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-1">
@@ -515,15 +539,32 @@ export default function Loans() {
                     </div>
                     
                     <div className="space-y-4">
-                      <div>
-                        <div className="flex justify-between text-sm mb-1.5">
-                          <span className="text-muted-foreground">Outstanding</span>
-                          <span className="font-mono font-medium">{formatCurrency(loan.outstandingAmount)}</span>
+                      <div className="rounded-xl border bg-background/70 p-4 shadow-sm">
+                        <div className="flex items-end justify-between gap-3 mb-2">
+                          <div>
+                            <p className="text-xs font-medium text-muted-foreground">Outstanding</p>
+                            <p className="mt-0.5 text-2xl font-bold font-mono tracking-tight">{formatCurrency(loan.outstandingAmount)}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xs font-medium text-muted-foreground">Paid</p>
+                            <p className="font-mono text-sm font-semibold">{progress.toFixed(1)}%</p>
+                          </div>
                         </div>
                         <Progress value={progress} className="h-2" />
                         <div className="flex justify-between text-[10px] mt-1.5 text-muted-foreground uppercase tracking-wider font-semibold">
-                          <span>{progress.toFixed(1)}% Paid</span>
-                          <span>{formatCurrency(loan.principalAmount)} Total</span>
+                          <span>{formatCurrency(principalPaid)} principal</span>
+                          <span>{formatCurrency(loan.principalAmount)} total</span>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="rounded-xl border bg-background/60 p-3">
+                          <p className="text-[11px] font-medium text-muted-foreground">Principal Paid</p>
+                          <p className="mt-1 font-mono text-sm font-semibold text-emerald-600">{formatCurrency(principalPaid)}</p>
+                        </div>
+                        <div className="rounded-xl border bg-background/60 p-3">
+                          <p className="text-[11px] font-medium text-muted-foreground">Interest Paid</p>
+                          <p className="mt-1 font-mono text-sm font-semibold text-amber-600">{formatCurrency(interestPaid)}</p>
                         </div>
                       </div>
                       
@@ -531,6 +572,10 @@ export default function Loans() {
                         <div>
                           <p className="text-xs text-muted-foreground mb-0.5">Monthly EMI</p>
                           <p className="font-mono font-medium">{formatCurrency(loan.emiAmount)}</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-xs text-muted-foreground mb-0.5">Paid EMIs</p>
+                          <p className="font-medium text-sm">{paidEmiCount} / {loan.tenureMonths}</p>
                         </div>
                         <div className="text-right">
                           <p className="text-xs text-muted-foreground mb-0.5">Remaining</p>

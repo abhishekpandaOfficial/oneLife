@@ -11,7 +11,7 @@ if (Number.isNaN(port) || port <= 0) {
 }
 
 const basePath = process.env.BASE_PATH || '/';
-const isProd = process.env.NODE_ENV === 'production';
+const apiPort = process.env.API_PORT || '5001';
 
 export default defineConfig({
   base: basePath,
@@ -38,6 +38,16 @@ export default defineConfig({
     sourcemap: false,
     chunkSizeWarningLimit: 1500,
     rollupOptions: {
+      onwarn(warning, defaultHandler) {
+        if (
+          warning.code === 'SOURCEMAP_ERROR' &&
+          warning.message.includes("Can't resolve original location")
+        ) {
+          return;
+        }
+
+        defaultHandler(warning);
+      },
       output: {
         // Prevent asset hash collisions on re-deploy
         entryFileNames: 'assets/[name]-[hash].js',
@@ -56,7 +66,7 @@ export default defineConfig({
     },
     proxy: {
       '/api': {
-        target: 'http://localhost:5001',
+        target: `http://localhost:${apiPort}`,
         changeOrigin: true,
       },
     },

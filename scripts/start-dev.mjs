@@ -38,6 +38,7 @@ const backendPort = envVars.PORT;
 const frontendEnv = {
   ...envVars,
   PORT: "5173", // Frontend Port
+  API_PORT: backendPort,
   BASE_PATH: "/",
 };
 
@@ -48,7 +49,6 @@ console.log(`Starting frontend on http://localhost:5173 (proxying /api to port $
 const backend = spawn("pnpm", ["--filter", "@workspace/api-server", "run", "dev"], {
   cwd: rootDir,
   env: envVars,
-  shell: true,
   stdio: "pipe",
 });
 
@@ -56,7 +56,6 @@ const backend = spawn("pnpm", ["--filter", "@workspace/api-server", "run", "dev"
 const frontend = spawn("pnpm", ["--filter", "@workspace/onelife-finance", "run", "dev"], {
   cwd: rootDir,
   env: frontendEnv,
-  shell: true,
   stdio: "pipe",
 });
 
@@ -72,10 +71,10 @@ function logPrefixed(stream, prefix, colorCode) {
 
 // Prefixes: 36 = Cyan (Backend), 35 = Magenta (Frontend)
 logPrefixed(backend.stdout, "Backend", "36");
-logPrefixed(backend.stderr, "Backend Error", "31");
+logPrefixed(backend.stderr, "Backend", "36");
 
 logPrefixed(frontend.stdout, "Frontend", "35");
-logPrefixed(frontend.stderr, "Frontend Error", "31");
+logPrefixed(frontend.stderr, "Frontend", "35");
 
 // Handle exit
 let exitScheduled = false;

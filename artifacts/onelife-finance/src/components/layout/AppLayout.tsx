@@ -198,11 +198,41 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             {/* Logo */}
             <div className="flex h-16 items-center px-4 border-b shrink-0">
               <Link href="/" className="flex items-center gap-2 overflow-hidden">
-                <img
-                  src="/onelife-logo.svg"
-                  alt="OneLife"
+                <svg
                   className="h-9 w-9 shrink-0 rounded-xl"
-                />
+                  viewBox="0 0 256 256"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  role="img"
+                  aria-label="OneLife"
+                >
+                  <defs>
+                    <linearGradient id="onelifeLogoRing" x1="46" y1="194" x2="210" y2="62" gradientUnits="userSpaceOnUse">
+                      <stop offset="0" stopColor="#20D6E7" />
+                      <stop offset="0.22" stopColor="#19D69D" />
+                      <stop offset="0.43" stopColor="#FFD048" />
+                      <stop offset="0.62" stopColor="#FF5A2A" />
+                      <stop offset="0.79" stopColor="#EA3DF7" />
+                      <stop offset="1" stopColor="#355DFF" />
+                    </linearGradient>
+                    <linearGradient id="onelifeLogoPerson" x1="128" y1="102" x2="128" y2="203" gradientUnits="userSpaceOnUse">
+                      <stop offset="0" stopColor="#69E9FF" />
+                      <stop offset="1" stopColor="#0BBBD6" />
+                    </linearGradient>
+                    <filter id="onelifeLogoShadow" x="18" y="18" width="220" height="224" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+                      <feDropShadow dx="0" dy="14" stdDeviation="14" floodColor="#07111F" floodOpacity="0.28" />
+                    </filter>
+                  </defs>
+                  <rect width="256" height="256" rx="56" fill="#0B1220" />
+                  <g filter="url(#onelifeLogoShadow)">
+                    <path d="M128 31C74.428 31 31 74.428 31 128C31 181.572 74.428 225 128 225C181.572 225 225 181.572 225 128C225 74.428 181.572 31 128 31ZM128 77C156.167 77 179 99.833 179 128C179 156.167 156.167 179 128 179C99.833 179 77 156.167 77 128C77 99.833 99.833 77 128 77Z" fill="url(#onelifeLogoRing)" />
+                    <path d="M56 137C62 188 102 213 128 213C154 213 194 188 200 137C189 165 162 185 128 185C94 185 67 165 56 137Z" fill="#0B1220" fillOpacity="0.18" />
+                    <circle cx="128" cy="109" r="22" fill="url(#onelifeLogoPerson)" />
+                    <path d="M82 201C87.818 169.661 104.97 151 128 151C151.03 151 168.182 169.661 174 201C160.75 208.618 145.391 213 128 213C110.609 213 95.25 208.618 82 201Z" fill="url(#onelifeLogoPerson)" />
+                    <path d="M55 128C55 87.683 87.683 55 128 55C151.39 55 172.211 66.002 185.572 83.115" stroke="white" strokeOpacity="0.28" strokeWidth="8" strokeLinecap="round" />
+                    <path d="M75 189C88.4 202.007 106.695 210 128 210C169.974 210 204 175.974 204 134" stroke="#6FF7FF" strokeOpacity="0.24" strokeWidth="8" strokeLinecap="round" />
+                  </g>
+                </svg>
                 <span className={cn(
                   "text-xl font-bold tracking-tight transition-all duration-300",
                   isCollapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100"

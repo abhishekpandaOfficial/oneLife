@@ -13,6 +13,7 @@ import {
   totalSavings,
   upcomingPayments,
   totalCreditCardOutstanding,
+  monthlyBudgetSummary,
 } from "../lib/finance";
 
 const router: IRouter = Router();
@@ -34,6 +35,7 @@ router.get("/dashboard/summary", async (_req, res): Promise<void> => {
     savings,
     payments,
     creditCardOutstanding,
+    budgetSummary,
   ] = await Promise.all([
     incomeExpenseTotals(start, end),
     expenseByCategory(start, end),
@@ -46,9 +48,13 @@ router.get("/dashboard/summary", async (_req, res): Promise<void> => {
     totalSavings(),
     upcomingPayments(),
     totalCreditCardOutstanding(),
+    monthlyBudgetSummary(key),
   ]);
 
   const netWorth = investmentValue + savings - loanOutstanding - creditCardOutstanding;
+  const netWorthChange = income - expense;
+  const openingNetWorth = netWorth - netWorthChange;
+  const netWorthChangePercent = openingNetWorth !== 0 ? (netWorthChange / Math.abs(openingNetWorth)) * 100 : 0;
 
   res.json(
     GetDashboardSummaryResponse.parse({
@@ -61,8 +67,11 @@ router.get("/dashboard/summary", async (_req, res): Promise<void> => {
       totalCreditCardOutstanding: creditCardOutstanding,
       totalInvestmentValue: investmentValue,
       totalInsuranceCoverage: insuranceCoverage,
+      netWorthChange,
+      netWorthChangePercent,
       emisDueCount: dueCount,
       emergencyFundAmount: emergencyFund,
+      budgetSummary,
       expenseByCategory: categoryBreakdown,
       incomeVsExpenseTrend: trend,
       upcomingPayments: payments,

@@ -31,8 +31,18 @@ export const GetDashboardSummaryResponse = zod.object({
   "totalCreditCardOutstanding": zod.number(),
   "totalInvestmentValue": zod.number(),
   "totalInsuranceCoverage": zod.number(),
+  "netWorthChange": zod.number(),
+  "netWorthChangePercent": zod.number(),
   "emisDueCount": zod.number(),
   "emergencyFundAmount": zod.number(),
+  "budgetSummary": zod.object({
+  "month": zod.string(),
+  "plannedAmount": zod.number(),
+  "actualAmount": zod.number(),
+  "remainingAmount": zod.number(),
+  "utilizationPercent": zod.number(),
+  "status": zod.enum(['under', 'warning', 'over', 'none'])
+}),
   "expenseByCategory": zod.array(zod.object({
   "category": zod.string(),
   "amount": zod.number(),

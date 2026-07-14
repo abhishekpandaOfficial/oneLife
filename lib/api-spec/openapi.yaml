@@ -1152,12 +1152,28 @@ components:
         period: { type: string }
         netWorth: { type: number }
 
+    BudgetStatus:
+      type: string
+      enum: [under, warning, over, none]
+
+    BudgetSummary:
+      type: object
+      required: [month, plannedAmount, actualAmount, remainingAmount, utilizationPercent, status]
+      properties:
+        month: { type: string }
+        plannedAmount: { type: number }
+        actualAmount: { type: number }
+        remainingAmount: { type: number }
+        utilizationPercent: { type: number }
+        status:
+          $ref: "#/components/schemas/BudgetStatus"
+
     DashboardSummary:
       type: object
       required:
         [monthlyIncome, monthlyExpenses, remainingBalance, totalSavings,
          netWorth, totalLoanOutstanding, totalCreditCardOutstanding, totalInvestmentValue, totalInsuranceCoverage,
-         emisDueCount, emergencyFundAmount, expenseByCategory, incomeVsExpenseTrend,
+         netWorthChange, netWorthChangePercent, emisDueCount, emergencyFundAmount, budgetSummary, expenseByCategory, incomeVsExpenseTrend,
          upcomingPayments]
       properties:
         monthlyIncome: { type: number }
@@ -1169,8 +1185,12 @@ components:
         totalCreditCardOutstanding: { type: number }
         totalInvestmentValue: { type: number }
         totalInsuranceCoverage: { type: number }
+        netWorthChange: { type: number }
+        netWorthChangePercent: { type: number }
         emisDueCount: { type: integer }
         emergencyFundAmount: { type: number }
+        budgetSummary:
+          $ref: "#/components/schemas/BudgetSummary"
         expenseByCategory:
           type: array
           items:

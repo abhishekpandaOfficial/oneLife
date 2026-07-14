@@ -13,7 +13,9 @@ import {
   CreditCard, 
   AlertCircle,
   Activity,
-  Plus
+  Plus,
+  CalendarDays,
+  Gauge
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -78,6 +80,8 @@ export default function Dashboard() {
   const rates = getGlobalRates();
   const totalAssets = summary.totalSavings + summary.totalInvestmentValue;
   const totalLiabilities = summary.totalLoanOutstanding + summary.totalCreditCardOutstanding;
+  const netWorthTrendUp = summary.netWorthChange >= 0;
+  const netWorthTrendLabel = `${netWorthTrendUp ? "+" : "-"}${formatCurrency(Math.abs(summary.netWorthChange))} this month (${netWorthTrendUp ? "+" : "-"}${Math.abs(summary.netWorthChangePercent).toFixed(1)}%)`;
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-12">
@@ -133,8 +137,8 @@ export default function Dashboard() {
           title="Net Worth" 
           amount={summary.netWorth} 
           icon={<Activity className="h-5 w-5 text-primary" />} 
-          trend="+2.5% from last month"
-          trendUp={true}
+          trend={netWorthTrendLabel}
+          trendUp={netWorthTrendUp}
           featured
         />
         <KpiCard 
@@ -152,6 +156,7 @@ export default function Dashboard() {
           amount={summary.monthlyExpenses} 
           icon={<ArrowUpRight className="h-5 w-5 text-destructive" />} 
         />
+        <BudgetKpiCard budget={summary.budgetSummary} />
         <KpiCard 
           title="Total Savings" 
           amount={summary.totalSavings} 
@@ -514,6 +519,85 @@ export default function Dashboard() {
         </Card>
       </div>
     </div>
+  );
+}
+
+function BudgetKpiCard({ budget }: { budget: {
+  month: string;
+  plannedAmount: number;
+  actualAmount: number;
+  remainingAmount: number;
+  utilizationPercent: number;
+  status: "under" | "warning" | "over" | "none";
+} }) {
+  const monthLabel = format(parseISO(`${budget.month}-01`), "MMMM yyyy");
+  const progress = Math.min(Math.max(budget.utilizationPercent, 0), 100);
+  const isOver = budget.status === "over";
+  const isWarning = budget.status === "warning";
+  const hasBudget = budget.status !== "none";
+  const statusLabel = !hasBudget
+    ? "No budget set"
+    : isOver
+      ? `${formatCurrency(Math.abs(budget.remainingAmount))} over budget`
+      : `${formatCurrency(Math.max(budget.remainingAmount, 0))} remaining`;
+  const meterClass = isOver
+    ? "from-rose-500 to-red-500"
+    : isWarning
+      ? "from-amber-400 to-orange-500"
+      : "from-emerald-500 to-teal-400";
+  const iconClass = isOver
+    ? "bg-rose-500/10 text-rose-500"
+    : isWarning
+      ? "bg-amber-500/10 text-amber-500"
+      : "bg-emerald-500/10 text-emerald-500";
+  const cardClass = isOver
+    ? "border-rose-500/20 bg-gradient-to-br from-card via-card to-rose-500/5"
+    : isWarning
+      ? "border-amber-500/20 bg-gradient-to-br from-card via-card to-amber-500/5"
+      : "border-emerald-500/20 bg-gradient-to-br from-card via-card to-emerald-500/5";
+
+  return (
+    <Card className={`rounded-2xl overflow-hidden shadow-sm ${cardClass} transition-all duration-300 hover:shadow-md`}>
+      <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+        <div>
+          <CardTitle className="text-sm font-medium text-muted-foreground">
+            Budget This Month
+          </CardTitle>
+          <div className="mt-1 flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
+            <CalendarDays className="h-3.5 w-3.5" />
+            {monthLabel}
+          </div>
+        </div>
+        <div className={`p-2 rounded-xl ${iconClass}`}>
+          <Gauge className="h-4 w-4" />
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <div>
+          <div className="text-2xl font-bold font-mono tracking-tight">
+            <AnimatedNumber value={budget.actualAmount} format={formatCurrency} />
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            spent of {formatCurrency(budget.plannedAmount)}
+          </p>
+        </div>
+
+        <div className="space-y-1.5">
+          <div className="h-2.5 w-full overflow-hidden rounded-full bg-muted shadow-inner">
+            <div
+              className={`h-full rounded-full bg-gradient-to-r ${meterClass} transition-all duration-700`}
+              style={{ width: hasBudget ? `${progress}%` : "0%" }}
+            />
+          </div>
+          <div className="flex items-center justify-between text-xs">
+            <span className={`font-semibold ${isOver ? "text-rose-500" : isWarning ? "text-amber-500" : "text-emerald-500"}`}>
+              {hasBudget ? `${Math.round(budget.utilizationPercent)}% used` : "Set a budget"}
+            </span>
+            <span className="font-medium text-muted-foreground">{statusLabel}</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 

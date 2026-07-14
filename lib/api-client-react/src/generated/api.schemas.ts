@@ -416,6 +416,25 @@ export interface NetWorthPoint {
   netWorth: number;
 }
 
+export type BudgetStatus = typeof BudgetStatus[keyof typeof BudgetStatus];
+
+
+export const BudgetStatus = {
+  under: 'under',
+  warning: 'warning',
+  over: 'over',
+  none: 'none',
+} as const;
+
+export interface BudgetSummary {
+  month: string;
+  plannedAmount: number;
+  actualAmount: number;
+  remainingAmount: number;
+  utilizationPercent: number;
+  status: BudgetStatus;
+}
+
 export interface DashboardSummary {
   monthlyIncome: number;
   monthlyExpenses: number;
@@ -426,8 +445,11 @@ export interface DashboardSummary {
   totalCreditCardOutstanding: number;
   totalInvestmentValue: number;
   totalInsuranceCoverage: number;
+  netWorthChange: number;
+  netWorthChangePercent: number;
   emisDueCount: number;
   emergencyFundAmount: number;
+  budgetSummary: BudgetSummary;
   expenseByCategory: CategoryAmount[];
   incomeVsExpenseTrend: TrendPoint[];
   upcomingPayments: UpcomingPayment[];

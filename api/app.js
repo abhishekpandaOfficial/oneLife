@@ -20706,27 +20706,27 @@ var require_router = __commonJS({
     var slice = Array.prototype.slice;
     var flatten = Array.prototype.flat;
     var methods = METHODS.map((method) => method.toLowerCase());
-    module.exports = Router14;
+    module.exports = Router15;
     module.exports.Route = Route;
-    function Router14(options) {
-      if (!(this instanceof Router14)) {
-        return new Router14(options);
+    function Router15(options) {
+      if (!(this instanceof Router15)) {
+        return new Router15(options);
       }
       const opts = options || {};
-      function router14(req, res, next) {
-        router14.handle(req, res, next);
+      function router15(req, res, next) {
+        router15.handle(req, res, next);
       }
-      Object.setPrototypeOf(router14, this);
-      router14.caseSensitive = opts.caseSensitive;
-      router14.mergeParams = opts.mergeParams;
-      router14.params = {};
-      router14.strict = opts.strict;
-      router14.stack = [];
-      return router14;
+      Object.setPrototypeOf(router15, this);
+      router15.caseSensitive = opts.caseSensitive;
+      router15.mergeParams = opts.mergeParams;
+      router15.params = {};
+      router15.strict = opts.strict;
+      router15.stack = [];
+      return router15;
     }
-    Router14.prototype = function() {
+    Router15.prototype = function() {
     };
-    Router14.prototype.param = function param(name, fn) {
+    Router15.prototype.param = function param(name, fn) {
       if (!name) {
         throw new TypeError("argument name is required");
       }
@@ -20746,7 +20746,7 @@ var require_router = __commonJS({
       params.push(fn);
       return this;
     };
-    Router14.prototype.handle = function handle(req, res, callback) {
+    Router15.prototype.handle = function handle(req, res, callback) {
       if (!callback) {
         throw new TypeError("argument callback is required");
       }
@@ -20873,7 +20873,7 @@ var require_router = __commonJS({
         }
       }
     };
-    Router14.prototype.use = function use(handler) {
+    Router15.prototype.use = function use(handler) {
       let offset = 0;
       let path = "/";
       if (typeof handler !== "function") {
@@ -20906,7 +20906,7 @@ var require_router = __commonJS({
       }
       return this;
     };
-    Router14.prototype.route = function route(path) {
+    Router15.prototype.route = function route(path) {
       const route2 = new Route(path);
       const layer = new Layer(path, {
         sensitive: this.caseSensitive,
@@ -20921,7 +20921,7 @@ var require_router = __commonJS({
       return route2;
     };
     methods.concat("all").forEach(function(method) {
-      Router14.prototype[method] = function(path) {
+      Router15.prototype[method] = function(path) {
         const route = this.route(path);
         route[method].apply(route, slice.call(arguments, 1));
         return this;
@@ -21104,13 +21104,13 @@ var require_application = __commonJS({
     var compileTrust = require_utils3().compileTrust;
     var resolve = __require("node:path").resolve;
     var once = require_once();
-    var Router14 = require_router();
+    var Router15 = require_router();
     var slice = Array.prototype.slice;
     var flatten = Array.prototype.flat;
     var app2 = exports = module.exports = {};
     var trustProxyDefaultSymbol = "@@symbol:trust_proxy_default";
     app2.init = function init() {
-      var router14 = null;
+      var router15 = null;
       this.cache = /* @__PURE__ */ Object.create(null);
       this.engines = /* @__PURE__ */ Object.create(null);
       this.settings = /* @__PURE__ */ Object.create(null);
@@ -21119,13 +21119,13 @@ var require_application = __commonJS({
         configurable: true,
         enumerable: true,
         get: function getrouter() {
-          if (router14 === null) {
-            router14 = new Router14({
+          if (router15 === null) {
+            router15 = new Router15({
               caseSensitive: this.enabled("case sensitive routing"),
               strict: this.enabled("strict routing")
             });
           }
-          return router14;
+          return router15;
         }
       });
     };
@@ -21196,15 +21196,15 @@ var require_application = __commonJS({
       if (fns.length === 0) {
         throw new TypeError("app.use() requires a middleware function");
       }
-      var router14 = this.router;
+      var router15 = this.router;
       fns.forEach(function(fn2) {
         if (!fn2 || !fn2.handle || !fn2.set) {
-          return router14.use(path, fn2);
+          return router15.use(path, fn2);
         }
         debug(".use app under %s", path);
         fn2.mountpath = path;
         fn2.parent = this;
-        router14.use(path, function mounted_app(req, res, next) {
+        router15.use(path, function mounted_app(req, res, next) {
           var orig = req.app;
           fn2.handle(req, res, function(err) {
             Object.setPrototypeOf(req, orig.request);
@@ -23789,7 +23789,7 @@ var require_express = __commonJS({
     var EventEmitter = __require("node:events").EventEmitter;
     var mixin = require_merge_descriptors();
     var proto = require_application();
-    var Router14 = require_router();
+    var Router15 = require_router();
     var req = require_request();
     var res = require_response();
     exports = module.exports = createApplication;
@@ -23811,8 +23811,8 @@ var require_express = __commonJS({
     exports.application = proto;
     exports.request = req;
     exports.response = res;
-    exports.Route = Router14.Route;
-    exports.Router = Router14;
+    exports.Route = Router15.Route;
+    exports.Router = Router15;
     exports.json = bodyParser.json;
     exports.raw = bodyParser.raw;
     exports.static = require_serve_static();
@@ -33811,12 +33811,12 @@ var require_lib5 = __commonJS({
 });
 
 // src/app.ts
-var import_express14 = __toESM(require_express2(), 1);
+var import_express15 = __toESM(require_express2(), 1);
 var import_cors = __toESM(require_lib3(), 1);
 var import_pino_http = __toESM(require_logger(), 1);
 
 // src/routes/index.ts
-var import_express13 = __toESM(require_express2(), 1);
+var import_express14 = __toESM(require_express2(), 1);
 
 // src/routes/health.ts
 var import_express = __toESM(require_express2(), 1);
@@ -37718,10 +37718,21 @@ var GetDashboardSummaryResponse = objectType({
   "totalSavings": numberType(),
   "netWorth": numberType(),
   "totalLoanOutstanding": numberType(),
+  "totalCreditCardOutstanding": numberType(),
   "totalInvestmentValue": numberType(),
   "totalInsuranceCoverage": numberType(),
+  "netWorthChange": numberType(),
+  "netWorthChangePercent": numberType(),
   "emisDueCount": numberType(),
   "emergencyFundAmount": numberType(),
+  "budgetSummary": objectType({
+    "month": stringType(),
+    "plannedAmount": numberType(),
+    "actualAmount": numberType(),
+    "remainingAmount": numberType(),
+    "utilizationPercent": numberType(),
+    "status": enumType(["under", "warning", "over", "none"])
+  }),
   "expenseByCategory": arrayType(objectType({
     "category": stringType(),
     "amount": numberType(),
@@ -37867,6 +37878,11 @@ var ListLoansResponseItem = objectType({
   "monthsRemaining": numberType(),
   "startDate": coerce.date(),
   "status": enumType(["active", "closed"]),
+  "bankName": stringType().nullish(),
+  "bankLogoUrl": stringType().nullish(),
+  "disbursementDocUrl": stringType().nullish(),
+  "repaymentScheduleDocUrl": stringType().nullish(),
+  "penaltyRate": numberType().optional(),
   "createdAt": coerce.date()
 });
 var ListLoansResponse = arrayType(ListLoansResponseItem);
@@ -37874,6 +37890,8 @@ var createLoanBodyPrincipalAmountMin = 0;
 var createLoanBodyOutstandingAmountMin = 0;
 var createLoanBodyInterestRateMin = 0;
 var createLoanBodyEmiAmountMin = 0;
+var createLoanBodyPenaltyRateDefault = 2;
+var createLoanBodyPenaltyRateMin = 0;
 var CreateLoanBody = objectType({
   "name": stringType().min(1),
   "loanType": enumType(["home", "car", "personal", "gold", "education", "other"]),
@@ -37882,7 +37900,12 @@ var CreateLoanBody = objectType({
   "interestRate": numberType().min(createLoanBodyInterestRateMin),
   "emiAmount": numberType().min(createLoanBodyEmiAmountMin),
   "tenureMonths": numberType().min(1),
-  "startDate": coerce.date()
+  "startDate": coerce.date(),
+  "bankName": stringType().optional(),
+  "bankLogoUrl": stringType().optional(),
+  "disbursementDocUrl": stringType().optional(),
+  "repaymentScheduleDocUrl": stringType().optional(),
+  "penaltyRate": numberType().min(createLoanBodyPenaltyRateMin).default(createLoanBodyPenaltyRateDefault)
 });
 var CreateLoanResponse = objectType({
   "id": numberType(),
@@ -37896,6 +37919,11 @@ var CreateLoanResponse = objectType({
   "monthsRemaining": numberType(),
   "startDate": coerce.date(),
   "status": enumType(["active", "closed"]),
+  "bankName": stringType().nullish(),
+  "bankLogoUrl": stringType().nullish(),
+  "disbursementDocUrl": stringType().nullish(),
+  "repaymentScheduleDocUrl": stringType().nullish(),
+  "penaltyRate": numberType().optional(),
   "createdAt": coerce.date()
 });
 var GetLoanParams = objectType({
@@ -37913,6 +37941,11 @@ var GetLoanResponse = objectType({
   "monthsRemaining": numberType(),
   "startDate": coerce.date(),
   "status": enumType(["active", "closed"]),
+  "bankName": stringType().nullish(),
+  "bankLogoUrl": stringType().nullish(),
+  "disbursementDocUrl": stringType().nullish(),
+  "repaymentScheduleDocUrl": stringType().nullish(),
+  "penaltyRate": numberType().optional(),
   "createdAt": coerce.date()
 }).and(objectType({
   "principalPaid": numberType(),
@@ -37924,7 +37957,9 @@ var GetLoanResponse = objectType({
     "dueDate": coerce.date(),
     "paidDate": coerce.date().nullable(),
     "amount": numberType(),
-    "status": enumType(["paid", "pending", "overdue", "partial"])
+    "status": enumType(["paid", "pending", "overdue", "partial"]),
+    "penaltyAmount": numberType().optional(),
+    "overdueDays": numberType().optional()
   }))
 }));
 var UpdateLoanParams = objectType({
@@ -37934,6 +37969,7 @@ var updateLoanBodyPrincipalAmountMin = 0;
 var updateLoanBodyOutstandingAmountMin = 0;
 var updateLoanBodyInterestRateMin = 0;
 var updateLoanBodyEmiAmountMin = 0;
+var updateLoanBodyPenaltyRateMin = 0;
 var UpdateLoanBody = objectType({
   "name": stringType().min(1).optional(),
   "loanType": enumType(["home", "car", "personal", "gold", "education", "other"]).optional(),
@@ -37943,6 +37979,11 @@ var UpdateLoanBody = objectType({
   "emiAmount": numberType().min(updateLoanBodyEmiAmountMin).optional(),
   "tenureMonths": numberType().min(1).optional(),
   "startDate": coerce.date().optional(),
+  "bankName": stringType().nullish(),
+  "bankLogoUrl": stringType().nullish(),
+  "disbursementDocUrl": stringType().nullish(),
+  "repaymentScheduleDocUrl": stringType().nullish(),
+  "penaltyRate": numberType().min(updateLoanBodyPenaltyRateMin).optional(),
   "status": enumType(["active", "closed"]).optional()
 });
 var UpdateLoanResponse = objectType({
@@ -37957,6 +37998,11 @@ var UpdateLoanResponse = objectType({
   "monthsRemaining": numberType(),
   "startDate": coerce.date(),
   "status": enumType(["active", "closed"]),
+  "bankName": stringType().nullish(),
+  "bankLogoUrl": stringType().nullish(),
+  "disbursementDocUrl": stringType().nullish(),
+  "repaymentScheduleDocUrl": stringType().nullish(),
+  "penaltyRate": numberType().optional(),
   "createdAt": coerce.date()
 });
 var DeleteLoanParams = objectType({
@@ -37974,7 +38020,9 @@ var ListEmisResponseItem = objectType({
   "dueDate": coerce.date(),
   "paidDate": coerce.date().nullable(),
   "amount": numberType(),
-  "status": enumType(["paid", "pending", "overdue", "partial"])
+  "status": enumType(["paid", "pending", "overdue", "partial"]),
+  "penaltyAmount": numberType().optional(),
+  "overdueDays": numberType().optional()
 });
 var ListEmisResponse = arrayType(ListEmisResponseItem);
 var UpdateEmiParams = objectType({
@@ -37982,7 +38030,9 @@ var UpdateEmiParams = objectType({
 });
 var UpdateEmiBody = objectType({
   "status": enumType(["paid", "pending", "overdue", "partial"]).optional(),
-  "paidDate": coerce.date().nullish()
+  "paidDate": coerce.date().nullish(),
+  "penaltyAmount": numberType().optional(),
+  "overdueDays": numberType().optional()
 });
 var UpdateEmiResponse = objectType({
   "id": numberType(),
@@ -37991,7 +38041,9 @@ var UpdateEmiResponse = objectType({
   "dueDate": coerce.date(),
   "paidDate": coerce.date().nullable(),
   "amount": numberType(),
-  "status": enumType(["paid", "pending", "overdue", "partial"])
+  "status": enumType(["paid", "pending", "overdue", "partial"]),
+  "penaltyAmount": numberType().optional(),
+  "overdueDays": numberType().optional()
 });
 var ListInsurancesResponseItem = objectType({
   "id": numberType(),
@@ -38243,6 +38295,73 @@ var GetReportSummaryResponse = objectType({
     "netWorth": numberType()
   }))
 });
+var ListCreditCardsResponseItem = objectType({
+  "id": numberType(),
+  "name": stringType(),
+  "bankName": stringType(),
+  "bankLogoUrl": stringType().nullish(),
+  "creditLimit": numberType(),
+  "outstandingAmount": numberType(),
+  "dueDate": coerce.date(),
+  "minimumDue": numberType(),
+  "createdAt": coerce.date()
+});
+var ListCreditCardsResponse = arrayType(ListCreditCardsResponseItem);
+var createCreditCardBodyCreditLimitMin = 0;
+var createCreditCardBodyOutstandingAmountDefault = 0;
+var createCreditCardBodyOutstandingAmountMin = 0;
+var createCreditCardBodyMinimumDueDefault = 0;
+var createCreditCardBodyMinimumDueMin = 0;
+var CreateCreditCardBody = objectType({
+  "name": stringType().min(1),
+  "bankName": stringType().min(1),
+  "bankLogoUrl": stringType().optional(),
+  "creditLimit": numberType().min(createCreditCardBodyCreditLimitMin),
+  "outstandingAmount": numberType().min(createCreditCardBodyOutstandingAmountMin).default(createCreditCardBodyOutstandingAmountDefault),
+  "dueDate": coerce.date(),
+  "minimumDue": numberType().min(createCreditCardBodyMinimumDueMin).default(createCreditCardBodyMinimumDueDefault)
+});
+var CreateCreditCardResponse = objectType({
+  "id": numberType(),
+  "name": stringType(),
+  "bankName": stringType(),
+  "bankLogoUrl": stringType().nullish(),
+  "creditLimit": numberType(),
+  "outstandingAmount": numberType(),
+  "dueDate": coerce.date(),
+  "minimumDue": numberType(),
+  "createdAt": coerce.date()
+});
+var UpdateCreditCardParams = objectType({
+  "id": coerce.number()
+});
+var updateCreditCardBodyCreditLimitMin = 0;
+var updateCreditCardBodyOutstandingAmountMin = 0;
+var updateCreditCardBodyMinimumDueMin = 0;
+var UpdateCreditCardBody = objectType({
+  "name": stringType().min(1).optional(),
+  "bankName": stringType().min(1).optional(),
+  "bankLogoUrl": stringType().nullish(),
+  "creditLimit": numberType().min(updateCreditCardBodyCreditLimitMin).optional(),
+  "outstandingAmount": numberType().min(updateCreditCardBodyOutstandingAmountMin).optional(),
+  "dueDate": coerce.date().optional(),
+  "minimumDue": numberType().min(updateCreditCardBodyMinimumDueMin).optional()
+});
+var UpdateCreditCardResponse = objectType({
+  "id": numberType(),
+  "name": stringType(),
+  "bankName": stringType(),
+  "bankLogoUrl": stringType().nullish(),
+  "creditLimit": numberType(),
+  "outstandingAmount": numberType(),
+  "dueDate": coerce.date(),
+  "minimumDue": numberType(),
+  "createdAt": coerce.date()
+});
+var DeleteCreditCardParams = objectType({
+  "id": coerce.number()
+});
+var DeleteCreditCardResponse = voidType();
 
 // ../../node_modules/.pnpm/pg@8.22.0/node_modules/pg/esm/index.mjs
 var import_lib = __toESM(require_lib5(), 1);
@@ -45217,10 +45336,12 @@ var schema_exports = {};
 __export(schema_exports, {
   budgetsTable: () => budgetsTable,
   categoriesTable: () => categoriesTable,
+  creditCardsTable: () => creditCardsTable,
   emisTable: () => emisTable,
   goalsTable: () => goalsTable,
   insertBudgetSchema: () => insertBudgetSchema,
   insertCategorySchema: () => insertCategorySchema,
+  insertCreditCardSchema: () => insertCreditCardSchema,
   insertEmiSchema: () => insertEmiSchema,
   insertGoalSchema: () => insertGoalSchema,
   insertInsuranceSchema: () => insertInsuranceSchema,
@@ -56663,6 +56784,11 @@ var loansTable = pgTable("loans", {
   tenureMonths: integer("tenure_months").notNull(),
   startDate: date("start_date", { mode: "string" }).notNull(),
   status: text("status", { enum: ["active", "closed"] }).notNull().default("active"),
+  bankName: text("bank_name"),
+  bankLogoUrl: text("bank_logo_url"),
+  disbursementDocUrl: text("disbursement_doc_url"),
+  repaymentScheduleDocUrl: text("repayment_schedule_doc_url"),
+  penaltyRate: numeric("penalty_rate", { precision: 6, scale: 3, mode: "number" }).notNull().default(2),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
 });
 var insertLoanSchema = createInsertSchema(loansTable).omit({
@@ -56677,7 +56803,9 @@ var emisTable = pgTable("emis", {
   dueDate: date("due_date", { mode: "string" }).notNull(),
   paidDate: date("paid_date", { mode: "string" }),
   amount: numeric("amount", { precision: 14, scale: 2, mode: "number" }).notNull(),
-  status: text("status", { enum: ["paid", "pending", "overdue", "partial"] }).notNull().default("pending")
+  status: text("status", { enum: ["paid", "pending", "overdue", "partial"] }).notNull().default("pending"),
+  penaltyAmount: numeric("penalty_amount", { precision: 14, scale: 2, mode: "number" }).notNull().default(0),
+  overdueDays: integer("overdue_days").notNull().default(0)
 });
 var insertEmiSchema = createInsertSchema(emisTable).omit({ id: true });
 
@@ -56744,6 +56872,23 @@ var budgetsTable = pgTable("budgets", {
   plannedAmount: numeric("planned_amount", { precision: 14, scale: 2, mode: "number" }).notNull()
 });
 var insertBudgetSchema = createInsertSchema(budgetsTable).omit({ id: true });
+
+// ../../lib/db/src/schema/credit_cards.ts
+var creditCardsTable = pgTable("credit_cards", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  bankName: text("bank_name").notNull(),
+  bankLogoUrl: text("bank_logo_url"),
+  creditLimit: numeric("credit_limit", { precision: 14, scale: 2, mode: "number" }).notNull(),
+  outstandingAmount: numeric("outstanding_amount", { precision: 14, scale: 2, mode: "number" }).notNull().default(0),
+  dueDate: date("due_date", { mode: "string" }).notNull(),
+  minimumDue: numeric("minimum_due", { precision: 14, scale: 2, mode: "number" }).notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+});
+var insertCreditCardSchema = createInsertSchema(creditCardsTable).omit({
+  id: true,
+  createdAt: true
+});
 
 // ../../lib/db/src/index.ts
 var { Pool: Pool3 } = esm_default;
@@ -56881,6 +57026,10 @@ async function totalLoanOutstanding() {
   const loans = await db.select().from(loansTable).where(eq(loansTable.status, "active"));
   return loans.reduce((sum, l) => sum + Number(l.outstandingAmount), 0);
 }
+async function totalCreditCardOutstanding() {
+  const cards = await db.select().from(creditCardsTable);
+  return cards.reduce((sum, c) => sum + Number(c.outstandingAmount), 0);
+}
 async function totalInvestmentValue() {
   const investments = await db.select().from(investmentsTable);
   return investments.reduce((sum, i) => sum + Number(i.currentValue), 0);
@@ -56901,6 +57050,25 @@ async function totalSavings() {
   const goals = await db.select().from(goalsTable);
   return goals.reduce((sum, g) => sum + Number(g.currentAmount), 0);
 }
+async function monthlyBudgetSummary(month) {
+  const { start, end } = monthRange(month);
+  const [budgetRows, expenseRows] = await Promise.all([
+    db.select({ plannedAmount: budgetsTable.plannedAmount }).from(budgetsTable).where(eq(budgetsTable.month, month)),
+    db.select({ amount: transactionsTable.amount, date: transactionsTable.date }).from(transactionsTable).where(eq(transactionsTable.type, "expense"))
+  ]);
+  const plannedAmount = budgetRows.reduce((sum, row) => sum + Number(row.plannedAmount), 0);
+  const actualAmount = expenseRows.filter((row) => row.date >= start && row.date <= end).reduce((sum, row) => sum + Number(row.amount), 0);
+  const utilizationPercent = plannedAmount > 0 ? actualAmount / plannedAmount * 100 : 0;
+  const status = plannedAmount === 0 ? "none" : utilizationPercent > 100 ? "over" : utilizationPercent >= 90 ? "warning" : "under";
+  return {
+    month,
+    plannedAmount,
+    actualAmount,
+    remainingAmount: plannedAmount - actualAmount,
+    utilizationPercent,
+    status
+  };
+}
 async function upcomingPayments(limit = 8) {
   const emis = await db.select({
     id: emisTable.id,
@@ -56912,6 +57080,7 @@ async function upcomingPayments(limit = 8) {
   const loans = await db.select().from(loansTable);
   const loanNameById = new Map(loans.map((l) => [l.id, l.name]));
   const insurances = await db.select().from(insurancesTable).where(eq(insurancesTable.status, "active"));
+  const cards = await db.select().from(creditCardsTable);
   const payments = [
     ...emis.map((e) => ({
       id: e.id,
@@ -56926,6 +57095,13 @@ async function upcomingPayments(limit = 8) {
       type: "insurance",
       dueDate: i.renewalDate,
       amount: Number(i.premiumAmount)
+    })),
+    ...cards.filter((c) => Number(c.outstandingAmount) > 0).map((c) => ({
+      id: c.id,
+      name: `${c.bankName} ${c.name} bill`,
+      type: "credit_card",
+      dueDate: c.dueDate,
+      amount: Number(c.minimumDue ?? 0) || Number(c.outstandingAmount)
     }))
   ];
   return payments.sort((a, b) => a.dueDate.localeCompare(b.dueDate)).slice(0, limit);
@@ -56947,7 +57123,9 @@ router2.get("/dashboard/summary", async (_req, res) => {
     dueCount,
     emergencyFund,
     savings,
-    payments
+    payments,
+    creditCardOutstanding,
+    budgetSummary
   ] = await Promise.all([
     incomeExpenseTotals(start, end),
     expenseByCategory(start, end),
@@ -56958,9 +57136,14 @@ router2.get("/dashboard/summary", async (_req, res) => {
     emisDueCount(),
     emergencyFundAmount(),
     totalSavings(),
-    upcomingPayments()
+    upcomingPayments(),
+    totalCreditCardOutstanding(),
+    monthlyBudgetSummary(key)
   ]);
-  const netWorth = investmentValue + savings - loanOutstanding;
+  const netWorth = investmentValue + savings - loanOutstanding - creditCardOutstanding;
+  const netWorthChange = income - expense;
+  const openingNetWorth = netWorth - netWorthChange;
+  const netWorthChangePercent = openingNetWorth !== 0 ? netWorthChange / Math.abs(openingNetWorth) * 100 : 0;
   res.json(
     GetDashboardSummaryResponse.parse({
       monthlyIncome: income,
@@ -56969,10 +57152,14 @@ router2.get("/dashboard/summary", async (_req, res) => {
       totalSavings: savings,
       netWorth,
       totalLoanOutstanding: loanOutstanding,
+      totalCreditCardOutstanding: creditCardOutstanding,
       totalInvestmentValue: investmentValue,
       totalInsuranceCoverage: insuranceCoverage,
+      netWorthChange,
+      netWorthChangePercent,
       emisDueCount: dueCount,
       emergencyFundAmount: emergencyFund,
+      budgetSummary,
       expenseByCategory: categoryBreakdown,
       incomeVsExpenseTrend: trend,
       upcomingPayments: payments
@@ -57139,6 +57326,33 @@ router5.get("/loans", async (_req, res) => {
   const withMonths = await Promise.all(loans.map(withComputed));
   res.json(ListLoansResponse.parse(withMonths));
 });
+function generateEmisForLoan(loanId, emiAmount, tenureMonths, startDateStr) {
+  const [yr, mo, dy] = startDateStr.split("-").map(Number);
+  const now = /* @__PURE__ */ new Date();
+  const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const emis = [];
+  for (let i = 0; i < tenureMonths; i++) {
+    const dueDate = new Date(yr, mo - 1 + i, dy);
+    const y = dueDate.getFullYear();
+    const m = String(dueDate.getMonth() + 1).padStart(2, "0");
+    const d = String(dueDate.getDate()).padStart(2, "0");
+    const dueDateStr = `${y}-${m}-${d}`;
+    const dueDateMonthStart = new Date(y, dueDate.getMonth(), 1);
+    const isPast = dueDateMonthStart < currentMonthStart;
+    const status = isPast ? "paid" : "pending";
+    const paidDate = isPast ? dueDateStr : null;
+    emis.push({
+      loanId,
+      dueDate: dueDateStr,
+      paidDate,
+      amount: emiAmount,
+      status,
+      penaltyAmount: 0,
+      overdueDays: 0
+    });
+  }
+  return emis;
+}
 router5.post("/loans", async (req, res) => {
   const parsed = CreateLoanBody.safeParse(req.body);
   if (!parsed.success) {
@@ -57154,8 +57368,15 @@ router5.post("/loans", async (req, res) => {
     interestRate: parsed.data.interestRate,
     emiAmount: parsed.data.emiAmount,
     tenureMonths: parsed.data.tenureMonths,
-    startDate: toDateStr(parsed.data.startDate)
+    startDate: toDateStr(parsed.data.startDate),
+    bankName: parsed.data.bankName ?? null,
+    bankLogoUrl: parsed.data.bankLogoUrl ?? null,
+    disbursementDocUrl: parsed.data.disbursementDocUrl ?? null,
+    repaymentScheduleDocUrl: parsed.data.repaymentScheduleDocUrl ?? null,
+    penaltyRate: parsed.data.penaltyRate ?? 2
   }).returning();
+  const emis = generateEmisForLoan(loan.id, loan.emiAmount, loan.tenureMonths, loan.startDate);
+  await db.insert(emisTable).values(emis);
   res.status(201).json(CreateLoanResponse.parse(await withComputed(loan)));
 });
 router5.get("/loans/:id", async (req, res) => {
@@ -57196,8 +57417,21 @@ router5.patch("/loans/:id", async (req, res) => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  const update = { ...parsed.data };
+  const update = {};
+  if (parsed.data.name !== void 0) update.name = parsed.data.name;
+  if (parsed.data.loanType !== void 0) update.loanType = parsed.data.loanType;
+  if (parsed.data.principalAmount !== void 0) update.principalAmount = parsed.data.principalAmount;
+  if (parsed.data.outstandingAmount !== void 0) update.outstandingAmount = parsed.data.outstandingAmount;
+  if (parsed.data.interestRate !== void 0) update.interestRate = parsed.data.interestRate;
+  if (parsed.data.emiAmount !== void 0) update.emiAmount = parsed.data.emiAmount;
+  if (parsed.data.tenureMonths !== void 0) update.tenureMonths = parsed.data.tenureMonths;
   if (parsed.data.startDate !== void 0) update.startDate = toDateStr(parsed.data.startDate);
+  if (parsed.data.bankName !== void 0) update.bankName = parsed.data.bankName;
+  if (parsed.data.bankLogoUrl !== void 0) update.bankLogoUrl = parsed.data.bankLogoUrl;
+  if (parsed.data.disbursementDocUrl !== void 0) update.disbursementDocUrl = parsed.data.disbursementDocUrl;
+  if (parsed.data.repaymentScheduleDocUrl !== void 0) update.repaymentScheduleDocUrl = parsed.data.repaymentScheduleDocUrl;
+  if (parsed.data.penaltyRate !== void 0) update.penaltyRate = parsed.data.penaltyRate;
+  if (parsed.data.status !== void 0) update.status = parsed.data.status;
   const [loan] = await db.update(loansTable).set(update).where(eq(loansTable.id, params.data.id)).returning();
   if (!loan) {
     res.status(404).json({ error: "Loan not found" });
@@ -57231,7 +57465,9 @@ function emiSelect() {
     dueDate: emisTable.dueDate,
     paidDate: emisTable.paidDate,
     amount: emisTable.amount,
-    status: emisTable.status
+    status: emisTable.status,
+    penaltyAmount: emisTable.penaltyAmount,
+    overdueDays: emisTable.overdueDays
   }).from(emisTable).innerJoin(loansTable, eq(emisTable.loanId, loansTable.id));
 }
 router6.get("/emis", async (req, res) => {
@@ -57259,10 +57495,41 @@ router6.patch("/emis/:id", async (req, res) => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
+  const [existingEmi] = await db.select().from(emisTable).where(eq(emisTable.id, params.data.id));
+  if (!existingEmi) {
+    res.status(404).json({ error: "EMI not found" });
+    return;
+  }
+  const [loan] = await db.select().from(loansTable).where(eq(loansTable.id, existingEmi.loanId));
   const update = {};
-  if (parsed.data.status !== void 0) update.status = parsed.data.status;
-  if (parsed.data.paidDate !== void 0) {
-    update.paidDate = parsed.data.paidDate ? toDateStr(parsed.data.paidDate) : null;
+  if (parsed.data.status !== void 0) {
+    let newStatus = parsed.data.status;
+    let paidDate = parsed.data.paidDate ? toDateStr(parsed.data.paidDate) : null;
+    let penaltyAmount = 0;
+    let overdueDays = 0;
+    if (newStatus === "paid") {
+      paidDate = paidDate ?? toDateStr(/* @__PURE__ */ new Date());
+    } else {
+      paidDate = null;
+      const now = /* @__PURE__ */ new Date();
+      const due = new Date(existingEmi.dueDate);
+      if (due < now) {
+        const diffTime = Math.abs(now.getTime() - due.getTime());
+        const diffDays = Math.ceil(diffTime / (1e3 * 60 * 60 * 24));
+        if (diffDays > 0) {
+          overdueDays = diffDays;
+          const rate = loan ? Number(loan.penaltyRate) : 2;
+          penaltyAmount = Number((existingEmi.amount * (rate / 100) * (diffDays / 30)).toFixed(2));
+          newStatus = "overdue";
+        }
+      } else {
+        newStatus = "pending";
+      }
+    }
+    update.status = newStatus;
+    update.paidDate = paidDate;
+    update.penaltyAmount = penaltyAmount;
+    update.overdueDays = overdueDays;
   }
   const [updated] = await db.update(emisTable).set(update).where(eq(emisTable.id, params.data.id)).returning({ id: emisTable.id });
   if (!updated) {
@@ -57270,12 +57537,12 @@ router6.patch("/emis/:id", async (req, res) => {
     return;
   }
   const [emi] = await emiSelect().where(eq(emisTable.id, updated.id));
-  if (update.status === "paid" && emi.status === "paid") {
-    const [loan] = await db.select().from(loansTable).where(eq(loansTable.id, emi.loanId));
-    if (loan) {
-      const nextOutstanding = Math.max(0, loan.outstandingAmount - loan.emiAmount);
-      await db.update(loansTable).set({ outstandingAmount: nextOutstanding }).where(eq(loansTable.id, loan.id));
-    }
+  if (parsed.data.status === "paid" && existingEmi.status !== "paid" && loan) {
+    const nextOutstanding = Math.max(0, loan.outstandingAmount - loan.emiAmount);
+    await db.update(loansTable).set({ outstandingAmount: nextOutstanding }).where(eq(loansTable.id, loan.id));
+  } else if (parsed.data.status !== "paid" && existingEmi.status === "paid" && loan) {
+    const nextOutstanding = loan.outstandingAmount + loan.emiAmount;
+    await db.update(loansTable).set({ outstandingAmount: nextOutstanding }).where(eq(loansTable.id, loan.id));
   }
   res.json(UpdateEmiResponse.parse(emi));
 });
@@ -57691,21 +57958,87 @@ router12.post("/db/clear", async (_req, res) => {
 });
 var db_default = router12;
 
-// src/routes/index.ts
+// src/routes/credit_cards.ts
+var import_express13 = __toESM(require_express2(), 1);
 var router13 = (0, import_express13.Router)();
-router13.use(health_default);
-router13.use(dashboard_default);
-router13.use(categories_default);
-router13.use(transactions_default);
-router13.use(loans_default);
-router13.use(emis_default);
-router13.use(insurances_default);
-router13.use(investments_default);
-router13.use(goals_default);
-router13.use(budgets_default);
-router13.use(reports_default);
-router13.use(db_default);
-var routes_default = router13;
+router13.get("/credit-cards", async (_req, res) => {
+  const cards = await db.select().from(creditCardsTable).orderBy(creditCardsTable.createdAt);
+  res.json(ListCreditCardsResponse.parse(cards));
+});
+router13.post("/credit-cards", async (req, res) => {
+  const parsed = CreateCreditCardBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [card] = await db.insert(creditCardsTable).values({
+    name: parsed.data.name,
+    bankName: parsed.data.bankName,
+    bankLogoUrl: parsed.data.bankLogoUrl ?? null,
+    creditLimit: parsed.data.creditLimit,
+    outstandingAmount: parsed.data.outstandingAmount ?? 0,
+    dueDate: toDateStr(parsed.data.dueDate),
+    minimumDue: parsed.data.minimumDue ?? 0
+  }).returning();
+  res.status(201).json(CreateCreditCardResponse.parse(card));
+});
+router13.patch("/credit-cards/:id", async (req, res) => {
+  const params = UpdateCreditCardParams.safeParse(req.params);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  const parsed = UpdateCreditCardBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const update = {};
+  if (parsed.data.name !== void 0) update.name = parsed.data.name;
+  if (parsed.data.bankName !== void 0) update.bankName = parsed.data.bankName;
+  if (parsed.data.bankLogoUrl !== void 0) update.bankLogoUrl = parsed.data.bankLogoUrl;
+  if (parsed.data.creditLimit !== void 0) update.creditLimit = parsed.data.creditLimit;
+  if (parsed.data.outstandingAmount !== void 0) update.outstandingAmount = parsed.data.outstandingAmount;
+  if (parsed.data.dueDate !== void 0) update.dueDate = toDateStr(parsed.data.dueDate);
+  if (parsed.data.minimumDue !== void 0) update.minimumDue = parsed.data.minimumDue;
+  const [card] = await db.update(creditCardsTable).set(update).where(eq(creditCardsTable.id, params.data.id)).returning();
+  if (!card) {
+    res.status(404).json({ error: "Credit card not found" });
+    return;
+  }
+  res.json(UpdateCreditCardResponse.parse(card));
+});
+router13.delete("/credit-cards/:id", async (req, res) => {
+  const params = DeleteCreditCardParams.safeParse(req.params);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  const [card] = await db.delete(creditCardsTable).where(eq(creditCardsTable.id, params.data.id)).returning();
+  if (!card) {
+    res.status(404).json({ error: "Credit card not found" });
+    return;
+  }
+  res.sendStatus(204);
+});
+var credit_cards_default = router13;
+
+// src/routes/index.ts
+var router14 = (0, import_express14.Router)();
+router14.use(health_default);
+router14.use(dashboard_default);
+router14.use(categories_default);
+router14.use(transactions_default);
+router14.use(loans_default);
+router14.use(emis_default);
+router14.use(insurances_default);
+router14.use(investments_default);
+router14.use(goals_default);
+router14.use(budgets_default);
+router14.use(reports_default);
+router14.use(db_default);
+router14.use(credit_cards_default);
+var routes_default = router14;
 
 // src/lib/logger.ts
 var import_pino = __toESM(require_pino(), 1);
@@ -57726,7 +58059,7 @@ var logger = (0, import_pino.default)({
 });
 
 // src/app.ts
-var app = (0, import_express14.default)();
+var app = (0, import_express15.default)();
 app.use(
   (0, import_pino_http.pinoHttp)({
     logger,
@@ -57747,8 +58080,8 @@ app.use(
   })
 );
 app.use((0, import_cors.default)());
-app.use(import_express14.default.json());
-app.use(import_express14.default.urlencoded({ extended: true }));
+app.use(import_express15.default.json());
+app.use(import_express15.default.urlencoded({ extended: true }));
 app.use("/api", routes_default);
 app.use((_req, res) => {
   res.status(404).json({

@@ -9,6 +9,7 @@ import {
   investmentsTable,
   goalsTable,
   creditCardsTable,
+  budgetsTable,
 } from "@workspace/db";
 import { monthRange, monthKey, lastMonthKeys, yearRange, lastYears } from "./dates";
 
@@ -22,6 +23,15 @@ export interface TrendPoint {
   period: string;
   income: number;
   expense: number;
+}
+
+export interface BudgetSummary {
+  month: string;
+  plannedAmount: number;
+  actualAmount: number;
+  remainingAmount: number;
+  utilizationPercent: number;
+  status: "under" | "warning" | "over" | "none";
 }
 
 async function sumByType(
@@ -135,6 +145,40 @@ export async function emergencyFundAmount(): Promise<number> {
 export async function totalSavings(): Promise<number> {
   const goals = await db.select().from(goalsTable);
   return goals.reduce((sum, g) => sum + Number(g.currentAmount), 0);
+}
+
+export async function monthlyBudgetSummary(month: string): Promise<BudgetSummary> {
+  const { start, end } = monthRange(month);
+  const [budgetRows, expenseRows] = await Promise.all([
+    db.select({ plannedAmount: budgetsTable.plannedAmount }).from(budgetsTable).where(eq(budgetsTable.month, month)),
+    db
+      .select({ amount: transactionsTable.amount, date: transactionsTable.date })
+      .from(transactionsTable)
+      .where(eq(transactionsTable.type, "expense")),
+  ]);
+
+  const plannedAmount = budgetRows.reduce((sum, row) => sum + Number(row.plannedAmount), 0);
+  const actualAmount = expenseRows
+    .filter((row) => row.date >= start && row.date <= end)
+    .reduce((sum, row) => sum + Number(row.amount), 0);
+  const utilizationPercent = plannedAmount > 0 ? (actualAmount / plannedAmount) * 100 : 0;
+  const status: BudgetSummary["status"] =
+    plannedAmount === 0
+      ? "none"
+      : utilizationPercent > 100
+        ? "over"
+        : utilizationPercent >= 90
+          ? "warning"
+          : "under";
+
+  return {
+    month,
+    plannedAmount,
+    actualAmount,
+    remainingAmount: plannedAmount - actualAmount,
+    utilizationPercent,
+    status,
+  };
 }
 
 export interface UpcomingPayment {

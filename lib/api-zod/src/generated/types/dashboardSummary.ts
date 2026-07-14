@@ -5,6 +5,7 @@
  * OneLife Finance API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { BudgetSummary } from './budgetSummary';
 import type { CategoryAmount } from './categoryAmount';
 import type { TrendPoint } from './trendPoint';
 import type { UpcomingPayment } from './upcomingPayment';
@@ -19,8 +20,11 @@ export interface DashboardSummary {
   totalCreditCardOutstanding: number;
   totalInvestmentValue: number;
   totalInsuranceCoverage: number;
+  netWorthChange: number;
+  netWorthChangePercent: number;
   emisDueCount: number;
   emergencyFundAmount: number;
+  budgetSummary: BudgetSummary;
   expenseByCategory: CategoryAmount[];
   incomeVsExpenseTrend: TrendPoint[];
   upcomingPayments: UpcomingPayment[];

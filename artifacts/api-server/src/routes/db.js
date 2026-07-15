@@ -227,6 +227,42 @@ const TABLE_MODULE_META = {
         color: "slate",
         status: "live",
     },
+    social_people: {
+        module: "OneSocial",
+        moduleKey: "social",
+        label: "People",
+        feature: "Relationship graph",
+        description: "Audience members, creators, leads, platform handles, and relationship stage.",
+        color: "rose",
+        status: "live",
+    },
+    social_circles: {
+        module: "OneSocial",
+        moduleKey: "social",
+        label: "Circles",
+        feature: "Audience circles",
+        description: "Relationship groups, publishing cadence, purpose, color, and member counts.",
+        color: "pink",
+        status: "live",
+    },
+    social_followups: {
+        module: "OneSocial",
+        moduleKey: "social",
+        label: "Follow-ups",
+        feature: "Relationship follow-ups",
+        description: "Scheduled social touchpoints linked to people, circles, channels, and notes.",
+        color: "orange",
+        status: "live",
+    },
+    social_automation_rules: {
+        module: "OneSocial",
+        moduleKey: "social",
+        label: "Automation Rules",
+        feature: "Workflow automation",
+        description: "Trigger/action workflow rules for publishing, repurposing, and scheduled operations.",
+        color: "purple",
+        status: "live",
+    },
 };
 const PLANNED_MODULES = [
     {
@@ -251,7 +287,6 @@ const PLANNED_MODULES = [
         tables: [
             "social_media_assets",
             "social_brand_profiles",
-            "social_automation_rules",
             "social_notifications",
             "social_comments",
             "social_revision_history",

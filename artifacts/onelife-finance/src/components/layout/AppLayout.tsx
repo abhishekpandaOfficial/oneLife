@@ -20,6 +20,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Zap,
+  GitBranch,
   LogOut,
   CreditCard,
   BriefcaseBusiness,
@@ -135,9 +136,14 @@ const navModules: Array<{
     accent: "text-rose-600 dark:text-rose-300",
     items: [
       { label: "Dashboard", href: "/onesocial", icon: LayoutDashboard, exact: true },
+      { label: "Content", href: "/onesocial/workspace", icon: FileText, exact: true },
+      { label: "Workflow", href: "/onesocial/workflow", icon: GitBranch, exact: true },
       { label: "People", href: "/onesocial/people", icon: Users, exact: true },
       { label: "Circles", href: "/onesocial/circles", icon: Circle, exact: true },
       { label: "Follow-ups", href: "/onesocial/follow-ups", icon: Handshake, exact: true },
+      { label: "Calendar", href: "/onesocial/calendar", icon: CalendarDays, exact: true },
+      { label: "Analytics", href: "/onesocial/analytics", icon: BarChart3, exact: true },
+      { label: "Settings", href: "/onesocial/settings", icon: Settings, exact: true },
     ],
   },
   {

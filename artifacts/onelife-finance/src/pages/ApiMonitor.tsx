@@ -46,7 +46,7 @@ interface EndpointGroup {
 }
 
 interface ApiModule {
-  id: "system" | "onefinance" | "onework";
+  id: "system" | "onefinance" | "onework" | "onesocial";
   label: string;
   shortLabel: string;
   description: string;
@@ -171,6 +171,7 @@ const API_MODULES: ApiModule[] = [
         name: "Summary",
         description: "Read-only workspace payload used by the OneWork page.",
         endpoints: [
+          { method: "GET", path: "/api/onework/capabilities", label: "CareerOS Capabilities", description: "Live and planned OneWork storage, integrations, and capability map." },
           { method: "GET", path: "/api/onework/summary", label: "OneWork Summary", description: "Companies, folders, documents, PF, and UAN status." },
         ],
       },
@@ -286,6 +287,91 @@ const API_MODULES: ApiModule[] = [
             safe: false,
             sampleBody: { userId: "demo-user", password: "not-stored" },
             expectedStatuses: [501],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "onesocial",
+    label: "OneSocial APIs",
+    shortLabel: "OneSocial",
+    description: "Enterprise AI content operations, platform adaptation, publishing queue, campaigns, and connector health.",
+    icon: Globe,
+    tone: "border-rose-500/25 bg-rose-500/5 text-rose-700 dark:text-rose-300",
+    groups: [
+      {
+        name: "Summary",
+        description: "Read-only ContentOS payloads used by the OneSocial page.",
+        endpoints: [
+          { method: "GET", path: "/api/onesocial/capabilities", label: "ContentOS Capabilities", description: "Live OneSocial storage, lifecycle, platform priorities, and capability map." },
+          { method: "GET", path: "/api/onesocial/summary", label: "OneSocial Summary", description: "Dashboard, content, campaigns, queue, connectors, analytics, hashtags, and activity." },
+        ],
+      },
+      {
+        name: "Content Operations",
+        description: "Create master content and generate platform-adapted versions.",
+        endpoints: [
+          {
+            method: "POST",
+            path: "/api/onesocial/content",
+            label: "Create Content",
+            description: "Create a master content item and generate LinkedIn/Substack/Medium/Twitter/Instagram versions.",
+            safe: false,
+            sampleBody: {
+              title: "API Monitor Content Test",
+              summary: "A content operations test item generated from API Monitor.",
+              body: "OneSocial turns a master idea into platform-ready posts, articles, newsletters, and promotional snippets.",
+              status: "draft",
+              approvalStatus: "draft",
+              contentType: "linkedin_post",
+              audience: "Engineering leaders",
+              cta: "Follow the OneLife build",
+              topics: "AI, ContentOps",
+              tags: "AI,OneLife,ContentOps",
+            },
+          },
+          {
+            method: "POST",
+            path: "/api/onesocial/content/1/generate-platform-versions",
+            label: "Generate Versions",
+            description: "Regenerate platform-specific adaptations for a content item.",
+            safe: false,
+          },
+        ],
+      },
+      {
+        name: "Publishing",
+        description: "Queue and manually execute publishing jobs.",
+        endpoints: [
+          {
+            method: "POST",
+            path: "/api/onesocial/schedule",
+            label: "Schedule Publish",
+            description: "Add a platform item to the publishing queue.",
+            safe: false,
+            sampleBody: { contentId: 1, platform: "linkedin_post", status: "scheduled", scheduledAt: new Date(Date.now() + 3600000).toISOString() },
+          },
+          {
+            method: "POST",
+            path: "/api/onesocial/queue/1/run",
+            label: "Run Queue Item",
+            description: "Simulate a successful publish and write analytics/activity rows.",
+            safe: false,
+          },
+        ],
+      },
+      {
+        name: "Connectors",
+        description: "Connector health checks for platform integration readiness.",
+        endpoints: [
+          {
+            method: "POST",
+            path: "/api/onesocial/connectors/1/check",
+            label: "Check Connector",
+            description: "Refresh a connector's health state.",
+            safe: false,
+            sampleBody: { status: "needs_auth" },
           },
         ],
       },

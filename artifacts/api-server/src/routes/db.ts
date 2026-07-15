@@ -156,10 +156,120 @@ const TABLE_MODULE_META: Record<string, {
     color: "red",
     status: "live",
   },
+  social_campaigns: {
+    module: "OneSocial",
+    moduleKey: "social",
+    label: "Campaigns",
+    feature: "Content campaigns",
+    description: "Campaign objectives, themes, timelines, progress, and status.",
+    color: "rose",
+    status: "live",
+  },
+  social_content_items: {
+    module: "OneSocial",
+    moduleKey: "social",
+    label: "Content Items",
+    feature: "Master content workspace",
+    description: "Ideas, drafts, articles, newsletters, status, approval, topics, SEO, and AI metadata.",
+    color: "rose",
+    status: "live",
+  },
+  social_platform_versions: {
+    module: "OneSocial",
+    moduleKey: "social",
+    label: "Platform Versions",
+    feature: "Platform adaptation",
+    description: "Optimized content variants for LinkedIn, Substack, Medium, Twitter/X, and Instagram.",
+    color: "cyan",
+    status: "live",
+  },
+  social_publish_queue: {
+    module: "OneSocial",
+    moduleKey: "social",
+    label: "Publishing Queue",
+    feature: "Scheduling and publishing",
+    description: "Scheduled, queued, retrying, published, missed, and failed publishing jobs.",
+    color: "indigo",
+    status: "live",
+  },
+  social_connectors: {
+    module: "OneSocial",
+    moduleKey: "social",
+    label: "Connectors",
+    feature: "Platform integrations",
+    description: "Connector status, health, tier priority, account metadata, and auth readiness.",
+    color: "emerald",
+    status: "live",
+  },
+  social_hashtags: {
+    module: "OneSocial",
+    moduleKey: "social",
+    label: "Hashtags",
+    feature: "Hashtag intelligence",
+    description: "Hashtag categories, platform fit, popularity, trending score, and performance.",
+    color: "amber",
+    status: "live",
+  },
+  social_analytics: {
+    module: "OneSocial",
+    moduleKey: "social",
+    label: "Analytics",
+    feature: "Content performance",
+    description: "Impressions, reach, engagement, clicks, shares, and follower growth snapshots.",
+    color: "violet",
+    status: "live",
+  },
+  social_ai_suggestions: {
+    module: "OneSocial",
+    moduleKey: "social",
+    label: "AI Suggestions",
+    feature: "AI content intelligence",
+    description: "Topic, SEO, repurposing, hashtag, schedule, and content-gap recommendations.",
+    color: "fuchsia",
+    status: "live",
+  },
+  social_activity: {
+    module: "OneSocial",
+    moduleKey: "social",
+    label: "Activity",
+    feature: "Audit timeline",
+    description: "Content operations event stream for creation, scheduling, publishing, and connector checks.",
+    color: "slate",
+    status: "live",
+  },
 };
 
 const PLANNED_MODULES = [
-  { module: "OneSocial", moduleKey: "social", tables: ["social_people", "social_circles", "social_followups"] },
+  {
+    module: "OneWork",
+    moduleKey: "work",
+    tables: [
+      "work_salary_history",
+      "work_hike_history",
+      "work_bonus_history",
+      "work_projects",
+      "work_skills",
+      "work_certifications",
+      "work_timeline_events",
+      "work_document_versions",
+      "work_share_links",
+      "work_audit_events",
+    ],
+  },
+  {
+    module: "OneSocial",
+    moduleKey: "social",
+    tables: [
+      "social_media_assets",
+      "social_brand_profiles",
+      "social_automation_rules",
+      "social_notifications",
+      "social_comments",
+      "social_revision_history",
+      "social_approval_comments",
+      "social_webhooks",
+    ],
+  },
   { module: "OneHealth", moduleKey: "health", tables: ["health_members", "health_records", "health_medicines", "health_appointments"] },
   { module: "OneNote", moduleKey: "note", tables: ["note_entries", "note_collections", "note_resources"] },
   { module: "OneIdea", moduleKey: "idea", tables: ["idea_entries", "idea_experiments", "idea_roadmap"] },
@@ -278,7 +388,11 @@ router.get("/db/info", async (_req, res): Promise<void> => {
     }
 
     for (const planned of PLANNED_MODULES) {
-      if (!moduleMap.has(planned.moduleKey)) {
+      const existing = moduleMap.get(planned.moduleKey);
+      if (existing) {
+        existing.plannedTables = [...planned.tables];
+        moduleMap.set(planned.moduleKey, existing);
+      } else {
         moduleMap.set(planned.moduleKey, {
           module: planned.module,
           moduleKey: planned.moduleKey,

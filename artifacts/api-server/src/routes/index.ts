@@ -13,6 +13,7 @@ import reportsRouter from "./reports";
 import dbRouter from "./db";
 import creditCardsRouter from "./credit_cards";
 import oneworkRouter from "./onework";
+import onesocialRouter from "./onesocial";
 
 const router: IRouter = Router();
 
@@ -30,5 +31,6 @@ router.use(reportsRouter);
 router.use(dbRouter);
 router.use(creditCardsRouter);
 router.use(oneworkRouter);
+router.use(onesocialRouter);
 
 export default router;

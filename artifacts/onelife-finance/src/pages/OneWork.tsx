@@ -28,10 +28,15 @@ import {
 } from "@workspace/api-client-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+  Award,
   BadgeIndianRupee,
+  BarChart3,
   BriefcaseBusiness,
   Building2,
   CalendarDays,
+  CircleAlert,
+  Clock3,
+  BrainCircuit,
   FileCheck2,
   FilePlus2,
   FileSignature,
@@ -44,10 +49,13 @@ import {
   Pencil,
   Plus,
   ReceiptText,
+  Share2,
   ScrollText,
   Search,
   ShieldCheck,
+  Sparkles,
   Trash2,
+  Trophy,
   TrendingDown,
   TrendingUp,
   Upload,
@@ -147,6 +155,23 @@ function todayInput() {
 function displayDate(value: string | null | undefined, fallback = "Present") {
   if (!value) return fallback;
   return format(parseISO(value), "MMM yyyy");
+}
+
+function experienceLabel(totalMonths: number) {
+  const years = Math.floor(totalMonths / 12);
+  const months = totalMonths % 12;
+  if (years === 0) return `${months} mo`;
+  if (months === 0) return `${years} yr`;
+  return `${years} yr ${months} mo`;
+}
+
+function annualize(monthly: number) {
+  return monthly * 12;
+}
+
+function formatPercent(value: number) {
+  if (!Number.isFinite(value)) return "0%";
+  return `${value.toFixed(1)}%`;
 }
 
 async function apiRequest<T>(url: string, options: RequestInit = {}): Promise<T> {
@@ -267,6 +292,33 @@ export default function OneWork() {
   const activeCompany = companies.find((company) => !company.endDate);
   const latestPfEntries = [...summary.pfEntries].sort((a, b) => b.month.localeCompare(a.month)).slice(0, 6);
   const latestWithdrawals = [...summary.pfWithdrawals].sort((a, b) => b.withdrawalDate.localeCompare(a.withdrawalDate)).slice(0, 5);
+  const currentCompany = activeCompany ?? companies[0] ?? null;
+  const highestMonthlySalary = companies.reduce((max, company) => Math.max(max, company.salaryMonthly), 0);
+  const salaryTimeline = [...companies].sort((a, b) => a.startDate.localeCompare(b.startDate));
+  const hikePercentages = salaryTimeline
+    .map((company, index) => {
+      const previous = salaryTimeline[index - 1];
+      if (!previous || previous.salaryMonthly <= 0) return null;
+      return ((company.salaryMonthly - previous.salaryMonthly) / previous.salaryMonthly) * 100;
+    })
+    .filter((value): value is number => value !== null && Number.isFinite(value));
+  const averageAnnualHike = hikePercentages.length ? hikePercentages.reduce((sum, value) => sum + value, 0) / hikePercentages.length : 0;
+  const recentUploads = [...summary.documents].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).slice(0, 4);
+  const documentNames = summary.documents.map((doc) => `${doc.name} ${doc.documentType} ${doc.categoryName ?? ""}`.toLowerCase());
+  const requiredDocuments = ["offer", "joining", "payslip", "form 16", "pf"];
+  const missingDocuments = requiredDocuments.filter((required) => !documentNames.some((name) => name.includes(required)));
+  const careerScore = Math.min(100, Math.round(
+    (companies.length ? 24 : 0) +
+    (summary.documents.length ? 24 : 0) +
+    (summary.profile?.uanNumber ? 16 : 0) +
+    (summary.pfEntries.length ? 16 : 0) +
+    (missingDocuments.length === 0 ? 20 : Math.max(0, 20 - missingDocuments.length * 4)),
+  ));
+  const aiInsights = [
+    currentCompany ? `${currentCompany.companyName} is your current career anchor.` : "Add your current company to unlock career insights.",
+    missingDocuments.length ? `${missingDocuments.length} important document types need attention.` : "Core employment documents look well covered.",
+    summary.profile?.uanNumber ? "UAN profile is ready for future EPFO connector sync." : "Save UAN details to prepare PF automation.",
+  ];
 
   const normalizedSearch = searchTerm.trim().toLowerCase();
   const searchResults: SearchResult[] = normalizedSearch
@@ -306,16 +358,17 @@ export default function OneWork() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-12">
-      <section className="overflow-hidden rounded-2xl border bg-card">
+      <section className="overflow-hidden rounded-2xl border border-blue-500/15 bg-gradient-to-br from-card via-card to-blue-500/5">
         <div className="grid gap-6 p-6 lg:grid-cols-[1fr_380px] lg:p-7">
           <div>
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="outline" className="bg-background">CareerOS</Badge>
               {activeCompany && <Badge>{activeCompany.companyName}</Badge>}
+              <Badge variant="secondary" className="gap-1"><Sparkles className="h-3 w-3" /> AI-ready</Badge>
             </div>
-            <h1 className="mt-4 text-3xl font-bold tracking-tight">OneWork Dashboard</h1>
+            <h1 className="mt-4 text-3xl font-bold tracking-tight">OneWork CareerOS Dashboard</h1>
             <p className="mt-2 max-w-3xl text-muted-foreground">
-              Company history, logos, folders, files, PF, Form 16, letters, payslips, and secure import status in one workspace.
+              Lifetime career command center for companies, documents, PF/UAN, salary signals, milestones, and future AI document intelligence.
             </p>
             <div className="mt-5 grid max-w-3xl gap-3 sm:grid-cols-[1fr_auto]">
               <div className="relative">
@@ -328,20 +381,20 @@ export default function OneWork() {
               </div>
             </div>
           </div>
-          <div className="rounded-xl border bg-muted/30 p-4">
-            <p className="text-xs font-medium uppercase text-muted-foreground">EPFO readiness</p>
-            <p className="mt-2 text-sm">{summary.epfoSyncStatus}</p>
-            <Separator className="my-4" />
-            <div className="grid grid-cols-2 gap-3 text-sm">
+          <div className="rounded-xl border bg-background/70 p-4 shadow-sm">
+            <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-muted-foreground">UAN</p>
-                <p className="truncate font-mono font-semibold">{summary.profile?.uanNumber || "Not saved"}</p>
+                <p className="text-xs font-medium uppercase text-muted-foreground">Career score</p>
+                <p className="mt-2 font-mono text-4xl font-bold">{careerScore}</p>
+                <p className="mt-1 text-xs text-muted-foreground">Based on timeline, documents, PF, and readiness.</p>
               </div>
-              <div>
-                <p className="text-muted-foreground">Member ID</p>
-                <p className="truncate font-mono font-semibold">{summary.profile?.epfoMemberId || "Not saved"}</p>
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <Trophy className="h-6 w-6" />
               </div>
             </div>
+            <Separator className="my-4" />
+            <p className="text-xs font-medium uppercase text-muted-foreground">EPFO readiness</p>
+            <p className="mt-2 text-sm">{summary.epfoSyncStatus}</p>
             <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => setDialog("profile")}>
               <ShieldCheck className="mr-2 h-4 w-4" /> Manage UAN
             </Button>
@@ -380,10 +433,66 @@ export default function OneWork() {
       )}
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <MetricCard title="Current Company" value={currentCompany?.companyName ?? "Not set"} icon={Building2} tone="text-blue-600" />
+        <MetricCard title="Current Designation" value={currentCompany?.position ?? "Not set"} icon={BriefcaseBusiness} tone="text-cyan-600" />
+        <MetricCard title="Total Experience" value={experienceLabel(summary.totalExperienceMonths)} icon={Clock3} tone="text-violet-600" />
+        <MetricCard title="Current CTC" value={formatCurrency(annualize(currentCompany?.salaryMonthly ?? 0))} icon={BadgeIndianRupee} tone="text-emerald-600" />
+        <MetricCard title="Highest CTC" value={formatCurrency(annualize(highestMonthlySalary))} icon={TrendingUp} tone="text-lime-600" />
+        <MetricCard title="Companies Worked" value={String(summary.totalCompanies)} icon={Building2} tone="text-blue-600" />
+        <MetricCard title="Total Documents" value={String(summary.documents.length)} icon={FileText} tone="text-amber-600" />
         <MetricCard title="PF Balance" value={formatCurrency(summary.pfBalance)} icon={Landmark} tone="text-emerald-600" />
-        <MetricCard title="Companies" value={String(summary.totalCompanies)} icon={Building2} tone="text-blue-600" />
-        <MetricCard title="Folders" value={String(summary.folders.length)} icon={Folder} tone="text-violet-600" />
-        <MetricCard title="Files" value={String(summary.documents.length)} icon={FileText} tone="text-amber-600" />
+        <MetricCard title="Total Bonus Earned" value={formatCurrency(0)} icon={Award} tone="text-orange-600" />
+        <MetricCard title="Average Hike" value={formatPercent(averageAnnualHike)} icon={BarChart3} tone="text-pink-600" />
+        <MetricCard title="Current Duration" value={currentCompany?.tenureLabel ?? "0 mo"} icon={CalendarDays} tone="text-indigo-600" />
+        <MetricCard title="Pending Documents" value={String(missingDocuments.length)} icon={CircleAlert} tone="text-red-600" />
+      </div>
+
+      <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2"><BrainCircuit className="h-5 w-5 text-primary" /> AI Insights</CardTitle>
+            <CardDescription>Assistant-ready career signals generated from live OneWork data.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {aiInsights.map((insight) => (
+              <div key={insight} className="flex items-start gap-3 rounded-xl border bg-muted/20 p-3 text-sm">
+                <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                <span>{insight}</span>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Uploads</CardTitle>
+            <CardDescription>Latest employment records entering the vault.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {recentUploads.length === 0 ? (
+              <EmptyState icon={Upload} title="No uploads yet" description="Upload payslips, letters, Form 16, PF statements, and certificates." />
+            ) : (
+              recentUploads.map((doc) => (
+                <div key={doc.id} className="flex items-center gap-3 rounded-xl border p-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                    <FileText className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">{doc.name}</p>
+                    <p className="truncate text-xs text-muted-foreground">{doc.companyName || "Global"} · {doc.categoryName || doc.documentType}</p>
+                  </div>
+                </div>
+              ))
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-4">
+        <ReadinessCard icon={FileCheck2} title="Document Intelligence" status="Ready for OCR/AI" detail={`${summary.documentCategories.length} categories mapped`} />
+        <ReadinessCard icon={Share2} title="Secure Sharing" status="Planned" detail="Share links, audit trail, and export packages" />
+        <ReadinessCard icon={BarChart3} title="Career Analytics" status="Live baseline" detail="Experience, CTC, PF, documents, and timeline" />
+        <ReadinessCard icon={WalletCards} title="Salary History" status="Planned storage" detail="CTC, bonus, hikes, ESOP, reimbursements" />
       </div>
 
       <Tabs defaultValue="documents" className="space-y-4">
@@ -554,6 +663,25 @@ function MetricCard({ title, value, icon: Icon, tone }: { title: string; value: 
             <p className="mt-1 truncate font-mono text-2xl font-bold">{value}</p>
           </div>
           <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted ${tone}`}><Icon className="h-5 w-5" /></div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ReadinessCard({ icon: Icon, title, status, detail }: { icon: React.ElementType; title: string; status: string; detail: string }) {
+  return (
+    <Card>
+      <CardContent className="p-4">
+        <div className="flex items-start gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <Icon className="h-5 w-5" />
+          </div>
+          <div className="min-w-0">
+            <p className="truncate font-medium">{title}</p>
+            <p className="mt-1 text-sm font-medium text-primary">{status}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{detail}</p>
+          </div>
         </div>
       </CardContent>
     </Card>

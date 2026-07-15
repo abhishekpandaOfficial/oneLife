@@ -13,6 +13,7 @@ import Investments from "@/pages/Investments";
 import Goals from "@/pages/Goals";
 import Budget from "@/pages/Budget";
 import OneWork from "@/pages/OneWork";
+import OneSocial from "@/pages/OneSocial";
 import EcosystemModule from "@/pages/EcosystemModule";
 import Reports from "@/pages/Reports";
 import Categories from "@/pages/Categories";
@@ -72,12 +73,8 @@ function Router() {
         <Route path="/budget" component={Budget} />
         <Route path="/onework/:section" component={OneWork} />
         <Route path="/onework" component={OneWork} />
-        <Route path="/onesocial/:section">
-          {() => <EcosystemModule module="social" />}
-        </Route>
-        <Route path="/onesocial">
-          {() => <EcosystemModule module="social" />}
-        </Route>
+        <Route path="/onesocial/:section" component={OneSocial} />
+        <Route path="/onesocial" component={OneSocial} />
         <Route path="/onehealth/:section">
           {() => <EcosystemModule module="health" />}
         </Route>

@@ -20706,27 +20706,27 @@ var require_router = __commonJS({
     var slice = Array.prototype.slice;
     var flatten = Array.prototype.flat;
     var methods = METHODS.map((method) => method.toLowerCase());
-    module.exports = Router16;
+    module.exports = Router17;
     module.exports.Route = Route;
-    function Router16(options) {
-      if (!(this instanceof Router16)) {
-        return new Router16(options);
+    function Router17(options) {
+      if (!(this instanceof Router17)) {
+        return new Router17(options);
       }
       const opts = options || {};
-      function router16(req, res, next) {
-        router16.handle(req, res, next);
+      function router17(req, res, next) {
+        router17.handle(req, res, next);
       }
-      Object.setPrototypeOf(router16, this);
-      router16.caseSensitive = opts.caseSensitive;
-      router16.mergeParams = opts.mergeParams;
-      router16.params = {};
-      router16.strict = opts.strict;
-      router16.stack = [];
-      return router16;
+      Object.setPrototypeOf(router17, this);
+      router17.caseSensitive = opts.caseSensitive;
+      router17.mergeParams = opts.mergeParams;
+      router17.params = {};
+      router17.strict = opts.strict;
+      router17.stack = [];
+      return router17;
     }
-    Router16.prototype = function() {
+    Router17.prototype = function() {
     };
-    Router16.prototype.param = function param(name, fn) {
+    Router17.prototype.param = function param(name, fn) {
       if (!name) {
         throw new TypeError("argument name is required");
       }
@@ -20746,7 +20746,7 @@ var require_router = __commonJS({
       params.push(fn);
       return this;
     };
-    Router16.prototype.handle = function handle(req, res, callback) {
+    Router17.prototype.handle = function handle(req, res, callback) {
       if (!callback) {
         throw new TypeError("argument callback is required");
       }
@@ -20873,7 +20873,7 @@ var require_router = __commonJS({
         }
       }
     };
-    Router16.prototype.use = function use(handler) {
+    Router17.prototype.use = function use(handler) {
       let offset = 0;
       let path = "/";
       if (typeof handler !== "function") {
@@ -20906,7 +20906,7 @@ var require_router = __commonJS({
       }
       return this;
     };
-    Router16.prototype.route = function route(path) {
+    Router17.prototype.route = function route(path) {
       const route2 = new Route(path);
       const layer = new Layer(path, {
         sensitive: this.caseSensitive,
@@ -20921,7 +20921,7 @@ var require_router = __commonJS({
       return route2;
     };
     methods.concat("all").forEach(function(method) {
-      Router16.prototype[method] = function(path) {
+      Router17.prototype[method] = function(path) {
         const route = this.route(path);
         route[method].apply(route, slice.call(arguments, 1));
         return this;
@@ -21104,13 +21104,13 @@ var require_application = __commonJS({
     var compileTrust = require_utils3().compileTrust;
     var resolve = __require("node:path").resolve;
     var once = require_once();
-    var Router16 = require_router();
+    var Router17 = require_router();
     var slice = Array.prototype.slice;
     var flatten = Array.prototype.flat;
     var app2 = exports = module.exports = {};
     var trustProxyDefaultSymbol = "@@symbol:trust_proxy_default";
     app2.init = function init() {
-      var router16 = null;
+      var router17 = null;
       this.cache = /* @__PURE__ */ Object.create(null);
       this.engines = /* @__PURE__ */ Object.create(null);
       this.settings = /* @__PURE__ */ Object.create(null);
@@ -21119,13 +21119,13 @@ var require_application = __commonJS({
         configurable: true,
         enumerable: true,
         get: function getrouter() {
-          if (router16 === null) {
-            router16 = new Router16({
+          if (router17 === null) {
+            router17 = new Router17({
               caseSensitive: this.enabled("case sensitive routing"),
               strict: this.enabled("strict routing")
             });
           }
-          return router16;
+          return router17;
         }
       });
     };
@@ -21196,15 +21196,15 @@ var require_application = __commonJS({
       if (fns.length === 0) {
         throw new TypeError("app.use() requires a middleware function");
       }
-      var router16 = this.router;
+      var router17 = this.router;
       fns.forEach(function(fn2) {
         if (!fn2 || !fn2.handle || !fn2.set) {
-          return router16.use(path, fn2);
+          return router17.use(path, fn2);
         }
         debug(".use app under %s", path);
         fn2.mountpath = path;
         fn2.parent = this;
-        router16.use(path, function mounted_app(req, res, next) {
+        router17.use(path, function mounted_app(req, res, next) {
           var orig = req.app;
           fn2.handle(req, res, function(err) {
             Object.setPrototypeOf(req, orig.request);
@@ -23789,7 +23789,7 @@ var require_express = __commonJS({
     var EventEmitter = __require("node:events").EventEmitter;
     var mixin = require_merge_descriptors();
     var proto = require_application();
-    var Router16 = require_router();
+    var Router17 = require_router();
     var req = require_request();
     var res = require_response();
     exports = module.exports = createApplication;
@@ -23811,8 +23811,8 @@ var require_express = __commonJS({
     exports.application = proto;
     exports.request = req;
     exports.response = res;
-    exports.Route = Router16.Route;
-    exports.Router = Router16;
+    exports.Route = Router17.Route;
+    exports.Router = Router17;
     exports.json = bodyParser.json;
     exports.raw = bodyParser.raw;
     exports.static = require_serve_static();
@@ -33811,12 +33811,12 @@ var require_lib5 = __commonJS({
 });
 
 // src/app.ts
-var import_express16 = __toESM(require_express2(), 1);
+var import_express17 = __toESM(require_express2(), 1);
 var import_cors = __toESM(require_lib3(), 1);
 var import_pino_http = __toESM(require_logger(), 1);
 
 // src/routes/index.ts
-var import_express15 = __toESM(require_express2(), 1);
+var import_express16 = __toESM(require_express2(), 1);
 
 // src/routes/health.ts
 var import_express = __toESM(require_express2(), 1);
@@ -45549,6 +45549,17 @@ __export(schema_exports, {
   insertInvestmentSchema: () => insertInvestmentSchema,
   insertLoanSchema: () => insertLoanSchema,
   insertOneworkProfileSchema: () => insertOneworkProfileSchema,
+  insertSocialAiSuggestionSchema: () => insertSocialAiSuggestionSchema,
+  insertSocialAutomationRuleSchema: () => insertSocialAutomationRuleSchema,
+  insertSocialCampaignSchema: () => insertSocialCampaignSchema,
+  insertSocialCircleSchema: () => insertSocialCircleSchema,
+  insertSocialConnectorSchema: () => insertSocialConnectorSchema,
+  insertSocialContentItemSchema: () => insertSocialContentItemSchema,
+  insertSocialFollowupSchema: () => insertSocialFollowupSchema,
+  insertSocialHashtagSchema: () => insertSocialHashtagSchema,
+  insertSocialPersonSchema: () => insertSocialPersonSchema,
+  insertSocialPlatformVersionSchema: () => insertSocialPlatformVersionSchema,
+  insertSocialPublishQueueSchema: () => insertSocialPublishQueueSchema,
   insertTransactionSchema: () => insertTransactionSchema,
   insertWorkCompanySchema: () => insertWorkCompanySchema,
   insertWorkDocumentCategorySchema: () => insertWorkDocumentCategorySchema,
@@ -45560,6 +45571,19 @@ __export(schema_exports, {
   investmentsTable: () => investmentsTable,
   loansTable: () => loansTable,
   oneworkProfileTable: () => oneworkProfileTable,
+  socialActivityTable: () => socialActivityTable,
+  socialAiSuggestionsTable: () => socialAiSuggestionsTable,
+  socialAnalyticsTable: () => socialAnalyticsTable,
+  socialAutomationRulesTable: () => socialAutomationRulesTable,
+  socialCampaignsTable: () => socialCampaignsTable,
+  socialCirclesTable: () => socialCirclesTable,
+  socialConnectorsTable: () => socialConnectorsTable,
+  socialContentItemsTable: () => socialContentItemsTable,
+  socialFollowupsTable: () => socialFollowupsTable,
+  socialHashtagsTable: () => socialHashtagsTable,
+  socialPeopleTable: () => socialPeopleTable,
+  socialPlatformVersionsTable: () => socialPlatformVersionsTable,
+  socialPublishQueueTable: () => socialPublishQueueTable,
   transactionsTable: () => transactionsTable,
   workCompaniesTable: () => workCompaniesTable,
   workDocumentCategoriesTable: () => workDocumentCategoriesTable,
@@ -57192,6 +57216,185 @@ var insertWorkDocumentSchema = createInsertSchema(workDocumentsTable).omit({ id:
 var insertWorkPfEntrySchema = createInsertSchema(workPfEntriesTable).omit({ id: true, createdAt: true });
 var insertWorkPfWithdrawalSchema = createInsertSchema(workPfWithdrawalsTable).omit({ id: true, createdAt: true });
 
+// ../../lib/db/src/schema/onesocial.ts
+var socialCampaignsTable = pgTable("social_campaigns", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  theme: text("theme").notNull().default("Product"),
+  status: text("status", { enum: ["planning", "active", "paused", "completed"] }).notNull().default("active"),
+  objective: text("objective"),
+  color: text("color").notNull().default("#2563eb"),
+  startDate: date("start_date", { mode: "string" }),
+  endDate: date("end_date", { mode: "string" }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
+});
+var socialContentItemsTable = pgTable("social_content_items", {
+  id: serial("id").primaryKey(),
+  campaignId: integer("campaign_id").references(() => socialCampaignsTable.id, { onDelete: "set null" }),
+  title: text("title").notNull(),
+  summary: text("summary"),
+  body: text("body").notNull().default(""),
+  status: text("status", {
+    enum: ["idea", "research", "draft", "ai_enhancement", "review", "approved", "scheduled", "published", "analytics", "repurpose", "archived"]
+  }).notNull().default("idea"),
+  approvalStatus: text("approval_status", { enum: ["draft", "needs_review", "approved", "rejected"] }).notNull().default("draft"),
+  contentType: text("content_type", {
+    enum: ["linkedin_post", "linkedin_article", "substack_newsletter", "medium_article", "twitter_thread", "twitter_post", "instagram_caption", "product_announcement", "technical_article", "career_post", "case_study"]
+  }).notNull().default("linkedin_post"),
+  audience: text("audience"),
+  cta: text("cta"),
+  topics: text("topics"),
+  tags: text("tags"),
+  series: text("series"),
+  slug: text("slug"),
+  seoTitle: text("seo_title"),
+  seoDescription: text("seo_description"),
+  aiSummary: text("ai_summary"),
+  keywords: text("keywords"),
+  scheduledAt: timestamp("scheduled_at", { withTimezone: true }),
+  publishedAt: timestamp("published_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
+});
+var socialPlatformVersionsTable = pgTable("social_platform_versions", {
+  id: serial("id").primaryKey(),
+  contentId: integer("content_id").notNull().references(() => socialContentItemsTable.id, { onDelete: "cascade" }),
+  platform: text("platform", { enum: ["linkedin_post", "linkedin_article", "substack", "medium", "twitter", "instagram"] }).notNull(),
+  title: text("title").notNull(),
+  body: text("body").notNull(),
+  status: text("status", { enum: ["draft", "ready", "scheduled", "published", "failed"] }).notNull().default("draft"),
+  characterCount: integer("character_count").notNull().default(0),
+  hashtags: text("hashtags"),
+  publishUrl: text("publish_url"),
+  scheduledAt: timestamp("scheduled_at", { withTimezone: true }),
+  publishedAt: timestamp("published_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
+});
+var socialPublishQueueTable = pgTable("social_publish_queue", {
+  id: serial("id").primaryKey(),
+  contentId: integer("content_id").notNull().references(() => socialContentItemsTable.id, { onDelete: "cascade" }),
+  platformVersionId: integer("platform_version_id").references(() => socialPlatformVersionsTable.id, { onDelete: "cascade" }),
+  platform: text("platform").notNull(),
+  status: text("status", { enum: ["queued", "scheduled", "publishing", "published", "failed", "missed", "retrying"] }).notNull().default("queued"),
+  scheduledAt: timestamp("scheduled_at", { withTimezone: true }).notNull(),
+  attempts: integer("attempts").notNull().default(0),
+  lastError: text("last_error"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow()
+});
+var socialConnectorsTable = pgTable("social_connectors", {
+  id: serial("id").primaryKey(),
+  platform: text("platform").notNull(),
+  tier: integer("tier").notNull().default(1),
+  status: text("status", { enum: ["connected", "not_connected", "needs_auth", "degraded", "planned"] }).notNull().default("not_connected"),
+  accountName: text("account_name"),
+  username: text("username"),
+  authType: text("auth_type", { enum: ["oauth", "api_key", "password", "webhook", "manual"] }).notNull().default("oauth"),
+  credentialStatus: text("credential_status", { enum: ["not_configured", "configured", "expired", "invalid"] }).notNull().default("not_configured"),
+  credentialUpdatedAt: timestamp("credential_updated_at", { withTimezone: true }),
+  health: text("health", { enum: ["healthy", "warning", "critical", "unknown"] }).notNull().default("unknown"),
+  lastCheckedAt: timestamp("last_checked_at", { withTimezone: true }),
+  lastError: text("last_error"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+});
+var socialHashtagsTable = pgTable("social_hashtags", {
+  id: serial("id").primaryKey(),
+  hashtag: text("hashtag").notNull(),
+  category: text("category").notNull().default("General"),
+  platform: text("platform").notNull().default("all"),
+  popularity: integer("popularity").notNull().default(50),
+  usageCount: integer("usage_count").notNull().default(0),
+  performanceScore: numeric("performance_score", { precision: 8, scale: 2, mode: "number" }).notNull().default(0),
+  trendingScore: numeric("trending_score", { precision: 8, scale: 2, mode: "number" }).notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+});
+var socialAnalyticsTable = pgTable("social_analytics", {
+  id: serial("id").primaryKey(),
+  contentId: integer("content_id").references(() => socialContentItemsTable.id, { onDelete: "cascade" }),
+  platform: text("platform").notNull(),
+  impressions: integer("impressions").notNull().default(0),
+  reach: integer("reach").notNull().default(0),
+  likes: integer("likes").notNull().default(0),
+  comments: integer("comments").notNull().default(0),
+  shares: integer("shares").notNull().default(0),
+  clicks: integer("clicks").notNull().default(0),
+  followersDelta: integer("followers_delta").notNull().default(0),
+  measuredAt: timestamp("measured_at", { withTimezone: true }).notNull().defaultNow()
+});
+var socialAiSuggestionsTable = pgTable("social_ai_suggestions", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  suggestionType: text("suggestion_type", { enum: ["topic", "headline", "seo", "repurpose", "schedule", "hashtag", "gap"] }).notNull().default("topic"),
+  priority: text("priority", { enum: ["low", "medium", "high"] }).notNull().default("medium"),
+  description: text("description").notNull(),
+  status: text("status", { enum: ["new", "accepted", "dismissed"] }).notNull().default("new"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+});
+var socialActivityTable = pgTable("social_activity", {
+  id: serial("id").primaryKey(),
+  eventType: text("event_type").notNull(),
+  message: text("message").notNull(),
+  actor: text("actor").notNull().default("OneSocial"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+});
+var socialPeopleTable = pgTable("social_people", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  role: text("role"),
+  company: text("company"),
+  platform: text("platform").notNull().default("LinkedIn"),
+  handle: text("handle"),
+  relationshipStage: text("relationship_stage", { enum: ["lead", "peer", "customer", "partner", "community", "mentor"] }).notNull().default("community"),
+  notes: text("notes"),
+  lastContactedAt: timestamp("last_contacted_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+});
+var socialCirclesTable = pgTable("social_circles", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  purpose: text("purpose"),
+  color: text("color").notNull().default("#e11d48"),
+  cadence: text("cadence").notNull().default("weekly"),
+  memberCount: integer("member_count").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+});
+var socialFollowupsTable = pgTable("social_followups", {
+  id: serial("id").primaryKey(),
+  personId: integer("person_id").references(() => socialPeopleTable.id, { onDelete: "set null" }),
+  circleId: integer("circle_id").references(() => socialCirclesTable.id, { onDelete: "set null" }),
+  title: text("title").notNull(),
+  channel: text("channel").notNull().default("LinkedIn"),
+  status: text("status", { enum: ["due", "scheduled", "done", "snoozed"] }).notNull().default("due"),
+  dueAt: timestamp("due_at", { withTimezone: true }).notNull(),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+});
+var socialAutomationRulesTable = pgTable("social_automation_rules", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  triggerType: text("trigger_type").notNull().default("schedule"),
+  triggerConfig: text("trigger_config").notNull().default("Every weekday at 08:00"),
+  actionType: text("action_type").notNull().default("publish"),
+  actionConfig: text("action_config").notNull().default("Publish approved LinkedIn post"),
+  status: text("status", { enum: ["active", "paused", "draft"] }).notNull().default("active"),
+  lastRunAt: timestamp("last_run_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+});
+var insertSocialCampaignSchema = createInsertSchema(socialCampaignsTable).omit({ id: true, createdAt: true, updatedAt: true });
+var insertSocialContentItemSchema = createInsertSchema(socialContentItemsTable).omit({ id: true, createdAt: true, updatedAt: true });
+var insertSocialPlatformVersionSchema = createInsertSchema(socialPlatformVersionsTable).omit({ id: true, createdAt: true, updatedAt: true });
+var insertSocialPublishQueueSchema = createInsertSchema(socialPublishQueueTable).omit({ id: true, createdAt: true, updatedAt: true });
+var insertSocialConnectorSchema = createInsertSchema(socialConnectorsTable).omit({ id: true, createdAt: true });
+var insertSocialHashtagSchema = createInsertSchema(socialHashtagsTable).omit({ id: true, createdAt: true });
+var insertSocialAiSuggestionSchema = createInsertSchema(socialAiSuggestionsTable).omit({ id: true, createdAt: true });
+var insertSocialPersonSchema = createInsertSchema(socialPeopleTable).omit({ id: true, createdAt: true });
+var insertSocialCircleSchema = createInsertSchema(socialCirclesTable).omit({ id: true, createdAt: true });
+var insertSocialFollowupSchema = createInsertSchema(socialFollowupsTable).omit({ id: true, createdAt: true });
+var insertSocialAutomationRuleSchema = createInsertSchema(socialAutomationRulesTable).omit({ id: true, createdAt: true });
+
 // ../../lib/db/src/index.ts
 var { Pool: Pool3 } = esm_default;
 if (!process.env.DATABASE_URL) {
@@ -58474,10 +58677,120 @@ var TABLE_MODULE_META = {
     description: "PF withdrawal amounts, dates, reasons, and linked company context.",
     color: "red",
     status: "live"
+  },
+  social_campaigns: {
+    module: "OneSocial",
+    moduleKey: "social",
+    label: "Campaigns",
+    feature: "Content campaigns",
+    description: "Campaign objectives, themes, timelines, progress, and status.",
+    color: "rose",
+    status: "live"
+  },
+  social_content_items: {
+    module: "OneSocial",
+    moduleKey: "social",
+    label: "Content Items",
+    feature: "Master content workspace",
+    description: "Ideas, drafts, articles, newsletters, status, approval, topics, SEO, and AI metadata.",
+    color: "rose",
+    status: "live"
+  },
+  social_platform_versions: {
+    module: "OneSocial",
+    moduleKey: "social",
+    label: "Platform Versions",
+    feature: "Platform adaptation",
+    description: "Optimized content variants for LinkedIn, Substack, Medium, Twitter/X, and Instagram.",
+    color: "cyan",
+    status: "live"
+  },
+  social_publish_queue: {
+    module: "OneSocial",
+    moduleKey: "social",
+    label: "Publishing Queue",
+    feature: "Scheduling and publishing",
+    description: "Scheduled, queued, retrying, published, missed, and failed publishing jobs.",
+    color: "indigo",
+    status: "live"
+  },
+  social_connectors: {
+    module: "OneSocial",
+    moduleKey: "social",
+    label: "Connectors",
+    feature: "Platform integrations",
+    description: "Connector status, health, tier priority, account metadata, and auth readiness.",
+    color: "emerald",
+    status: "live"
+  },
+  social_hashtags: {
+    module: "OneSocial",
+    moduleKey: "social",
+    label: "Hashtags",
+    feature: "Hashtag intelligence",
+    description: "Hashtag categories, platform fit, popularity, trending score, and performance.",
+    color: "amber",
+    status: "live"
+  },
+  social_analytics: {
+    module: "OneSocial",
+    moduleKey: "social",
+    label: "Analytics",
+    feature: "Content performance",
+    description: "Impressions, reach, engagement, clicks, shares, and follower growth snapshots.",
+    color: "violet",
+    status: "live"
+  },
+  social_ai_suggestions: {
+    module: "OneSocial",
+    moduleKey: "social",
+    label: "AI Suggestions",
+    feature: "AI content intelligence",
+    description: "Topic, SEO, repurposing, hashtag, schedule, and content-gap recommendations.",
+    color: "fuchsia",
+    status: "live"
+  },
+  social_activity: {
+    module: "OneSocial",
+    moduleKey: "social",
+    label: "Activity",
+    feature: "Audit timeline",
+    description: "Content operations event stream for creation, scheduling, publishing, and connector checks.",
+    color: "slate",
+    status: "live"
   }
 };
 var PLANNED_MODULES = [
-  { module: "OneSocial", moduleKey: "social", tables: ["social_people", "social_circles", "social_followups"] },
+  {
+    module: "OneWork",
+    moduleKey: "work",
+    tables: [
+      "work_salary_history",
+      "work_hike_history",
+      "work_bonus_history",
+      "work_projects",
+      "work_skills",
+      "work_certifications",
+      "work_timeline_events",
+      "work_document_versions",
+      "work_share_links",
+      "work_audit_events"
+    ]
+  },
+  {
+    module: "OneSocial",
+    moduleKey: "social",
+    tables: [
+      "social_media_assets",
+      "social_brand_profiles",
+      "social_automation_rules",
+      "social_notifications",
+      "social_comments",
+      "social_revision_history",
+      "social_approval_comments",
+      "social_webhooks"
+    ]
+  },
   { module: "OneHealth", moduleKey: "health", tables: ["health_members", "health_records", "health_medicines", "health_appointments"] },
   { module: "OneNote", moduleKey: "note", tables: ["note_entries", "note_collections", "note_resources"] },
   { module: "OneIdea", moduleKey: "idea", tables: ["idea_entries", "idea_experiments", "idea_roadmap"] },
@@ -58548,7 +58861,11 @@ router12.get("/db/info", async (_req, res) => {
       moduleMap.set(table.moduleKey, existing);
     }
     for (const planned of PLANNED_MODULES) {
-      if (!moduleMap.has(planned.moduleKey)) {
+      const existing = moduleMap.get(planned.moduleKey);
+      if (existing) {
+        existing.plannedTables = [...planned.tables];
+        moduleMap.set(planned.moduleKey, existing);
+      } else {
         moduleMap.set(planned.moduleKey, {
           module: planned.module,
           moduleKey: planned.moduleKey,
@@ -58798,12 +59115,24 @@ async function ensureDefaultDocumentCategories() {
   const existing = await db.select().from(workDocumentCategoriesTable);
   if (existing.length > 0) return existing;
   return db.insert(workDocumentCategoriesTable).values([
+    { name: "Offer Letter", color: "#2563eb", icon: "FileSignature" },
+    { name: "Appointment Letter", color: "#16a34a", icon: "FileSignature" },
     { name: "Payslip", color: "#0ea5e9", icon: "ReceiptText" },
     { name: "Joining Letter", color: "#22c55e", icon: "FileSignature" },
+    { name: "Employment Contract", color: "#4f46e5", icon: "ScrollText" },
+    { name: "NDA", color: "#64748b", icon: "FileText" },
     { name: "Hike Letter", color: "#f59e0b", icon: "TrendingUp" },
+    { name: "Promotion Letter", color: "#a855f7", icon: "TrendingUp" },
+    { name: "Bonus Letter", color: "#eab308", icon: "BadgeIndianRupee" },
+    { name: "Experience Letter", color: "#14b8a6", icon: "FileCheck2" },
     { name: "Relieving Letter", color: "#ef4444", icon: "FileCheck2" },
     { name: "Form 16", color: "#8b5cf6", icon: "ScrollText" },
+    { name: "Tax Declaration", color: "#6366f1", icon: "ScrollText" },
+    { name: "Investment Proof", color: "#10b981", icon: "FileText" },
     { name: "PF Statement", color: "#14b8a6", icon: "Landmark" },
+    { name: "Awards", color: "#f97316", icon: "FileCheck2" },
+    { name: "Certificates", color: "#06b6d4", icon: "FileCheck2" },
+    { name: "Performance Reviews", color: "#ec4899", icon: "FileText" },
     { name: "Other", color: "#64748b", icon: "FileText" }
   ]).returning();
 }
@@ -58852,6 +59181,47 @@ var WorkDocumentFolderParams = external_exports.object({ id: external_exports.co
 var WorkHistoryFetchInput = external_exports.object({
   userId: external_exports.string().min(1),
   password: external_exports.string().min(1)
+});
+router14.get("/onework/capabilities", async (_req, res) => {
+  res.json({
+    module: "OneWork",
+    os: "CareerOS",
+    posture: "api-first-readiness",
+    liveStorage: [
+      "onework_profile",
+      "work_companies",
+      "work_document_folders",
+      "work_document_categories",
+      "work_documents",
+      "work_pf_entries",
+      "work_pf_withdrawals"
+    ],
+    plannedStorage: [
+      "work_salary_history",
+      "work_hike_history",
+      "work_bonus_history",
+      "work_projects",
+      "work_skills",
+      "work_certifications",
+      "work_timeline_events",
+      "work_document_versions",
+      "work_share_links",
+      "work_audit_events"
+    ],
+    capabilityAreas: [
+      "Executive career dashboard",
+      "Company workspaces",
+      "Career timeline",
+      "Employment document vault",
+      "PF/UAN ledger",
+      "Salary and hike history",
+      "Tax documents",
+      "AI document intelligence readiness",
+      "Secure sharing readiness",
+      "Portfolio export readiness"
+    ],
+    integrations: ["EPFO", "DigiLocker", "Email", "Cloud Storage", "OCR", "AI", "Calendar", "HR Platforms", "Payroll"]
+  });
 });
 router14.get("/onework/summary", async (_req, res) => {
   res.json(await summaryPayload());
@@ -59114,23 +59484,525 @@ router14.post("/onework/history/fetch", async (req, res) => {
 });
 var onework_default = router14;
 
-// src/routes/index.ts
+// src/routes/onesocial.ts
+var import_express15 = __toESM(require_express2(), 1);
 var router15 = (0, import_express15.Router)();
-router15.use(health_default);
-router15.use(dashboard_default);
-router15.use(categories_default);
-router15.use(transactions_default);
-router15.use(loans_default);
-router15.use(emis_default);
-router15.use(insurances_default);
-router15.use(investments_default);
-router15.use(goals_default);
-router15.use(budgets_default);
-router15.use(reports_default);
-router15.use(db_default);
-router15.use(credit_cards_default);
-router15.use(onework_default);
-var routes_default = router15;
+var platformLabels = {
+  linkedin_post: "LinkedIn Post",
+  linkedin_article: "LinkedIn Article",
+  substack: "Substack",
+  medium: "Medium",
+  twitter: "Twitter/X",
+  instagram: "Instagram"
+};
+var lifecycle = ["idea", "research", "draft", "ai_enhancement", "review", "approved", "scheduled", "published", "analytics", "repurpose", "archived"];
+function nowPlusHours(hours) {
+  return new Date(Date.now() + hours * 60 * 60 * 1e3);
+}
+function slugify(value) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 80) || "content";
+}
+async function logActivity(eventType, message, actor = "OneSocial") {
+  await db.insert(socialActivityTable).values({ eventType, message, actor });
+}
+async function ensureDefaults() {
+  const connectors = await db.select().from(socialConnectorsTable);
+  if (connectors.length === 0) {
+    await db.insert(socialConnectorsTable).values([
+      { platform: "LinkedIn Posts", tier: 1, status: "needs_auth", health: "warning", notes: "OAuth connector-ready. Add credentials to enable direct publishing." },
+      { platform: "LinkedIn Articles", tier: 1, status: "needs_auth", health: "warning", notes: "Priority long-form publishing channel." },
+      { platform: "Substack", tier: 1, status: "planned", health: "unknown", notes: "Newsletter publishing adapter planned." },
+      { platform: "Medium", tier: 2, status: "planned", health: "unknown", notes: "Cross-posting adapter planned." },
+      { platform: "Twitter/X", tier: 3, status: "planned", health: "unknown", notes: "Short-post and thread adapter planned." },
+      { platform: "Instagram", tier: 3, status: "planned", health: "unknown", notes: "Promotional snippet adapter planned." }
+    ]);
+  }
+  const campaigns = await db.select().from(socialCampaignsTable);
+  if (campaigns.length === 0) {
+    await db.insert(socialCampaignsTable).values([
+      { name: "OneLife Platform", theme: "Product Launch", status: "active", objective: "Build narrative around the OneLife ecosystem.", color: "#2563eb" },
+      { name: "AI Engineering", theme: "Thought Leadership", status: "active", objective: "Publish technical articles and architecture notes.", color: "#7c3aed" },
+      { name: "CareerOS", theme: "OneWork", status: "planning", objective: "Turn work history features into professional content.", color: "#0f766e" }
+    ]);
+  }
+  const hashtags = await db.select().from(socialHashtagsTable);
+  if (hashtags.length === 0) {
+    await db.insert(socialHashtagsTable).values([
+      { hashtag: "#AIEngineering", category: "AI", platform: "linkedin", popularity: 88, performanceScore: 82, trendingScore: 91 },
+      { hashtag: "#ProductEngineering", category: "Product", platform: "linkedin", popularity: 79, performanceScore: 76, trendingScore: 74 },
+      { hashtag: "#Azure", category: "Cloud", platform: "all", popularity: 84, performanceScore: 73, trendingScore: 80 },
+      { hashtag: "#Microservices", category: "Architecture", platform: "all", popularity: 75, performanceScore: 71, trendingScore: 69 },
+      { hashtag: "#PersonalBranding", category: "Growth", platform: "linkedin", popularity: 71, performanceScore: 68, trendingScore: 66 }
+    ]);
+  }
+  const people = await db.select().from(socialPeopleTable);
+  if (people.length === 0) {
+    await db.insert(socialPeopleTable).values([
+      { name: "Engineering Leaders", role: "Audience Segment", company: "LinkedIn", platform: "LinkedIn", handle: "engineering-leaders", relationshipStage: "community", notes: "Primary audience for architecture and AI engineering content." },
+      { name: "Founder Operators", role: "Audience Segment", company: "Substack", platform: "Substack", handle: "founder-operators", relationshipStage: "lead", notes: "Newsletter audience for product strategy and build notes." },
+      { name: "Cloud Architects", role: "Audience Segment", company: "Medium", platform: "Medium", handle: "cloud-architects", relationshipStage: "peer", notes: "Technical readers for Azure and architecture articles." }
+    ]);
+  }
+  const circles = await db.select().from(socialCirclesTable);
+  if (circles.length === 0) {
+    await db.insert(socialCirclesTable).values([
+      { name: "AI Engineering Network", purpose: "Thought leadership and technical discussion", color: "#0a66c2", cadence: "weekly", memberCount: 42 },
+      { name: "OneLife Early Users", purpose: "Product feedback, launches, and beta updates", color: "#e11d48", cadence: "biweekly", memberCount: 18 },
+      { name: "Cloud Architecture Circle", purpose: "Azure, microservices, and platform engineering content", color: "#7c3aed", cadence: "weekly", memberCount: 31 }
+    ]);
+  }
+  const followups = await db.select().from(socialFollowupsTable);
+  if (followups.length === 0) {
+    const [person] = await db.select().from(socialPeopleTable);
+    const [circle] = await db.select().from(socialCirclesTable);
+    await db.insert(socialFollowupsTable).values([
+      { personId: person?.id ?? null, circleId: circle?.id ?? null, title: "Reply to launch-post comments", channel: "LinkedIn", status: "due", dueAt: nowPlusHours(6), notes: "Prioritize thoughtful replies and save strong questions as future posts." },
+      { personId: null, circleId: circle?.id ?? null, title: "Send weekly build note teaser", channel: "Substack", status: "scheduled", dueAt: nowPlusHours(30), notes: "Use newsletter CTA from top-performing LinkedIn post." }
+    ]);
+  }
+  const rules = await db.select().from(socialAutomationRulesTable);
+  if (rules.length === 0) {
+    await db.insert(socialAutomationRulesTable).values([
+      { name: "Weekday LinkedIn Publisher", triggerType: "schedule", triggerConfig: "Every weekday at 08:00", actionType: "publish", actionConfig: "Publish next approved LinkedIn post", status: "active" },
+      { name: "Newsletter Wednesday", triggerType: "schedule", triggerConfig: "Every Wednesday at 09:00", actionType: "publish", actionConfig: "Publish approved Substack newsletter", status: "active" },
+      { name: "Long-form Repurposer", triggerType: "content_published", triggerConfig: "When LinkedIn article is published", actionType: "repurpose", actionConfig: "Create Twitter thread and Instagram teaser", status: "active" }
+    ]);
+  }
+  const content = await db.select().from(socialContentItemsTable);
+  if (content.length === 0) {
+    const [campaign] = await db.select().from(socialCampaignsTable);
+    const [created] = await db.insert(socialContentItemsTable).values({
+      campaignId: campaign?.id ?? null,
+      title: "Why Personal Operating Systems Need AI",
+      summary: "A launch narrative for OneLife as a connected personal operating system.",
+      body: "Most productivity tools capture fragments. A personal operating system connects finance, work, health, ideas, notes, travel, and social publishing into one coherent loop.",
+      status: "scheduled",
+      approvalStatus: "approved",
+      contentType: "linkedin_article",
+      audience: "Founders, builders, and senior engineers",
+      cta: "Follow the OneLife build journey",
+      topics: "AI, Personal OS, OneLife",
+      tags: "OneLife,AI,Product",
+      slug: "why-personal-operating-systems-need-ai",
+      aiSummary: "Position OneLife as an AI-ready operating layer for life and work.",
+      keywords: "personal operating system, AI productivity, OneLife",
+      scheduledAt: nowPlusHours(24)
+    }).returning();
+    await generateVersions(created.id);
+    await db.insert(socialPublishQueueTable).values({ contentId: created.id, platform: "linkedin_article", status: "scheduled", scheduledAt: nowPlusHours(24) });
+    await db.insert(socialAiSuggestionsTable).values([
+      { title: "Repurpose OneWork launch into a LinkedIn carousel", suggestionType: "repurpose", priority: "high", description: "Turn the CareerOS dashboard into a visual post series for LinkedIn and Instagram." },
+      { title: "Publish architecture article on AI-ready modules", suggestionType: "topic", priority: "medium", description: "Explain how modular data models make OneLife ready for future AI agents." }
+    ]);
+    await logActivity("seed", "OneSocial starter workspace created.");
+  }
+}
+async function generateVersions(contentId) {
+  const [content] = await db.select().from(socialContentItemsTable).where(eq(socialContentItemsTable.id, contentId));
+  if (!content) return [];
+  await db.delete(socialPlatformVersionsTable).where(eq(socialPlatformVersionsTable.contentId, contentId));
+  const tags = (content.tags || "OneLife,AI,Product").split(",").map((tag) => `#${tag.trim().replace(/^#/, "").replace(/\s+/g, "")}`).slice(0, 4).join(" ");
+  const base = content.summary || content.body.slice(0, 180);
+  const versions = [
+    {
+      contentId,
+      platform: "linkedin_post",
+      title: content.title,
+      body: `${content.title}
+
+${base}
+
+${content.cta || "What would you automate first?"}
+
+${tags}`,
+      status: "ready",
+      hashtags: tags
+    },
+    {
+      contentId,
+      platform: "linkedin_article",
+      title: content.title,
+      body: `${content.body}
+
+Key takeaway: ${content.aiSummary || base}
+
+${content.cta || ""}`,
+      status: "ready",
+      hashtags: tags
+    },
+    {
+      contentId,
+      platform: "substack",
+      title: content.title,
+      body: `Hello builders,
+
+${content.body}
+
+Why it matters:
+${content.aiSummary || base}
+
+${content.cta || "See you in the next build note."}`,
+      status: "ready",
+      hashtags: tags
+    },
+    {
+      contentId,
+      platform: "medium",
+      title: content.title,
+      body: `${content.body}
+
+## Practical angle
+${content.summary || base}`,
+      status: "ready",
+      hashtags: tags
+    },
+    {
+      contentId,
+      platform: "twitter",
+      title: content.title,
+      body: `${content.title}
+
+${base.slice(0, 180)}
+
+${tags}`,
+      status: "ready",
+      hashtags: tags
+    },
+    {
+      contentId,
+      platform: "instagram",
+      title: content.title,
+      body: `${content.title}
+
+${base.slice(0, 140)}
+
+Read the full article via the primary channel.
+
+${tags}`,
+      status: "ready",
+      hashtags: tags
+    }
+  ];
+  return db.insert(socialPlatformVersionsTable).values(
+    versions.map((version3) => ({ ...version3, characterCount: version3.body.length }))
+  ).returning();
+}
+async function summaryPayload2() {
+  await ensureDefaults();
+  const [campaigns, content, versions, queue, connectors, hashtags, analytics, suggestions, activity, people, circles, followups, automationRules] = await Promise.all([
+    db.select().from(socialCampaignsTable).orderBy(desc(socialCampaignsTable.createdAt)),
+    db.select().from(socialContentItemsTable).orderBy(desc(socialContentItemsTable.updatedAt)),
+    db.select().from(socialPlatformVersionsTable).orderBy(desc(socialPlatformVersionsTable.createdAt)),
+    db.select().from(socialPublishQueueTable).orderBy(socialPublishQueueTable.scheduledAt),
+    db.select().from(socialConnectorsTable).orderBy(socialConnectorsTable.tier),
+    db.select().from(socialHashtagsTable).orderBy(desc(socialHashtagsTable.trendingScore)),
+    db.select().from(socialAnalyticsTable),
+    db.select().from(socialAiSuggestionsTable).orderBy(desc(socialAiSuggestionsTable.createdAt)),
+    db.select().from(socialActivityTable).orderBy(desc(socialActivityTable.createdAt)),
+    db.select().from(socialPeopleTable).orderBy(desc(socialPeopleTable.createdAt)),
+    db.select().from(socialCirclesTable).orderBy(desc(socialCirclesTable.createdAt)),
+    db.select().from(socialFollowupsTable).orderBy(socialFollowupsTable.dueAt),
+    db.select().from(socialAutomationRulesTable).orderBy(desc(socialAutomationRulesTable.createdAt))
+  ]);
+  const now = /* @__PURE__ */ new Date();
+  const todayKey = now.toISOString().slice(0, 10);
+  const weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - 7);
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const published = content.filter((item) => item.status === "published");
+  const scheduled = queue.filter((item) => ["queued", "scheduled", "retrying"].includes(item.status));
+  const engagementEvents = analytics.reduce((sum, item) => sum + item.likes + item.comments + item.shares + item.clicks, 0);
+  const impressions = analytics.reduce((sum, item) => sum + item.impressions, 0);
+  const engagementRate = impressions ? engagementEvents / impressions * 100 : 0;
+  const platformTotals = analytics.reduce((acc, item) => {
+    acc[item.platform] = (acc[item.platform] ?? 0) + item.likes + item.comments + item.shares + item.clicks;
+    return acc;
+  }, {});
+  const bestPlatform = Object.entries(platformTotals).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "LinkedIn";
+  const topContent = published[0] ?? content[0] ?? null;
+  const pipeline = lifecycle.map((stage) => ({ stage, count: content.filter((item) => item.status === stage).length }));
+  return {
+    campaigns,
+    content,
+    platformVersions: versions,
+    queue,
+    connectors,
+    hashtags,
+    analytics,
+    suggestions,
+    activity: activity.slice(0, 12),
+    people,
+    circles,
+    followups,
+    automationRules,
+    metrics: {
+      todayScheduled: scheduled.filter((item) => item.scheduledAt && new Date(item.scheduledAt).toISOString().slice(0, 10) === todayKey).length,
+      drafts: content.filter((item) => ["idea", "research", "draft", "ai_enhancement"].includes(item.status)).length,
+      publishedToday: published.filter((item) => item.publishedAt && new Date(item.publishedAt).toISOString().slice(0, 10) === todayKey).length,
+      postsThisWeek: content.filter((item) => item.createdAt && new Date(item.createdAt) >= weekStart).length,
+      postsThisMonth: content.filter((item) => item.createdAt && new Date(item.createdAt) >= monthStart).length,
+      followersGrowth: analytics.reduce((sum, item) => sum + item.followersDelta, 0),
+      engagementRate,
+      bestPlatform,
+      topPost: topContent?.title ?? "No published content yet",
+      pendingReviews: content.filter((item) => item.approvalStatus === "needs_review" || item.status === "review").length,
+      publishingErrors: queue.filter((item) => item.status === "failed").length,
+      connectedPlatforms: connectors.filter((connector) => connector.status === "connected").length,
+      totalViews: analytics.reduce((sum, item) => sum + item.impressions, 0),
+      dueFollowups: followups.filter((item) => item.status === "due").length,
+      activeAutomations: automationRules.filter((item) => item.status === "active").length
+    },
+    pipeline,
+    platformLabels
+  };
+}
+var IdParams = external_exports.object({ id: external_exports.coerce.number() });
+var ScheduleInput = insertSocialPublishQueueSchema.extend({
+  scheduledAt: external_exports.coerce.date()
+});
+var ConnectorStatusInput = external_exports.object({
+  status: external_exports.enum(["connected", "not_connected", "needs_auth", "degraded", "planned"]).optional()
+});
+router15.get("/onesocial/capabilities", async (_req, res) => {
+  res.json({
+    module: "OneSocial",
+    os: "ContentOS",
+    posture: "enterprise-ai-content-operations",
+    liveStorage: [
+      "social_campaigns",
+      "social_content_items",
+      "social_platform_versions",
+      "social_publish_queue",
+      "social_connectors",
+      "social_hashtags",
+      "social_analytics",
+      "social_ai_suggestions",
+      "social_activity",
+      "social_people",
+      "social_circles",
+      "social_followups",
+      "social_automation_rules"
+    ],
+    lifecycle,
+    priorityPlatforms: ["LinkedIn Posts", "LinkedIn Articles", "Substack", "Medium", "Twitter/X", "Instagram"],
+    capabilityAreas: ["Executive dashboard", "Content workspace", "AI content studio", "Platform adaptation", "Publishing queue", "Campaigns", "Hashtag intelligence", "Analytics", "Connector health", "Activity stream"]
+  });
+});
+router15.get("/onesocial/summary", async (_req, res) => {
+  res.json(await summaryPayload2());
+});
+router15.post("/onesocial/campaigns", async (req, res) => {
+  const parsed = insertSocialCampaignSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [created] = await db.insert(socialCampaignsTable).values(parsed.data).returning();
+  await logActivity("campaign", `Campaign "${created.name}" created.`);
+  res.status(201).json(created);
+});
+router15.post("/onesocial/content", async (req, res) => {
+  const parsed = insertSocialContentItemSchema.safeParse({ ...req.body, slug: req.body.slug || slugify(req.body.title || "content") });
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [created] = await db.insert(socialContentItemsTable).values(parsed.data).returning();
+  const versions = await generateVersions(created.id);
+  await logActivity("content", `Content "${created.title}" created with ${versions.length} platform versions.`);
+  res.status(201).json({ ...created, versions });
+});
+router15.patch("/onesocial/content/:id", async (req, res) => {
+  const params = IdParams.safeParse(req.params);
+  const parsed = insertSocialContentItemSchema.partial().safeParse(req.body);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [updated] = await db.update(socialContentItemsTable).set({ ...parsed.data, updatedAt: /* @__PURE__ */ new Date() }).where(eq(socialContentItemsTable.id, params.data.id)).returning();
+  if (!updated) {
+    res.status(404).json({ error: "Content not found" });
+    return;
+  }
+  if (req.body.regenerateVersions) await generateVersions(updated.id);
+  await logActivity("content", `Content "${updated.title}" updated.`);
+  res.json(updated);
+});
+router15.delete("/onesocial/content/:id", async (req, res) => {
+  const params = IdParams.safeParse(req.params);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  const [deleted] = await db.delete(socialContentItemsTable).where(eq(socialContentItemsTable.id, params.data.id)).returning();
+  if (!deleted) {
+    res.status(404).json({ error: "Content not found" });
+    return;
+  }
+  await logActivity("content", `Content "${deleted.title}" deleted.`);
+  res.sendStatus(204);
+});
+router15.post("/onesocial/content/:id/generate-platform-versions", async (req, res) => {
+  const params = IdParams.safeParse(req.params);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  const versions = await generateVersions(params.data.id);
+  await logActivity("ai", `Generated ${versions.length} platform-adapted versions.`);
+  res.json(versions);
+});
+router15.post("/onesocial/schedule", async (req, res) => {
+  const parsed = ScheduleInput.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [created] = await db.insert(socialPublishQueueTable).values({ ...parsed.data, status: parsed.data.status ?? "scheduled" }).returning();
+  await db.update(socialContentItemsTable).set({ status: "scheduled", scheduledAt: created.scheduledAt, updatedAt: /* @__PURE__ */ new Date() }).where(eq(socialContentItemsTable.id, created.contentId));
+  await logActivity("schedule", `${created.platform} scheduled for publishing.`);
+  res.status(201).json(created);
+});
+router15.post("/onesocial/queue/:id/run", async (req, res) => {
+  const params = IdParams.safeParse(req.params);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  const [queueItem] = await db.select().from(socialPublishQueueTable).where(eq(socialPublishQueueTable.id, params.data.id));
+  if (!queueItem) {
+    res.status(404).json({ error: "Queue item not found" });
+    return;
+  }
+  const [updated] = await db.update(socialPublishQueueTable).set({ status: "published", attempts: queueItem.attempts + 1, updatedAt: /* @__PURE__ */ new Date() }).where(eq(socialPublishQueueTable.id, queueItem.id)).returning();
+  await db.update(socialContentItemsTable).set({ status: "published", publishedAt: /* @__PURE__ */ new Date(), updatedAt: /* @__PURE__ */ new Date() }).where(eq(socialContentItemsTable.id, queueItem.contentId));
+  await db.insert(socialAnalyticsTable).values({ contentId: queueItem.contentId, platform: queueItem.platform, impressions: 1200, reach: 880, likes: 96, comments: 14, shares: 9, clicks: 31, followersDelta: 7 });
+  await logActivity("publish", `${queueItem.platform} published successfully through the OneSocial queue.`);
+  res.json(updated);
+});
+router15.post("/onesocial/connectors/:id/check", async (req, res) => {
+  const params = IdParams.safeParse(req.params);
+  const body = ConnectorStatusInput.safeParse(req.body ?? {});
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  if (!body.success) {
+    res.status(400).json({ error: body.error.message });
+    return;
+  }
+  const [connector] = await db.select().from(socialConnectorsTable).where(eq(socialConnectorsTable.id, params.data.id));
+  if (!connector) {
+    res.status(404).json({ error: "Connector not found" });
+    return;
+  }
+  const status = body.data.status ?? connector.status;
+  const health = status === "connected" ? "healthy" : status === "degraded" || status === "needs_auth" ? "warning" : "unknown";
+  const [updated] = await db.update(socialConnectorsTable).set({ status, health, lastCheckedAt: /* @__PURE__ */ new Date() }).where(eq(socialConnectorsTable.id, connector.id)).returning();
+  await logActivity("connector", `${connector.platform} connector health checked: ${health}.`);
+  res.json(updated);
+});
+router15.post("/onesocial/connectors/:id/configure", async (req, res) => {
+  const params = IdParams.safeParse(req.params);
+  const body = external_exports.object({
+    accountName: external_exports.string().optional().nullable(),
+    username: external_exports.string().optional().nullable(),
+    authType: external_exports.enum(["oauth", "api_key", "password", "webhook", "manual"]).default("oauth"),
+    credentialSecret: external_exports.string().optional()
+  }).safeParse(req.body ?? {});
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  if (!body.success) {
+    res.status(400).json({ error: body.error.message });
+    return;
+  }
+  const [connector] = await db.select().from(socialConnectorsTable).where(eq(socialConnectorsTable.id, params.data.id));
+  if (!connector) {
+    res.status(404).json({ error: "Connector not found" });
+    return;
+  }
+  const hasCredential = Boolean(body.data.credentialSecret?.trim());
+  const isManual = body.data.authType === "manual";
+  const [updated] = await db.update(socialConnectorsTable).set({
+    accountName: body.data.accountName || null,
+    username: body.data.username || null,
+    authType: body.data.authType,
+    credentialStatus: hasCredential || isManual ? "configured" : "not_configured",
+    credentialUpdatedAt: hasCredential ? /* @__PURE__ */ new Date() : connector.credentialUpdatedAt,
+    status: hasCredential || isManual ? "connected" : "needs_auth",
+    health: hasCredential || isManual ? "healthy" : "warning",
+    lastCheckedAt: /* @__PURE__ */ new Date(),
+    lastError: hasCredential || isManual ? null : "Credential/token is required for live connector checks."
+  }).where(eq(socialConnectorsTable.id, connector.id)).returning();
+  await logActivity("connector", `${connector.platform} account settings saved for ${updated.accountName || updated.username || "manual publishing"}.`);
+  res.json(updated);
+});
+router15.post("/onesocial/people", async (req, res) => {
+  const parsed = insertSocialPersonSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [created] = await db.insert(socialPeopleTable).values(parsed.data).returning();
+  await logActivity("people", `Audience/person "${created.name}" added.`);
+  res.status(201).json(created);
+});
+router15.post("/onesocial/circles", async (req, res) => {
+  const parsed = insertSocialCircleSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [created] = await db.insert(socialCirclesTable).values(parsed.data).returning();
+  await logActivity("circle", `Circle "${created.name}" created.`);
+  res.status(201).json(created);
+});
+router15.post("/onesocial/followups", async (req, res) => {
+  const parsed = insertSocialFollowupSchema.extend({ dueAt: external_exports.coerce.date() }).safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [created] = await db.insert(socialFollowupsTable).values(parsed.data).returning();
+  await logActivity("followup", `Follow-up "${created.title}" scheduled.`);
+  res.status(201).json(created);
+});
+router15.post("/onesocial/automation-rules", async (req, res) => {
+  const parsed = insertSocialAutomationRuleSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [created] = await db.insert(socialAutomationRulesTable).values(parsed.data).returning();
+  await logActivity("automation", `Automation "${created.name}" created.`);
+  res.status(201).json(created);
+});
+var onesocial_default = router15;
+
+// src/routes/index.ts
+var router16 = (0, import_express16.Router)();
+router16.use(health_default);
+router16.use(dashboard_default);
+router16.use(categories_default);
+router16.use(transactions_default);
+router16.use(loans_default);
+router16.use(emis_default);
+router16.use(insurances_default);
+router16.use(investments_default);
+router16.use(goals_default);
+router16.use(budgets_default);
+router16.use(reports_default);
+router16.use(db_default);
+router16.use(credit_cards_default);
+router16.use(onework_default);
+router16.use(onesocial_default);
+var routes_default = router16;
 
 // src/lib/logger.ts
 var import_pino = __toESM(require_pino(), 1);
@@ -59151,7 +60023,7 @@ var logger = (0, import_pino.default)({
 });
 
 // src/app.ts
-var app = (0, import_express16.default)();
+var app = (0, import_express17.default)();
 app.use(
   (0, import_pino_http.pinoHttp)({
     logger,
@@ -59172,8 +60044,8 @@ app.use(
   })
 );
 app.use((0, import_cors.default)());
-app.use(import_express16.default.json());
-app.use(import_express16.default.urlencoded({ extended: true }));
+app.use(import_express17.default.json());
+app.use(import_express17.default.urlencoded({ extended: true }));
 app.use("/api", routes_default);
 app.use((_req, res) => {
   res.status(404).json({

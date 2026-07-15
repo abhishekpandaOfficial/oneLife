@@ -130,12 +130,24 @@ async function ensureDefaultDocumentCategories() {
     if (existing.length > 0)
         return existing;
     return db.insert(workDocumentCategoriesTable).values([
+        { name: "Offer Letter", color: "#2563eb", icon: "FileSignature" },
+        { name: "Appointment Letter", color: "#16a34a", icon: "FileSignature" },
         { name: "Payslip", color: "#0ea5e9", icon: "ReceiptText" },
         { name: "Joining Letter", color: "#22c55e", icon: "FileSignature" },
+        { name: "Employment Contract", color: "#4f46e5", icon: "ScrollText" },
+        { name: "NDA", color: "#64748b", icon: "FileText" },
         { name: "Hike Letter", color: "#f59e0b", icon: "TrendingUp" },
+        { name: "Promotion Letter", color: "#a855f7", icon: "TrendingUp" },
+        { name: "Bonus Letter", color: "#eab308", icon: "BadgeIndianRupee" },
+        { name: "Experience Letter", color: "#14b8a6", icon: "FileCheck2" },
         { name: "Relieving Letter", color: "#ef4444", icon: "FileCheck2" },
         { name: "Form 16", color: "#8b5cf6", icon: "ScrollText" },
+        { name: "Tax Declaration", color: "#6366f1", icon: "ScrollText" },
+        { name: "Investment Proof", color: "#10b981", icon: "FileText" },
         { name: "PF Statement", color: "#14b8a6", icon: "Landmark" },
+        { name: "Awards", color: "#f97316", icon: "FileCheck2" },
+        { name: "Certificates", color: "#06b6d4", icon: "FileCheck2" },
+        { name: "Performance Reviews", color: "#ec4899", icon: "FileText" },
         { name: "Other", color: "#64748b", icon: "FileText" },
     ]).returning();
 }
@@ -203,6 +215,47 @@ const WorkDocumentFolderParams = z.object({ id: z.coerce.number() });
 const WorkHistoryFetchInput = z.object({
     userId: z.string().min(1),
     password: z.string().min(1),
+});
+router.get("/onework/capabilities", async (_req, res) => {
+    res.json({
+        module: "OneWork",
+        os: "CareerOS",
+        posture: "api-first-readiness",
+        liveStorage: [
+            "onework_profile",
+            "work_companies",
+            "work_document_folders",
+            "work_document_categories",
+            "work_documents",
+            "work_pf_entries",
+            "work_pf_withdrawals",
+        ],
+        plannedStorage: [
+            "work_salary_history",
+            "work_hike_history",
+            "work_bonus_history",
+            "work_projects",
+            "work_skills",
+            "work_certifications",
+            "work_timeline_events",
+            "work_document_versions",
+            "work_share_links",
+            "work_audit_events",
+        ],
+        capabilityAreas: [
+            "Executive career dashboard",
+            "Company workspaces",
+            "Career timeline",
+            "Employment document vault",
+            "PF/UAN ledger",
+            "Salary and hike history",
+            "Tax documents",
+            "AI document intelligence readiness",
+            "Secure sharing readiness",
+            "Portfolio export readiness",
+        ],
+        integrations: ["EPFO", "DigiLocker", "Email", "Cloud Storage", "OCR", "AI", "Calendar", "HR Platforms", "Payroll"],
+    });
 });
 router.get("/onework/summary", async (_req, res) => {
     res.json(await summaryPayload());

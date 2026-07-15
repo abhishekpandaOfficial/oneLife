@@ -23,6 +23,18 @@ import {
   LogOut,
   CreditCard,
   BriefcaseBusiness,
+  Users,
+  Notebook,
+  Lightbulb,
+  Plane,
+  ChevronDown,
+  Circle,
+  FileText,
+  Building2,
+  Folder,
+  Handshake,
+  MapPinned,
+  BadgeIndianRupee,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -59,27 +71,143 @@ function getInitials(name: string): string {
     .join("");
 }
 
-const navItems = [
-  { label: "Dashboard",    href: "/app",         icon: LayoutDashboard },
-  { label: "Income",       href: "/income",       icon: ArrowDownToLine },
-  { label: "Expenses",     href: "/expenses",     icon: ArrowUpFromLine },
-  { label: "Transactions", href: "/transactions", icon: ArrowLeftRight },
-  { label: "Loans",        href: "/loans",        icon: Wallet },
-  { label: "Credit Cards", href: "/credit-cards", icon: CreditCard },
-  { label: "Insurance",    href: "/insurance",    icon: ShieldCheck },
-  { label: "Investments",  href: "/investments",  icon: TrendingUp },
-  { label: "Goals",        href: "/goals",        icon: Target },
-  { label: "Budget",       href: "/budget",       icon: PieChart },
-  { label: "OneWork",      href: "/onework",      icon: BriefcaseBusiness },
-  { label: "Reports",      href: "/reports",      icon: BarChart3 },
-  { label: "Categories",   href: "/categories",   icon: Tags },
-  { label: "Settings",     href: "/settings",     icon: Settings },
+type NavItem = {
+  label: string;
+  href: string;
+  icon: React.ElementType;
+  badge?: string;
+  exact?: boolean;
+};
+
+const navModules: Array<{
+  id: string;
+  label: string;
+  os: string;
+  icon: React.ElementType;
+  accent: string;
+  items: NavItem[];
+}> = [
+  {
+    id: "finance",
+    label: "OneFinance",
+    os: "MoneyOS",
+    icon: Wallet,
+    accent: "text-emerald-600 dark:text-emerald-300",
+    items: [
+      { label: "Dashboard", href: "/onefinance", icon: LayoutDashboard, exact: true },
+      { label: "Income", href: "/income", icon: ArrowDownToLine },
+      { label: "Expenses", href: "/expenses", icon: ArrowUpFromLine },
+      { label: "Transactions", href: "/transactions", icon: ArrowLeftRight },
+      { label: "Loans", href: "/loans", icon: Wallet },
+      { label: "Credit Cards", href: "/credit-cards", icon: CreditCard },
+      { label: "Insurance", href: "/insurance", icon: ShieldCheck },
+      { label: "Investments", href: "/investments", icon: TrendingUp },
+      { label: "Goals", href: "/goals", icon: Target },
+      { label: "Budget", href: "/budget", icon: PieChart },
+      { label: "Reports", href: "/reports", icon: BarChart3 },
+      { label: "Categories", href: "/categories", icon: Tags },
+    ],
+  },
+  {
+    id: "work",
+    label: "OneWork",
+    os: "CareerOS",
+    icon: BriefcaseBusiness,
+    accent: "text-blue-600 dark:text-blue-300",
+    items: [
+      { label: "Dashboard", href: "/onework", icon: LayoutDashboard, exact: true },
+      { label: "Career Workspace", href: "/onework/career", icon: BriefcaseBusiness, exact: true },
+      { label: "Companies", href: "/onework/companies", icon: Building2, exact: true },
+      { label: "Documents", href: "/onework/documents", icon: Folder, exact: true },
+      { label: "PF Ledger", href: "/onework/pf", icon: BadgeIndianRupee, exact: true },
+    ],
+  },
+  {
+    id: "social",
+    label: "OneSocial",
+    os: "RelationshipOS",
+    icon: Users,
+    accent: "text-rose-600 dark:text-rose-300",
+    items: [
+      { label: "Dashboard", href: "/onesocial", icon: LayoutDashboard, exact: true },
+      { label: "People", href: "/onesocial/people", icon: Users, exact: true },
+      { label: "Circles", href: "/onesocial/circles", icon: Circle, exact: true },
+      { label: "Follow-ups", href: "/onesocial/follow-ups", icon: Handshake, exact: true },
+    ],
+  },
+  {
+    id: "note",
+    label: "OneNote",
+    os: "KnowledgeOS",
+    icon: Notebook,
+    accent: "text-amber-600 dark:text-amber-300",
+    items: [
+      { label: "Dashboard", href: "/onenote", icon: LayoutDashboard, exact: true },
+      { label: "Notes", href: "/onenote/notes", icon: Notebook, exact: true },
+      { label: "Collections", href: "/onenote/collections", icon: Folder, exact: true },
+      { label: "Resources", href: "/onenote/resources", icon: FileText, exact: true },
+    ],
+  },
+  {
+    id: "idea",
+    label: "OneIdea",
+    os: "CreationOS",
+    icon: Lightbulb,
+    accent: "text-fuchsia-600 dark:text-fuchsia-300",
+    items: [
+      { label: "Dashboard", href: "/oneidea", icon: LayoutDashboard, exact: true },
+      { label: "Ideas", href: "/oneidea/ideas", icon: Lightbulb, exact: true },
+      { label: "Experiments", href: "/oneidea/experiments", icon: Zap, exact: true },
+      { label: "Roadmap", href: "/oneidea/roadmap", icon: Target, exact: true },
+    ],
+  },
+  {
+    id: "travel",
+    label: "OneTravel",
+    os: "TravelOS",
+    icon: Plane,
+    accent: "text-cyan-600 dark:text-cyan-300",
+    items: [
+      { label: "Dashboard", href: "/onetravel", icon: LayoutDashboard, exact: true },
+      { label: "Trips", href: "/onetravel/trips", icon: Plane, exact: true },
+      { label: "Places", href: "/onetravel/places", icon: MapPinned, exact: true },
+      { label: "Travel Docs", href: "/onetravel/documents", icon: FileText, exact: true },
+    ],
+  },
 ];
+
+const dashboardItem: NavItem = { label: "One Dashboard", href: "/app", icon: LayoutDashboard, exact: true };
+const settingsItem: NavItem = { label: "Settings", href: "/settings", icon: Settings, exact: true };
+const searchableNavItems = [dashboardItem, ...navModules.flatMap((module) => module.items), settingsItem];
+const MODULE_PREF_KEY = "onelife_sidebar_open_modules";
+
+function isRouteActive(location: string, item: Pick<NavItem, "href" | "exact">) {
+  return item.exact ? location === item.href : location === item.href || location.startsWith(`${item.href}/`);
+}
+
+function readOpenModules(): Record<string, boolean> {
+  const defaults = {
+    finance: true,
+    work: true,
+    social: false,
+    note: false,
+    idea: false,
+    travel: false,
+  };
+  try {
+    const raw = localStorage.getItem(MODULE_PREF_KEY);
+    if (!raw) return defaults;
+    return { ...defaults, ...JSON.parse(raw) };
+  } catch {
+    return defaults;
+  }
+}
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [location, setLocation] = useLocation();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [dbStatus, setDbStatus] = useState<"connected" | "error" | "checking">("checking");
+  const [openModules, setOpenModules] = useState<Record<string, boolean>>(readOpenModules);
 
   // Display name — re-reads from localStorage whenever settings are saved
   const [displayName, setDisplayName] = useState<string>(readDisplayName);
@@ -181,6 +309,14 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     setSearchQuery("");
   };
 
+  const toggleModule = (id: string) => {
+    setOpenModules((current) => {
+      const next = { ...current, [id]: !current[id] };
+      localStorage.setItem(MODULE_PREF_KEY, JSON.stringify(next));
+      return next;
+    });
+  };
+
   const isDbActive  = location === "/database"    || location.startsWith("/database");
   const isApiActive = location === "/api-monitor" || location.startsWith("/api-monitor");
   const initials    = getInitials(displayName);
@@ -246,29 +382,96 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
             {/* Nav links */}
             <div className="flex-1 overflow-y-auto py-4 px-2 space-y-0.5">
-              {navItems.map((item) => {
-                const isActive = location === item.href ||
-                  (item.href !== "/" && location.startsWith(item.href));
+              <Link
+                href={dashboardItem.href}
+                title={isCollapsed ? dashboardItem.label : undefined}
+                className={cn(
+                  "flex items-center gap-3 rounded-lg py-2.5 text-sm font-semibold transition-all duration-150",
+                  isCollapsed ? "justify-center px-2 h-10" : "px-3",
+                  location === dashboardItem.href
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-foreground hover:bg-muted"
+                )}
+              >
+                <dashboardItem.icon className="h-4 w-4 shrink-0" />
+                {!isCollapsed && <span className="truncate">{dashboardItem.label}</span>}
+              </Link>
+
+              {!isCollapsed && (
+                <div className="px-3 pb-1 pt-4 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+                  Ecosystem
+                </div>
+              )}
+
+              {navModules.map((module) => {
+                const isModuleActive = module.items.some((item) => isRouteActive(location, item));
+                const isOpen = Boolean(openModules[module.id]);
                 return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    title={isCollapsed ? item.label : undefined}
-                    className={cn(
-                      "flex items-center gap-3 rounded-lg py-2.5 text-sm font-medium transition-all duration-150",
-                      isCollapsed ? "justify-center px-2 h-10" : "px-3",
-                      isActive
-                        ? "bg-primary text-primary-foreground shadow-sm"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  <div key={module.id} className="space-y-0.5">
+                    <button
+                      type="button"
+                      onClick={() => isCollapsed ? setLocation(module.items[0].href) : toggleModule(module.id)}
+                      title={isCollapsed ? module.label : undefined}
+                      className={cn(
+                        "flex w-full items-center gap-3 rounded-lg py-2.5 text-sm font-semibold transition-all duration-150",
+                        isCollapsed ? "justify-center px-2 h-10" : "px-3",
+                        isModuleActive
+                          ? "bg-muted text-foreground"
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      )}
+                    >
+                      <module.icon className={cn("h-4 w-4 shrink-0", !isModuleActive && module.accent)} />
+                      {!isCollapsed && (
+                        <>
+                          <span className="flex min-w-0 flex-1 items-baseline gap-2 text-left">
+                            <span className="truncate">{module.label}</span>
+                            <span className="truncate text-[10px] font-semibold text-muted-foreground">{module.os}</span>
+                          </span>
+                          <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform", isOpen ? "rotate-0" : "-rotate-90")} />
+                        </>
+                      )}
+                    </button>
+
+                    {!isCollapsed && isOpen && (
+                      <div className="ml-3 space-y-0.5 border-l border-border/70 pl-3">
+                        {module.items.map((item) => {
+                          const isActive = isRouteActive(location, item);
+                          return (
+                            <Link
+                              key={`${module.id}-${item.label}-${item.href}`}
+                              href={item.href}
+                              className={cn(
+                                "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-150",
+                                isActive
+                                  ? "bg-primary text-primary-foreground shadow-sm"
+                                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                              )}
+                            >
+                              <item.icon className="h-3.5 w-3.5 shrink-0" />
+                              <span className="truncate">{item.label}</span>
+                            </Link>
+                          );
+                        })}
+                      </div>
                     )}
-                  >
-                    <item.icon className="h-4 w-4 shrink-0" />
-                    {!isCollapsed && (
-                      <span className="truncate">{item.label}</span>
-                    )}
-                  </Link>
+                  </div>
                 );
               })}
+
+              <Link
+                href={settingsItem.href}
+                title={isCollapsed ? settingsItem.label : undefined}
+                className={cn(
+                  "flex items-center gap-3 rounded-lg py-2.5 text-sm font-medium transition-all duration-150",
+                  isCollapsed ? "justify-center px-2 h-10" : "px-3",
+                  location === settingsItem.href
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
+              >
+                <settingsItem.icon className="h-4 w-4 shrink-0" />
+                {!isCollapsed && <span className="truncate">{settingsItem.label}</span>}
+              </Link>
 
               {/* System section */}
               <div className="pt-3 pb-1">
@@ -373,7 +576,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 )}>
                   <div className="px-3 py-2 border-b">
                     <p className="text-sm font-semibold truncate">{displayName}</p>
-                    <p className="text-[11px] text-muted-foreground">OneLife Finance</p>
+                    <p className="text-[11px] text-muted-foreground">OneLife Ecosystem</p>
                   </div>
                   <button
                     onClick={() => { setProfileOpen(false); setLocation("/settings"); }}
@@ -456,9 +659,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         <CommandList>
           <CommandEmpty>{isLoadingSearch ? "Searching…" : "No results found."}</CommandEmpty>
           <CommandGroup heading="Quick Pages">
-            {navItems
+            {searchableNavItems
               .filter((i) => i.label.toLowerCase().includes(searchQuery.toLowerCase()))
-              .slice(0, 5)
+              .slice(0, 8)
               .map((i) => (
                 <CommandItem key={i.href} onSelect={() => handleSelectNav(i.href)} className="cursor-pointer">
                   <i.icon className="mr-2 h-4 w-4 text-muted-foreground" />

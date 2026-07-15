@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "wouter";
 import { 
   useGetDashboardSummary, 
+  useGetOneworkSummary,
   useListTransactions,
   type Transaction,
 } from "@workspace/api-client-react";
@@ -21,7 +22,16 @@ import {
   Landmark,
   ReceiptText,
   Scale,
-  Umbrella
+  Umbrella,
+  BriefcaseBusiness,
+  Building2,
+  FileText,
+  Lightbulb,
+  Notebook,
+  Plane,
+  Users,
+  ArrowRight,
+  Sparkles
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -54,9 +64,11 @@ function monthRangeFromKey(month: string) {
   };
 }
 
-export default function Dashboard() {
+export default function Dashboard({ mode = "one" }: { mode?: "one" | "finance" }) {
+  const isFinanceDashboard = mode === "finance";
   const currentCurrency = useCurrencyRefresh();
   const { data: summary, isLoading, error } = useGetDashboardSummary();
+  const { data: workSummary, isLoading: isWorkLoading } = useGetOneworkSummary();
   const [isExpenseDialogOpen, setIsExpenseDialogOpen] = React.useState(false);
   const expenseMonthRange = summary ? monthRangeFromKey(summary.budgetSummary.month) : undefined;
   const { data: monthlyExpenseTransactions, isLoading: isExpensesLoading } = useListTransactions(
@@ -113,16 +125,100 @@ export default function Dashboard() {
   const totalLiabilities = summary.totalLoanOutstanding + summary.totalCreditCardOutstanding;
   const netWorthTrendUp = summary.netWorthChange >= 0;
   const netWorthTrendLabel = `${netWorthTrendUp ? "+" : "-"}${formatCurrency(Math.abs(summary.netWorthChange))} this month (${netWorthTrendUp ? "+" : "-"}${Math.abs(summary.netWorthChangePercent).toFixed(1)}%)`;
+  const ecosystemModules = [
+    {
+      title: "OneFinance",
+      os: "MoneyOS",
+      href: "/onefinance",
+      icon: Wallet,
+      tone: "border-emerald-500/25 bg-emerald-500/10 text-emerald-600 dark:text-emerald-300",
+      metric: formatCurrency(summary.netWorth),
+      label: "Net worth",
+      details: [
+        `${formatCurrency(summary.monthlyIncome)} income`,
+        `${formatCurrency(summary.monthlyExpenses)} expenses`,
+        `${summary.upcomingPayments.length} upcoming`,
+      ],
+      progress: Math.min(Math.max(summary.budgetSummary.utilizationPercent || 0, 0), 100),
+    },
+    {
+      title: "OneWork",
+      os: "CareerOS",
+      href: "/onework",
+      icon: BriefcaseBusiness,
+      tone: "border-blue-500/25 bg-blue-500/10 text-blue-600 dark:text-blue-300",
+      metric: isWorkLoading ? "Loading" : `${workSummary?.totalCompanies ?? 0}`,
+      label: "Companies",
+      details: [
+        `${workSummary?.documents.length ?? 0} files`,
+        `${workSummary?.folders.length ?? 0} folders`,
+        `${formatCurrency(workSummary?.pfBalance ?? summary.pfBalance ?? 0)} PF`,
+      ],
+      progress: workSummary?.totalCompanies ? 72 : 18,
+    },
+    {
+      title: "OneSocial",
+      os: "RelationshipOS",
+      href: "/onesocial",
+      icon: Users,
+      tone: "border-rose-500/25 bg-rose-500/10 text-rose-600 dark:text-rose-300",
+      metric: "0",
+      label: "People",
+      details: ["Circles ready", "Follow-ups planned", "Timeline mapped"],
+      progress: 22,
+    },
+    {
+      title: "OneNote",
+      os: "KnowledgeOS",
+      href: "/onenote",
+      icon: Notebook,
+      tone: "border-amber-500/25 bg-amber-500/10 text-amber-700 dark:text-amber-300",
+      metric: "0",
+      label: "Notes",
+      details: ["Collections ready", "Resources mapped", "Search planned"],
+      progress: 26,
+    },
+    {
+      title: "OneIdea",
+      os: "CreationOS",
+      href: "/oneidea",
+      icon: Lightbulb,
+      tone: "border-fuchsia-500/25 bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-300",
+      metric: "0",
+      label: "Ideas",
+      details: ["Experiments ready", "Scoring planned", "Roadmap mapped"],
+      progress: 24,
+    },
+    {
+      title: "OneTravel",
+      os: "TravelOS",
+      href: "/onetravel",
+      icon: Plane,
+      tone: "border-cyan-500/25 bg-cyan-500/10 text-cyan-600 dark:text-cyan-300",
+      metric: "0",
+      label: "Trips",
+      details: ["Places ready", "Travel docs mapped", "Budgets planned"],
+      progress: 25,
+    },
+  ];
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-12">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Financial Overview</h1>
-          <p className="text-muted-foreground mt-1">Your command center for all things money.</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="outline" className="bg-card">{isFinanceDashboard ? "OneFinance Module" : "OneLife Ecosystem"}</Badge>
+            <Badge className="gap-1"><Sparkles className="h-3 w-3" /> {isFinanceDashboard ? "MoneyOS" : "UnifiedOS"}</Badge>
+          </div>
+          <h1 className="mt-3 text-3xl font-bold tracking-tight">{isFinanceDashboard ? "OneFinance Dashboard" : "One Dashboard"}</h1>
+          <p className="text-muted-foreground mt-1">
+            {isFinanceDashboard
+              ? "Net worth, cash flow, budgets, debt, investments, insurance, and payments in one finance cockpit."
+              : "A beautiful command center for finance, work, social, notes, ideas, and travel."}
+          </p>
           
           {/* Live Exchange Rates Row */}
-          <div className="flex flex-wrap items-center gap-2 mt-3 text-[11px] text-muted-foreground bg-card border px-3 py-1.5 rounded-xl shadow-sm max-w-fit">
+          {isFinanceDashboard && <div className="flex flex-wrap items-center gap-2 mt-3 text-[11px] text-muted-foreground bg-card border px-3 py-1.5 rounded-xl shadow-sm max-w-fit">
             <span className="flex items-center gap-1 font-semibold text-foreground mr-1">
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
               Live Rates:
@@ -132,9 +228,9 @@ export default function Dashboard() {
             <span className="bg-muted/50 px-2 py-0.5 rounded-md border font-mono">1 QAR = {(1 / rates.QAR).toFixed(2)} INR</span>
             <span className="bg-muted/50 px-2 py-0.5 rounded-md border font-mono">1 SAR = {(1 / rates.SAR).toFixed(2)} INR</span>
             <span className="bg-muted/50 px-2 py-0.5 rounded-md border font-mono">1 AED = {(1 / rates.AED).toFixed(2)} INR</span>
-          </div>
+          </div>}
         </div>
-        <div className="flex flex-wrap items-center gap-3">
+        {isFinanceDashboard && <div className="flex flex-wrap items-center gap-3">
           <select
             value={currentCurrency}
             onChange={(e) => setGlobalCurrency(e.target.value)}
@@ -160,9 +256,75 @@ export default function Dashboard() {
               Add Expense
             </Button>
           </Link>
-        </div>
+        </div>}
       </div>
 
+      {!isFinanceDashboard && <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {ecosystemModules.map((module) => (
+          <Link key={module.title} href={module.href}>
+            <Card className={`group h-full overflow-hidden rounded-2xl border shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md ${module.tone}`}>
+              <CardHeader className="space-y-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-card/80 shadow-sm">
+                      <module.icon className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg text-foreground">{module.title}</CardTitle>
+                      <CardDescription>{module.os} · {module.label}</CardDescription>
+                    </div>
+                  </div>
+                  <ArrowRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1" />
+                </div>
+                <div>
+                  <p className="font-mono text-3xl font-bold text-foreground">{module.metric}</p>
+                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-background/70">
+                    <div className="h-full rounded-full bg-current transition-all duration-700" style={{ width: `${module.progress}%` }} />
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="flex flex-wrap gap-2">
+                {module.details.map((detail) => (
+                  <Badge key={detail} variant="outline" className="bg-card/70 text-foreground">{detail}</Badge>
+                ))}
+                <Badge variant="secondary" className="bg-card/80 text-foreground">{module.os}</Badge>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
+      </section>}
+
+      {!isFinanceDashboard && <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
+        <Card className="rounded-2xl border-primary/10 bg-gradient-to-br from-card via-card to-primary/5">
+          <CardHeader>
+            <CardTitle>Today Across OneLife</CardTitle>
+            <CardDescription>Live finance and work signals sit beside the new ecosystem modules.</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <MiniSignal icon={ReceiptText} label="Monthly spend" value={formatCurrency(summary.monthlyExpenses)} />
+            <MiniSignal icon={CalendarDays} label="Payments due" value={String(summary.upcomingPayments.length)} />
+            <MiniSignal icon={Building2} label="Work companies" value={String(workSummary?.totalCompanies ?? 0)} />
+            <MiniSignal icon={FileText} label="Work files" value={String(workSummary?.documents.length ?? 0)} />
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-2xl">
+          <CardHeader>
+            <CardTitle>Build Coverage</CardTitle>
+            <CardDescription>Modules are organized; finance and work are data-backed now.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <CoverageRow icon={Wallet} label="OneFinance" value="Live" />
+            <CoverageRow icon={BriefcaseBusiness} label="OneWork" value="Live" />
+            <CoverageRow icon={Users} label="OneSocial" value="Mapped" />
+            <CoverageRow icon={Notebook} label="OneNote" value="Mapped" />
+            <CoverageRow icon={Lightbulb} label="OneIdea" value="Mapped" />
+            <CoverageRow icon={Plane} label="OneTravel" value="Mapped" />
+          </CardContent>
+        </Card>
+      </div>}
+
+      {isFinanceDashboard && <>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard 
           title="Net Worth" 
@@ -588,6 +750,31 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
+      </>}
+    </div>
+  );
+}
+
+function MiniSignal({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
+  return (
+    <div className="rounded-xl border bg-background/70 p-4">
+      <div className="flex items-center gap-2 text-muted-foreground">
+        <Icon className="h-4 w-4" />
+        <p className="text-sm">{label}</p>
+      </div>
+      <p className="mt-2 truncate font-mono text-xl font-bold">{value}</p>
+    </div>
+  );
+}
+
+function CoverageRow({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-xl border bg-muted/20 px-3 py-2.5">
+      <div className="flex min-w-0 items-center gap-2">
+        <Icon className="h-4 w-4 shrink-0 text-primary" />
+        <span className="truncate text-sm font-medium">{label}</span>
+      </div>
+      <Badge variant={value === "Live" ? "default" : "outline"}>{value}</Badge>
     </div>
   );
 }

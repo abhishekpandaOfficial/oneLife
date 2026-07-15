@@ -15,6 +15,12 @@ import {
   ChevronRight,
   Activity,
   Trash2,
+  Wallet,
+  BriefcaseBusiness,
+  Users,
+  Notebook,
+  Lightbulb,
+  Plane,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -40,6 +46,24 @@ interface TableInfo {
   rowCount: number;
   sizeBytes: number;
   sizeHuman: string;
+  module: string;
+  moduleKey: string;
+  label: string;
+  feature: string;
+  description: string;
+  color: string;
+  status: "live" | "planned" | "system";
+}
+
+interface ModuleInfo {
+  module: string;
+  moduleKey: string;
+  tableCount: number;
+  rowCount: number;
+  sizeBytes: number;
+  sizeHuman: string;
+  status: "live" | "planned";
+  plannedTables?: string[];
 }
 
 interface DbInfo {
@@ -48,6 +72,7 @@ interface DbInfo {
   database: string;
   version: string;
   tables: TableInfo[];
+  modules: ModuleInfo[];
   lastChecked: string;
   error?: string;
 }
@@ -68,15 +93,41 @@ const triggerSync = async (): Promise<{ success: boolean; message: string }> => 
 
 // ─── Table name display helper ───────────────────────────────────────────────
 
-const TABLE_META: Record<string, { label: string; color: string }> = {
-  categories:   { label: "Categories",   color: "bg-blue-500" },
-  transactions: { label: "Transactions", color: "bg-emerald-500" },
-  loans:        { label: "Loans",        color: "bg-orange-500" },
-  emis:         { label: "EMIs",         color: "bg-yellow-500" },
-  insurances:   { label: "Insurances",   color: "bg-purple-500" },
-  investments:  { label: "Investments",  color: "bg-teal-500" },
-  goals:        { label: "Goals",        color: "bg-pink-500" },
-  budgets:      { label: "Budgets",      color: "bg-indigo-500" },
+const MODULE_ICONS: Record<string, React.ElementType> = {
+  finance: Wallet,
+  work: BriefcaseBusiness,
+  social: Users,
+  note: Notebook,
+  idea: Lightbulb,
+  travel: Plane,
+  system: Database,
+};
+
+const COLOR_DOT: Record<string, string> = {
+  emerald: "bg-emerald-500",
+  orange: "bg-orange-500",
+  amber: "bg-amber-500",
+  rose: "bg-rose-500",
+  cyan: "bg-cyan-500",
+  teal: "bg-teal-500",
+  pink: "bg-pink-500",
+  indigo: "bg-indigo-500",
+  blue: "bg-blue-500",
+  violet: "bg-violet-500",
+  slate: "bg-slate-500",
+  red: "bg-red-500",
+};
+
+const MODULE_ORDER = ["finance", "work", "social", "note", "idea", "travel", "system"];
+
+const MODULE_TONE: Record<string, string> = {
+  finance: "border-emerald-500/20 bg-emerald-500/5",
+  work: "border-blue-500/20 bg-blue-500/5",
+  social: "border-rose-500/20 bg-rose-500/5",
+  note: "border-amber-500/20 bg-amber-500/5",
+  idea: "border-fuchsia-500/20 bg-fuchsia-500/5",
+  travel: "border-cyan-500/20 bg-cyan-500/5",
+  system: "border-slate-500/20 bg-slate-500/5",
 };
 
 function humanDate(iso: string) {
@@ -132,6 +183,13 @@ export default function DatabaseMonitor() {
   const isSyncing = syncMutation.isPending || isLoading;
 
   const selectedTableData = data?.tables.find((t) => t.name === selectedTable);
+  const sortedModules = [...(data?.modules ?? [])].sort(
+    (a, b) => MODULE_ORDER.indexOf(a.moduleKey) - MODULE_ORDER.indexOf(b.moduleKey)
+  );
+  const tablesByModule = sortedModules.map((module) => ({
+    ...module,
+    tables: (data?.tables ?? []).filter((table) => table.moduleKey === module.moduleKey),
+  }));
 
   return (
     <div className="space-y-6">
@@ -248,7 +306,7 @@ export default function DatabaseMonitor() {
             </div>
             <p className="text-2xl font-bold">{data?.tables.length ?? "—"}</p>
             <p className="text-xs text-muted-foreground mt-0.5">
-              {data?.tables.reduce((s, t) => s + t.rowCount, 0).toLocaleString() ?? "—"} total rows
+              {data?.modules.filter((module) => module.status === "live").length ?? "—"} live modules
             </p>
           </CardContent>
         </Card>
@@ -299,9 +357,9 @@ export default function DatabaseMonitor() {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <Rows3 className="h-4 w-4 text-primary" />
-              Tables
+              Module Tables
             </CardTitle>
-            <CardDescription>Click a table to inspect details</CardDescription>
+            <CardDescription>Grouped by OneLife module</CardDescription>
           </CardHeader>
           <CardContent className="p-0">
             {isLoading ? (
@@ -311,36 +369,70 @@ export default function DatabaseMonitor() {
                 ))}
               </div>
             ) : (
-              <ul className="divide-y">
-                {data?.tables.map((table) => {
-                  const meta = TABLE_META[table.name];
-                  const isSelected = selectedTable === table.name;
+              <div className="space-y-3 p-3">
+                {tablesByModule.map((module) => {
+                  const ModuleIcon = MODULE_ICONS[module.moduleKey] ?? Database;
                   return (
-                    <li key={table.name}>
-                      <button
-                        onClick={() => setSelectedTable(isSelected ? null : table.name)}
-                        className={cn(
-                          "w-full flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/50",
-                          isSelected && "bg-primary/5"
-                        )}
-                      >
-                        <span className={cn(
-                          "h-2.5 w-2.5 rounded-full shrink-0",
-                          meta?.color ?? "bg-muted-foreground"
-                        )} />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{meta?.label ?? table.name}</p>
-                          <p className="text-xs text-muted-foreground">{table.rowCount.toLocaleString()} rows</p>
+                    <section key={module.moduleKey} className={cn("overflow-hidden rounded-xl border", MODULE_TONE[module.moduleKey] ?? "bg-muted/20")}>
+                      <div className="flex items-center justify-between gap-3 border-b bg-card/70 px-3 py-2.5">
+                        <div className="flex min-w-0 items-center gap-2">
+                          <ModuleIcon className="h-4 w-4 shrink-0 text-primary" />
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-semibold">{module.module}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {module.status === "live"
+                                ? `${module.tableCount} tables · ${module.rowCount.toLocaleString()} rows`
+                                : "Planned schema"}
+                            </p>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2 shrink-0">
-                          <Badge variant="secondary" className="text-[10px] font-mono">{table.sizeHuman}</Badge>
-                          <ChevronRight className={cn("h-3 w-3 text-muted-foreground transition-transform", isSelected && "rotate-90")} />
+                        <Badge variant={module.status === "live" ? "default" : "outline"}>{module.status}</Badge>
+                      </div>
+
+                      {module.tables.length > 0 ? (
+                        <ul className="divide-y bg-card/35">
+                          {module.tables.map((table) => {
+                            const isSelected = selectedTable === table.name;
+                            return (
+                              <li key={table.name}>
+                                <button
+                                  onClick={() => setSelectedTable(isSelected ? null : table.name)}
+                                  className={cn(
+                                    "w-full flex items-center gap-3 px-3 py-3 text-left transition-colors hover:bg-muted/50",
+                                    isSelected && "bg-primary/10"
+                                  )}
+                                >
+                                  <span className={cn(
+                                    "h-2.5 w-2.5 rounded-full shrink-0",
+                                    COLOR_DOT[table.color] ?? "bg-muted-foreground"
+                                  )} />
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium truncate">{table.label}</p>
+                                    <p className="truncate text-xs text-muted-foreground">{table.feature} · {table.rowCount.toLocaleString()} rows</p>
+                                  </div>
+                                  <div className="flex items-center gap-2 shrink-0">
+                                    <Badge variant="secondary" className="text-[10px] font-mono">{table.sizeHuman}</Badge>
+                                    <ChevronRight className={cn("h-3 w-3 text-muted-foreground transition-transform", isSelected && "rotate-90")} />
+                                  </div>
+                                </button>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      ) : (
+                        <div className="space-y-2 bg-card/35 p-3">
+                          {module.plannedTables?.map((tableName) => (
+                            <div key={tableName} className="flex items-center justify-between gap-3 rounded-lg border border-dashed bg-background/60 px-3 py-2 text-sm">
+                              <span className="font-mono text-xs text-muted-foreground">{tableName}</span>
+                              <Badge variant="outline">planned</Badge>
+                            </div>
+                          ))}
                         </div>
-                      </button>
-                    </li>
+                      )}
+                    </section>
                   );
                 })}
-              </ul>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -353,14 +445,14 @@ export default function DatabaseMonitor() {
                 <CardTitle className="flex items-center gap-2">
                   <span className={cn(
                     "h-3 w-3 rounded-full",
-                    TABLE_META[selectedTableData.name]?.color ?? "bg-muted-foreground"
+                    COLOR_DOT[selectedTableData.color] ?? "bg-muted-foreground"
                   )} />
-                  {TABLE_META[selectedTableData.name]?.label ?? selectedTableData.name}
+                  {selectedTableData.label}
                   <Badge variant="outline" className="ml-auto font-mono text-xs">
                     {selectedTableData.name}
                   </Badge>
                 </CardTitle>
-                <CardDescription>Table statistics from Supabase</CardDescription>
+                <CardDescription>{selectedTableData.module} · {selectedTableData.feature}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -384,11 +476,18 @@ export default function DatabaseMonitor() {
                 <div className="mt-6 rounded-xl border bg-muted/30 p-4">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Table Info</p>
                   <div className="space-y-2 text-sm">
+                    <InfoRow label="Module" value={selectedTableData.module} />
+                    <InfoRow label="Feature" value={selectedTableData.feature} />
                     <InfoRow label="Table name" value={selectedTableData.name} mono />
                     <InfoRow label="Schema"     value="public" mono />
                     <InfoRow label="Database"   value={data?.database ?? "—"} mono />
                     <InfoRow label="Host"        value={data?.host ?? "—"} mono />
                   </div>
+                </div>
+
+                <div className="mt-4 rounded-xl border bg-card p-4">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Purpose</p>
+                  <p className="text-sm text-muted-foreground">{selectedTableData.description}</p>
                 </div>
 
                 <p className="text-xs text-muted-foreground mt-4 flex items-center gap-1">

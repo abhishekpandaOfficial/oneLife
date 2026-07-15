@@ -13,6 +13,7 @@ import Investments from "@/pages/Investments";
 import Goals from "@/pages/Goals";
 import Budget from "@/pages/Budget";
 import OneWork from "@/pages/OneWork";
+import EcosystemModule from "@/pages/EcosystemModule";
 import Reports from "@/pages/Reports";
 import Categories from "@/pages/Categories";
 import Settings from "@/pages/Settings";
@@ -36,7 +37,12 @@ function Router() {
   return (
     <AppLayout>
       <Switch>
-        <Route path="/app" component={Dashboard} />
+        <Route path="/app">
+          {() => <Dashboard />}
+        </Route>
+        <Route path="/onefinance">
+          {() => <Dashboard mode="finance" />}
+        </Route>
 
         {/* key forces full remount when switching income ↔ expenses ↔ transactions */}
         <Route path="/income">
@@ -64,7 +70,32 @@ function Router() {
         <Route path="/investments" component={Investments} />
         <Route path="/goals" component={Goals} />
         <Route path="/budget" component={Budget} />
+        <Route path="/onework/:section" component={OneWork} />
         <Route path="/onework" component={OneWork} />
+        <Route path="/onesocial/:section">
+          {() => <EcosystemModule module="social" />}
+        </Route>
+        <Route path="/onesocial">
+          {() => <EcosystemModule module="social" />}
+        </Route>
+        <Route path="/onenote/:section">
+          {() => <EcosystemModule module="note" />}
+        </Route>
+        <Route path="/onenote">
+          {() => <EcosystemModule module="note" />}
+        </Route>
+        <Route path="/oneidea/:section">
+          {() => <EcosystemModule module="idea" />}
+        </Route>
+        <Route path="/oneidea">
+          {() => <EcosystemModule module="idea" />}
+        </Route>
+        <Route path="/onetravel/:section">
+          {() => <EcosystemModule module="travel" />}
+        </Route>
+        <Route path="/onetravel">
+          {() => <EcosystemModule module="travel" />}
+        </Route>
         <Route path="/reports" component={Reports} />
         <Route path="/categories" component={Categories} />
         <Route path="/settings" component={Settings} />

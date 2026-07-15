@@ -310,10 +310,10 @@ export default function OneWork() {
         <div className="grid gap-6 p-6 lg:grid-cols-[1fr_380px] lg:p-7">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="outline" className="bg-background">Career OS</Badge>
+              <Badge variant="outline" className="bg-background">CareerOS</Badge>
               {activeCompany && <Badge>{activeCompany.companyName}</Badge>}
             </div>
-            <h1 className="mt-4 text-3xl font-bold tracking-tight">OneWork</h1>
+            <h1 className="mt-4 text-3xl font-bold tracking-tight">OneWork Dashboard</h1>
             <p className="mt-2 max-w-3xl text-muted-foreground">
               Company history, logos, folders, files, PF, Form 16, letters, payslips, and secure import status in one workspace.
             </p>

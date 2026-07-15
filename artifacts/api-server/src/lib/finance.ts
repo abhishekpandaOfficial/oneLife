@@ -10,6 +10,9 @@ import {
   goalsTable,
   creditCardsTable,
   budgetsTable,
+  workCompaniesTable,
+  workPfEntriesTable,
+  workPfWithdrawalsTable,
 } from "@workspace/db";
 import { monthRange, monthKey, lastMonthKeys, yearRange, lastYears } from "./dates";
 
@@ -114,6 +117,27 @@ export async function totalLoanOutstanding(): Promise<number> {
 export async function totalCreditCardOutstanding(): Promise<number> {
   const cards = await db.select().from(creditCardsTable);
   return cards.reduce((sum, c) => sum + Number(c.outstandingAmount), 0);
+}
+
+function monthsInclusive(startDate: string, endDate: string | null): number {
+  const start = new Date(startDate);
+  const end = endDate ? new Date(endDate) : new Date();
+  return Math.max(0, (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()) + 1);
+}
+
+export async function totalPfBalance(): Promise<number> {
+  const [companies, entries, withdrawals] = await Promise.all([
+    db.select().from(workCompaniesTable),
+    db.select().from(workPfEntriesTable),
+    db.select().from(workPfWithdrawalsTable),
+  ]);
+  const entryCompanyIds = new Set(entries.map((entry) => entry.companyId).filter(Boolean));
+  const entriesTotal = entries.reduce((sum, entry) => sum + Number(entry.employeeAmount) + Number(entry.employerAmount) + Number(entry.interestAmount), 0);
+  const estimatedTotal = companies
+    .filter((company) => !entryCompanyIds.has(company.id))
+    .reduce((sum, company) => sum + monthsInclusive(company.startDate, company.endDate) * (Number(company.employeePfMonthly) + Number(company.employerPfMonthly)), 0);
+  const withdrawn = withdrawals.reduce((sum, withdrawal) => sum + Number(withdrawal.amount), 0);
+  return Math.max(0, entriesTotal + estimatedTotal - withdrawn);
 }
 
 export async function totalInvestmentValue(): Promise<number> {

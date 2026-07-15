@@ -20706,27 +20706,27 @@ var require_router = __commonJS({
     var slice = Array.prototype.slice;
     var flatten = Array.prototype.flat;
     var methods = METHODS.map((method) => method.toLowerCase());
-    module.exports = Router15;
+    module.exports = Router16;
     module.exports.Route = Route;
-    function Router15(options) {
-      if (!(this instanceof Router15)) {
-        return new Router15(options);
+    function Router16(options) {
+      if (!(this instanceof Router16)) {
+        return new Router16(options);
       }
       const opts = options || {};
-      function router15(req, res, next) {
-        router15.handle(req, res, next);
+      function router16(req, res, next) {
+        router16.handle(req, res, next);
       }
-      Object.setPrototypeOf(router15, this);
-      router15.caseSensitive = opts.caseSensitive;
-      router15.mergeParams = opts.mergeParams;
-      router15.params = {};
-      router15.strict = opts.strict;
-      router15.stack = [];
-      return router15;
+      Object.setPrototypeOf(router16, this);
+      router16.caseSensitive = opts.caseSensitive;
+      router16.mergeParams = opts.mergeParams;
+      router16.params = {};
+      router16.strict = opts.strict;
+      router16.stack = [];
+      return router16;
     }
-    Router15.prototype = function() {
+    Router16.prototype = function() {
     };
-    Router15.prototype.param = function param(name, fn) {
+    Router16.prototype.param = function param(name, fn) {
       if (!name) {
         throw new TypeError("argument name is required");
       }
@@ -20746,7 +20746,7 @@ var require_router = __commonJS({
       params.push(fn);
       return this;
     };
-    Router15.prototype.handle = function handle(req, res, callback) {
+    Router16.prototype.handle = function handle(req, res, callback) {
       if (!callback) {
         throw new TypeError("argument callback is required");
       }
@@ -20873,7 +20873,7 @@ var require_router = __commonJS({
         }
       }
     };
-    Router15.prototype.use = function use(handler) {
+    Router16.prototype.use = function use(handler) {
       let offset = 0;
       let path = "/";
       if (typeof handler !== "function") {
@@ -20906,7 +20906,7 @@ var require_router = __commonJS({
       }
       return this;
     };
-    Router15.prototype.route = function route(path) {
+    Router16.prototype.route = function route(path) {
       const route2 = new Route(path);
       const layer = new Layer(path, {
         sensitive: this.caseSensitive,
@@ -20921,7 +20921,7 @@ var require_router = __commonJS({
       return route2;
     };
     methods.concat("all").forEach(function(method) {
-      Router15.prototype[method] = function(path) {
+      Router16.prototype[method] = function(path) {
         const route = this.route(path);
         route[method].apply(route, slice.call(arguments, 1));
         return this;
@@ -21104,13 +21104,13 @@ var require_application = __commonJS({
     var compileTrust = require_utils3().compileTrust;
     var resolve = __require("node:path").resolve;
     var once = require_once();
-    var Router15 = require_router();
+    var Router16 = require_router();
     var slice = Array.prototype.slice;
     var flatten = Array.prototype.flat;
     var app2 = exports = module.exports = {};
     var trustProxyDefaultSymbol = "@@symbol:trust_proxy_default";
     app2.init = function init() {
-      var router15 = null;
+      var router16 = null;
       this.cache = /* @__PURE__ */ Object.create(null);
       this.engines = /* @__PURE__ */ Object.create(null);
       this.settings = /* @__PURE__ */ Object.create(null);
@@ -21119,13 +21119,13 @@ var require_application = __commonJS({
         configurable: true,
         enumerable: true,
         get: function getrouter() {
-          if (router15 === null) {
-            router15 = new Router15({
+          if (router16 === null) {
+            router16 = new Router16({
               caseSensitive: this.enabled("case sensitive routing"),
               strict: this.enabled("strict routing")
             });
           }
-          return router15;
+          return router16;
         }
       });
     };
@@ -21196,15 +21196,15 @@ var require_application = __commonJS({
       if (fns.length === 0) {
         throw new TypeError("app.use() requires a middleware function");
       }
-      var router15 = this.router;
+      var router16 = this.router;
       fns.forEach(function(fn2) {
         if (!fn2 || !fn2.handle || !fn2.set) {
-          return router15.use(path, fn2);
+          return router16.use(path, fn2);
         }
         debug(".use app under %s", path);
         fn2.mountpath = path;
         fn2.parent = this;
-        router15.use(path, function mounted_app(req, res, next) {
+        router16.use(path, function mounted_app(req, res, next) {
           var orig = req.app;
           fn2.handle(req, res, function(err) {
             Object.setPrototypeOf(req, orig.request);
@@ -23789,7 +23789,7 @@ var require_express = __commonJS({
     var EventEmitter = __require("node:events").EventEmitter;
     var mixin = require_merge_descriptors();
     var proto = require_application();
-    var Router15 = require_router();
+    var Router16 = require_router();
     var req = require_request();
     var res = require_response();
     exports = module.exports = createApplication;
@@ -23811,8 +23811,8 @@ var require_express = __commonJS({
     exports.application = proto;
     exports.request = req;
     exports.response = res;
-    exports.Route = Router15.Route;
-    exports.Router = Router15;
+    exports.Route = Router16.Route;
+    exports.Router = Router16;
     exports.json = bodyParser.json;
     exports.raw = bodyParser.raw;
     exports.static = require_serve_static();
@@ -33811,12 +33811,12 @@ var require_lib5 = __commonJS({
 });
 
 // src/app.ts
-var import_express15 = __toESM(require_express2(), 1);
+var import_express16 = __toESM(require_express2(), 1);
 var import_cors = __toESM(require_lib3(), 1);
 var import_pino_http = __toESM(require_logger(), 1);
 
 // src/routes/index.ts
-var import_express14 = __toESM(require_express2(), 1);
+var import_express15 = __toESM(require_express2(), 1);
 
 // src/routes/health.ts
 var import_express = __toESM(require_express2(), 1);
@@ -37721,6 +37721,7 @@ var GetDashboardSummaryResponse = objectType({
   "totalCreditCardOutstanding": numberType(),
   "totalInvestmentValue": numberType(),
   "totalInsuranceCoverage": numberType(),
+  "pfBalance": numberType().optional(),
   "netWorthChange": numberType(),
   "netWorthChangePercent": numberType(),
   "emisDueCount": numberType(),
@@ -38379,6 +38380,189 @@ var DeleteCreditCardParams = objectType({
   "id": coerce.number()
 });
 var DeleteCreditCardResponse = voidType();
+var WorkEmploymentType = enumType(["full_time", "part_time", "contract", "internship", "freelance"]);
+var WorkDocumentType = enumType(["payslip", "joining_letter", "hike_letter", "relieving_letter", "form16", "pf_statement", "other"]);
+var WorkPfSource = enumType(["manual", "estimated", "epfo"]);
+var OneworkProfile = objectType({
+  "id": numberType(),
+  "uanNumber": stringType().nullish(),
+  "epfoMemberId": stringType().nullish(),
+  "lastEpfoSyncAt": coerce.date().nullish(),
+  "createdAt": coerce.date()
+});
+var OneworkProfileInput = objectType({
+  "uanNumber": stringType().nullish(),
+  "epfoMemberId": stringType().nullish()
+});
+var WorkCompany = objectType({
+  "id": numberType(),
+  "companyName": stringType(),
+  "position": stringType(),
+  "location": stringType().nullish(),
+  "employmentType": WorkEmploymentType,
+  "salaryMonthly": numberType(),
+  "startDate": stringType(),
+  "endDate": stringType().nullable(),
+  "pfAccountNumber": stringType().nullish(),
+  "employeePfMonthly": numberType(),
+  "employerPfMonthly": numberType(),
+  "color": stringType(),
+  "icon": stringType(),
+  "logoUrl": stringType().nullish(),
+  "notes": stringType().nullish(),
+  "tenureMonths": numberType(),
+  "tenureLabel": stringType(),
+  "estimatedPfAmount": numberType(),
+  "documentsCount": numberType(),
+  "createdAt": coerce.date()
+});
+var WorkCompanyInput = objectType({
+  "companyName": stringType().min(1),
+  "position": stringType().min(1),
+  "location": stringType().nullish(),
+  "employmentType": WorkEmploymentType.default("full_time"),
+  "salaryMonthly": numberType().min(0).default(0),
+  "startDate": coerce.date(),
+  "endDate": coerce.date().nullish(),
+  "pfAccountNumber": stringType().nullish(),
+  "employeePfMonthly": numberType().min(0).default(0),
+  "employerPfMonthly": numberType().min(0).default(0),
+  "color": stringType().default("#2563eb"),
+  "icon": stringType().default("Building2"),
+  "logoUrl": stringType().nullish(),
+  "notes": stringType().nullish()
+});
+var WorkCompanyUpdate = WorkCompanyInput.partial();
+var WorkDocumentFolder = objectType({
+  "id": numberType(),
+  "companyId": numberType(),
+  "companyName": stringType().nullish(),
+  "name": stringType(),
+  "color": stringType(),
+  "icon": stringType(),
+  "notes": stringType().nullish(),
+  "documentsCount": numberType(),
+  "createdAt": coerce.date()
+});
+var WorkDocumentFolderInput = objectType({
+  "companyId": numberType(),
+  "name": stringType().min(1),
+  "color": stringType().default("#2563eb"),
+  "icon": stringType().default("FileText"),
+  "notes": stringType().nullish()
+});
+var WorkDocumentFolderUpdate = WorkDocumentFolderInput.partial();
+var WorkDocumentCategory = objectType({
+  "id": numberType(),
+  "name": stringType(),
+  "color": stringType(),
+  "icon": stringType(),
+  "createdAt": coerce.date()
+});
+var WorkDocumentCategoryInput = objectType({
+  "name": stringType().min(1),
+  "color": stringType().default("#64748b"),
+  "icon": stringType().default("FileText")
+});
+var WorkDocumentCategoryUpdate = WorkDocumentCategoryInput.partial();
+var WorkDocument = objectType({
+  "id": numberType(),
+  "companyId": numberType().nullable(),
+  "companyName": stringType().nullish(),
+  "folderId": numberType().nullable(),
+  "folderName": stringType().nullish(),
+  "categoryId": numberType().nullable(),
+  "categoryName": stringType().nullish(),
+  "categoryColor": stringType().nullish(),
+  "categoryIcon": stringType().nullish(),
+  "name": stringType(),
+  "documentType": WorkDocumentType,
+  "fileName": stringType(),
+  "fileUrl": stringType().nullish(),
+  "documentDate": stringType().nullable(),
+  "notes": stringType().nullish(),
+  "createdAt": coerce.date()
+});
+var WorkDocumentInput = objectType({
+  "companyId": numberType().nullish(),
+  "folderId": numberType().nullish(),
+  "categoryId": numberType().nullish(),
+  "name": stringType().min(1),
+  "documentType": WorkDocumentType.default("other"),
+  "fileName": stringType().min(1),
+  "fileUrl": stringType().nullish(),
+  "documentDate": coerce.date().nullish(),
+  "notes": stringType().nullish()
+});
+var WorkDocumentUpdate = WorkDocumentInput.partial();
+var WorkPfEntry = objectType({
+  "id": numberType(),
+  "companyId": numberType().nullable(),
+  "companyName": stringType().nullish(),
+  "month": stringType(),
+  "employeeAmount": numberType(),
+  "employerAmount": numberType(),
+  "interestAmount": numberType(),
+  "source": WorkPfSource,
+  "notes": stringType().nullish(),
+  "createdAt": coerce.date()
+});
+var WorkPfEntryInput = objectType({
+  "companyId": numberType().nullish(),
+  "month": stringType().min(7),
+  "employeeAmount": numberType().min(0).default(0),
+  "employerAmount": numberType().min(0).default(0),
+  "interestAmount": numberType().min(0).default(0),
+  "source": WorkPfSource.default("manual"),
+  "notes": stringType().nullish()
+});
+var WorkPfEntryUpdate = WorkPfEntryInput.partial();
+var WorkPfWithdrawal = objectType({
+  "id": numberType(),
+  "companyId": numberType().nullable(),
+  "companyName": stringType().nullish(),
+  "amount": numberType(),
+  "withdrawalDate": stringType(),
+  "reason": stringType().nullish(),
+  "notes": stringType().nullish(),
+  "createdAt": coerce.date()
+});
+var WorkPfWithdrawalInput = objectType({
+  "companyId": numberType().nullish(),
+  "amount": numberType().min(0),
+  "withdrawalDate": coerce.date(),
+  "reason": stringType().nullish(),
+  "notes": stringType().nullish()
+});
+var WorkPfWithdrawalUpdate = WorkPfWithdrawalInput.partial();
+var OneworkSummary = objectType({
+  "profile": OneworkProfile.nullable(),
+  "companies": arrayType(WorkCompany),
+  "folders": arrayType(WorkDocumentFolder),
+  "documents": arrayType(WorkDocument),
+  "documentCategories": arrayType(WorkDocumentCategory),
+  "pfEntries": arrayType(WorkPfEntry),
+  "pfWithdrawals": arrayType(WorkPfWithdrawal),
+  "totalCompanies": numberType(),
+  "activeCompanyName": stringType().nullish(),
+  "totalExperienceMonths": numberType(),
+  "totalSalaryMonthly": numberType(),
+  "pfContributions": numberType(),
+  "pfWithdrawalsTotal": numberType(),
+  "pfBalance": numberType(),
+  "epfoSyncStatus": stringType()
+});
+var GetWorkCompanyParams = objectType({ "id": coerce.number() });
+var UpdateWorkCompanyParams = GetWorkCompanyParams;
+var DeleteWorkCompanyParams = GetWorkCompanyParams;
+var UpdateWorkDocumentCategoryParams = objectType({ "id": coerce.number() });
+var DeleteWorkDocumentCategoryParams = UpdateWorkDocumentCategoryParams;
+var UpdateWorkDocumentParams = objectType({ "id": coerce.number() });
+var DeleteWorkDocumentParams = UpdateWorkDocumentParams;
+var UpdateWorkPfEntryParams = objectType({ "id": coerce.number() });
+var DeleteWorkPfEntryParams = UpdateWorkPfEntryParams;
+var UpdateWorkPfWithdrawalParams = objectType({ "id": coerce.number() });
+var DeleteWorkPfWithdrawalParams = UpdateWorkPfWithdrawalParams;
 
 // ../../node_modules/.pnpm/pg@8.22.0/node_modules/pg/esm/index.mjs
 var import_lib = __toESM(require_lib5(), 1);
@@ -45364,11 +45548,25 @@ __export(schema_exports, {
   insertInsuranceSchema: () => insertInsuranceSchema,
   insertInvestmentSchema: () => insertInvestmentSchema,
   insertLoanSchema: () => insertLoanSchema,
+  insertOneworkProfileSchema: () => insertOneworkProfileSchema,
   insertTransactionSchema: () => insertTransactionSchema,
+  insertWorkCompanySchema: () => insertWorkCompanySchema,
+  insertWorkDocumentCategorySchema: () => insertWorkDocumentCategorySchema,
+  insertWorkDocumentFolderSchema: () => insertWorkDocumentFolderSchema,
+  insertWorkDocumentSchema: () => insertWorkDocumentSchema,
+  insertWorkPfEntrySchema: () => insertWorkPfEntrySchema,
+  insertWorkPfWithdrawalSchema: () => insertWorkPfWithdrawalSchema,
   insurancesTable: () => insurancesTable,
   investmentsTable: () => investmentsTable,
   loansTable: () => loansTable,
-  transactionsTable: () => transactionsTable
+  oneworkProfileTable: () => oneworkProfileTable,
+  transactionsTable: () => transactionsTable,
+  workCompaniesTable: () => workCompaniesTable,
+  workDocumentCategoriesTable: () => workDocumentCategoriesTable,
+  workDocumentFoldersTable: () => workDocumentFoldersTable,
+  workDocumentsTable: () => workDocumentsTable,
+  workPfEntriesTable: () => workPfEntriesTable,
+  workPfWithdrawalsTable: () => workPfWithdrawalsTable
 });
 
 // ../../node_modules/.pnpm/zod@3.25.76/node_modules/zod/v4/classic/external.js
@@ -56907,6 +57105,93 @@ var insertCreditCardSchema = createInsertSchema(creditCardsTable).omit({
   createdAt: true
 });
 
+// ../../lib/db/src/schema/onework.ts
+var oneworkProfileTable = pgTable("onework_profile", {
+  id: serial("id").primaryKey(),
+  uanNumber: text("uan_number"),
+  epfoMemberId: text("epfo_member_id"),
+  lastEpfoSyncAt: timestamp("last_epfo_sync_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+});
+var workCompaniesTable = pgTable("work_companies", {
+  id: serial("id").primaryKey(),
+  companyName: text("company_name").notNull(),
+  position: text("position").notNull(),
+  location: text("location"),
+  employmentType: text("employment_type", {
+    enum: ["full_time", "part_time", "contract", "internship", "freelance"]
+  }).notNull().default("full_time"),
+  salaryMonthly: numeric("salary_monthly", { precision: 14, scale: 2, mode: "number" }).notNull().default(0),
+  startDate: date("start_date", { mode: "string" }).notNull(),
+  endDate: date("end_date", { mode: "string" }),
+  pfAccountNumber: text("pf_account_number"),
+  employeePfMonthly: numeric("employee_pf_monthly", { precision: 14, scale: 2, mode: "number" }).notNull().default(0),
+  employerPfMonthly: numeric("employer_pf_monthly", { precision: 14, scale: 2, mode: "number" }).notNull().default(0),
+  color: text("color").notNull().default("#2563eb"),
+  icon: text("icon").notNull().default("Building2"),
+  logoUrl: text("logo_url"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+});
+var workDocumentFoldersTable = pgTable("work_document_folders", {
+  id: serial("id").primaryKey(),
+  companyId: integer("company_id").notNull().references(() => workCompaniesTable.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  color: text("color").notNull().default("#2563eb"),
+  icon: text("icon").notNull().default("FileText"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+});
+var workDocumentCategoriesTable = pgTable("work_document_categories", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  color: text("color").notNull().default("#64748b"),
+  icon: text("icon").notNull().default("FileText"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+});
+var workDocumentsTable = pgTable("work_documents", {
+  id: serial("id").primaryKey(),
+  companyId: integer("company_id").references(() => workCompaniesTable.id, { onDelete: "cascade" }),
+  folderId: integer("folder_id").references(() => workDocumentFoldersTable.id, { onDelete: "set null" }),
+  categoryId: integer("category_id").references(() => workDocumentCategoriesTable.id, { onDelete: "set null" }),
+  name: text("name").notNull(),
+  documentType: text("document_type", {
+    enum: ["payslip", "joining_letter", "hike_letter", "relieving_letter", "form16", "pf_statement", "other"]
+  }).notNull().default("other"),
+  fileName: text("file_name").notNull(),
+  fileUrl: text("file_url"),
+  documentDate: date("document_date", { mode: "string" }),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+});
+var workPfEntriesTable = pgTable("work_pf_entries", {
+  id: serial("id").primaryKey(),
+  companyId: integer("company_id").references(() => workCompaniesTable.id, { onDelete: "cascade" }),
+  month: text("month").notNull(),
+  employeeAmount: numeric("employee_amount", { precision: 14, scale: 2, mode: "number" }).notNull().default(0),
+  employerAmount: numeric("employer_amount", { precision: 14, scale: 2, mode: "number" }).notNull().default(0),
+  interestAmount: numeric("interest_amount", { precision: 14, scale: 2, mode: "number" }).notNull().default(0),
+  source: text("source", { enum: ["manual", "estimated", "epfo"] }).notNull().default("manual"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+});
+var workPfWithdrawalsTable = pgTable("work_pf_withdrawals", {
+  id: serial("id").primaryKey(),
+  companyId: integer("company_id").references(() => workCompaniesTable.id, { onDelete: "set null" }),
+  amount: numeric("amount", { precision: 14, scale: 2, mode: "number" }).notNull(),
+  withdrawalDate: date("withdrawal_date", { mode: "string" }).notNull(),
+  reason: text("reason"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow()
+});
+var insertOneworkProfileSchema = createInsertSchema(oneworkProfileTable).omit({ id: true, createdAt: true });
+var insertWorkCompanySchema = createInsertSchema(workCompaniesTable).omit({ id: true, createdAt: true });
+var insertWorkDocumentFolderSchema = createInsertSchema(workDocumentFoldersTable).omit({ id: true, createdAt: true });
+var insertWorkDocumentCategorySchema = createInsertSchema(workDocumentCategoriesTable).omit({ id: true, createdAt: true });
+var insertWorkDocumentSchema = createInsertSchema(workDocumentsTable).omit({ id: true, createdAt: true });
+var insertWorkPfEntrySchema = createInsertSchema(workPfEntriesTable).omit({ id: true, createdAt: true });
+var insertWorkPfWithdrawalSchema = createInsertSchema(workPfWithdrawalsTable).omit({ id: true, createdAt: true });
+
 // ../../lib/db/src/index.ts
 var { Pool: Pool3 } = esm_default;
 if (!process.env.DATABASE_URL) {
@@ -57047,6 +57332,23 @@ async function totalLoanOutstanding() {
 async function totalCreditCardOutstanding() {
   const cards = await db.select().from(creditCardsTable);
   return cards.reduce((sum, c) => sum + Number(c.outstandingAmount), 0);
+}
+function monthsInclusive(startDate, endDate) {
+  const start = new Date(startDate);
+  const end = endDate ? new Date(endDate) : /* @__PURE__ */ new Date();
+  return Math.max(0, (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()) + 1);
+}
+async function totalPfBalance() {
+  const [companies, entries, withdrawals] = await Promise.all([
+    db.select().from(workCompaniesTable),
+    db.select().from(workPfEntriesTable),
+    db.select().from(workPfWithdrawalsTable)
+  ]);
+  const entryCompanyIds = new Set(entries.map((entry) => entry.companyId).filter(Boolean));
+  const entriesTotal = entries.reduce((sum, entry) => sum + Number(entry.employeeAmount) + Number(entry.employerAmount) + Number(entry.interestAmount), 0);
+  const estimatedTotal = companies.filter((company) => !entryCompanyIds.has(company.id)).reduce((sum, company) => sum + monthsInclusive(company.startDate, company.endDate) * (Number(company.employeePfMonthly) + Number(company.employerPfMonthly)), 0);
+  const withdrawn = withdrawals.reduce((sum, withdrawal) => sum + Number(withdrawal.amount), 0);
+  return Math.max(0, entriesTotal + estimatedTotal - withdrawn);
 }
 async function totalInvestmentValue() {
   const investments = await db.select().from(investmentsTable);
@@ -57220,7 +57522,8 @@ router2.get("/dashboard/summary", async (_req, res) => {
     savings,
     payments,
     creditCardOutstanding,
-    budgetSummary
+    budgetSummary,
+    pfBalance
   ] = await Promise.all([
     incomeExpenseTotals(start, end),
     expenseByCategory(start, end),
@@ -57233,9 +57536,10 @@ router2.get("/dashboard/summary", async (_req, res) => {
     totalSavings(),
     upcomingPayments(),
     totalCreditCardOutstanding(),
-    monthlyBudgetSummary(key)
+    monthlyBudgetSummary(key),
+    totalPfBalance()
   ]);
-  const netWorth = investmentValue + savings - loanOutstanding - creditCardOutstanding;
+  const netWorth = investmentValue + savings + pfBalance - loanOutstanding - creditCardOutstanding;
   const netWorthChange = income - expense;
   const openingNetWorth = netWorth - netWorthChange;
   const netWorthChangePercent = openingNetWorth !== 0 ? netWorthChange / Math.abs(openingNetWorth) * 100 : 0;
@@ -57250,6 +57554,7 @@ router2.get("/dashboard/summary", async (_req, res) => {
       totalCreditCardOutstanding: creditCardOutstanding,
       totalInvestmentValue: investmentValue,
       totalInsuranceCoverage: insuranceCoverage,
+      pfBalance,
       netWorthChange,
       netWorthChangePercent,
       emisDueCount: dueCount,
@@ -58195,22 +58500,461 @@ router13.delete("/credit-cards/:id", async (req, res) => {
 });
 var credit_cards_default = router13;
 
-// src/routes/index.ts
+// src/routes/onework.ts
+var import_express14 = __toESM(require_express2(), 1);
 var router14 = (0, import_express14.Router)();
-router14.use(health_default);
-router14.use(dashboard_default);
-router14.use(categories_default);
-router14.use(transactions_default);
-router14.use(loans_default);
-router14.use(emis_default);
-router14.use(insurances_default);
-router14.use(investments_default);
-router14.use(goals_default);
-router14.use(budgets_default);
-router14.use(reports_default);
-router14.use(db_default);
-router14.use(credit_cards_default);
-var routes_default = router14;
+function monthDiffInclusive(startDate, endDate) {
+  const start = new Date(startDate);
+  const end = endDate ? new Date(endDate) : /* @__PURE__ */ new Date();
+  const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()) + 1;
+  return Math.max(0, months);
+}
+function tenureLabel(months) {
+  const years = Math.floor(months / 12);
+  const rest = months % 12;
+  if (years === 0) return `${rest} mo`;
+  if (rest === 0) return `${years} yr`;
+  return `${years} yr ${rest} mo`;
+}
+function dateOrNull(value) {
+  if (!value) return null;
+  return toDateStr(value instanceof Date ? value : new Date(value));
+}
+async function documentCountsByCompany() {
+  const docs = await db.select().from(workDocumentsTable);
+  const counts = /* @__PURE__ */ new Map();
+  for (const doc of docs) {
+    if (doc.companyId) counts.set(doc.companyId, (counts.get(doc.companyId) ?? 0) + 1);
+  }
+  return counts;
+}
+async function documentCountsByFolder() {
+  const docs = await db.select().from(workDocumentsTable);
+  const counts = /* @__PURE__ */ new Map();
+  for (const doc of docs) {
+    if (doc.folderId) counts.set(doc.folderId, (counts.get(doc.folderId) ?? 0) + 1);
+  }
+  return counts;
+}
+async function toCompanyRows() {
+  const [companies, counts] = await Promise.all([
+    db.select().from(workCompaniesTable).orderBy(workCompaniesTable.startDate),
+    documentCountsByCompany()
+  ]);
+  return companies.map((company) => {
+    const tenureMonths = monthDiffInclusive(company.startDate, company.endDate);
+    return WorkCompany.parse({
+      ...company,
+      salaryMonthly: Number(company.salaryMonthly),
+      employeePfMonthly: Number(company.employeePfMonthly),
+      employerPfMonthly: Number(company.employerPfMonthly),
+      tenureMonths,
+      tenureLabel: tenureLabel(tenureMonths),
+      estimatedPfAmount: tenureMonths * (Number(company.employeePfMonthly) + Number(company.employerPfMonthly)),
+      documentsCount: counts.get(company.id) ?? 0
+    });
+  });
+}
+async function toDocumentRows() {
+  const [docs, companies, folders, categories] = await Promise.all([
+    db.select().from(workDocumentsTable).orderBy(workDocumentsTable.createdAt),
+    db.select().from(workCompaniesTable),
+    db.select().from(workDocumentFoldersTable),
+    db.select().from(workDocumentCategoriesTable)
+  ]);
+  const companyById = new Map(companies.map((company) => [company.id, company]));
+  const folderById = new Map(folders.map((folder) => [folder.id, folder]));
+  const categoryById = new Map(categories.map((category) => [category.id, category]));
+  return docs.map((doc) => {
+    const company = doc.companyId ? companyById.get(doc.companyId) : null;
+    const folder = doc.folderId ? folderById.get(doc.folderId) : null;
+    const category = doc.categoryId ? categoryById.get(doc.categoryId) : null;
+    return WorkDocument.parse({
+      ...doc,
+      companyName: company?.companyName ?? null,
+      folderName: folder?.name ?? null,
+      categoryName: category?.name ?? null,
+      categoryColor: category?.color ?? null,
+      categoryIcon: category?.icon ?? null
+    });
+  });
+}
+async function toFolderRows() {
+  const [folders, companies, counts] = await Promise.all([
+    db.select().from(workDocumentFoldersTable).orderBy(workDocumentFoldersTable.createdAt),
+    db.select().from(workCompaniesTable),
+    documentCountsByFolder()
+  ]);
+  const companyById = new Map(companies.map((company) => [company.id, company.companyName]));
+  return folders.map((folder) => WorkDocumentFolder.parse({
+    ...folder,
+    companyName: companyById.get(folder.companyId) ?? null,
+    documentsCount: counts.get(folder.id) ?? 0
+  }));
+}
+async function toPfEntryRows() {
+  const [entries, companies] = await Promise.all([
+    db.select().from(workPfEntriesTable).orderBy(workPfEntriesTable.month),
+    db.select().from(workCompaniesTable)
+  ]);
+  const companyById = new Map(companies.map((company) => [company.id, company.companyName]));
+  return entries.map((entry) => WorkPfEntry.parse({
+    ...entry,
+    employeeAmount: Number(entry.employeeAmount),
+    employerAmount: Number(entry.employerAmount),
+    interestAmount: Number(entry.interestAmount),
+    companyName: entry.companyId ? companyById.get(entry.companyId) ?? null : null
+  }));
+}
+async function toWithdrawalRows() {
+  const [withdrawals, companies] = await Promise.all([
+    db.select().from(workPfWithdrawalsTable).orderBy(workPfWithdrawalsTable.withdrawalDate),
+    db.select().from(workCompaniesTable)
+  ]);
+  const companyById = new Map(companies.map((company) => [company.id, company.companyName]));
+  return withdrawals.map((withdrawal) => WorkPfWithdrawal.parse({
+    ...withdrawal,
+    amount: Number(withdrawal.amount),
+    companyName: withdrawal.companyId ? companyById.get(withdrawal.companyId) ?? null : null
+  }));
+}
+async function ensureDefaultDocumentCategories() {
+  const existing = await db.select().from(workDocumentCategoriesTable);
+  if (existing.length > 0) return existing;
+  return db.insert(workDocumentCategoriesTable).values([
+    { name: "Payslip", color: "#0ea5e9", icon: "ReceiptText" },
+    { name: "Joining Letter", color: "#22c55e", icon: "FileSignature" },
+    { name: "Hike Letter", color: "#f59e0b", icon: "TrendingUp" },
+    { name: "Relieving Letter", color: "#ef4444", icon: "FileCheck2" },
+    { name: "Form 16", color: "#8b5cf6", icon: "ScrollText" },
+    { name: "PF Statement", color: "#14b8a6", icon: "Landmark" },
+    { name: "Other", color: "#64748b", icon: "FileText" }
+  ]).returning();
+}
+async function summaryPayload() {
+  const [profileRows, companies, folders, docs, categories, entries, withdrawals] = await Promise.all([
+    db.select().from(oneworkProfileTable),
+    toCompanyRows(),
+    toFolderRows(),
+    toDocumentRows(),
+    ensureDefaultDocumentCategories(),
+    toPfEntryRows(),
+    toWithdrawalRows()
+  ]);
+  const pfContributionsFromEntries = entries.reduce((sum, entry) => sum + entry.employeeAmount + entry.employerAmount + entry.interestAmount, 0);
+  const entryCompanyIds = new Set(entries.map((entry) => entry.companyId).filter(Boolean));
+  const estimatedContribution = companies.filter((company) => !entryCompanyIds.has(company.id)).reduce((sum, company) => sum + company.estimatedPfAmount, 0);
+  const pfContributions = pfContributionsFromEntries + estimatedContribution;
+  const pfWithdrawalsTotal = withdrawals.reduce((sum, withdrawal) => sum + withdrawal.amount, 0);
+  const activeCompany = companies.find((company) => !company.endDate) ?? companies.at(-1);
+  return OneworkSummary.parse({
+    profile: profileRows[0] ?? null,
+    companies,
+    folders,
+    documents: docs,
+    documentCategories: categories,
+    pfEntries: entries,
+    pfWithdrawals: withdrawals,
+    totalCompanies: companies.length,
+    activeCompanyName: activeCompany?.companyName ?? null,
+    totalExperienceMonths: companies.reduce((sum, company) => sum + company.tenureMonths, 0),
+    totalSalaryMonthly: activeCompany?.salaryMonthly ?? 0,
+    pfContributions,
+    pfWithdrawalsTotal,
+    pfBalance: Math.max(0, pfContributions - pfWithdrawalsTotal),
+    epfoSyncStatus: "Manual records active. EPFO sync requires an authenticated UAN session and OTP flow."
+  });
+}
+function companyValues(data) {
+  return {
+    ...data,
+    startDate: data.startDate ? dateOrNull(data.startDate) : void 0,
+    endDate: data.endDate === null ? null : data.endDate ? dateOrNull(data.endDate) : void 0
+  };
+}
+var WorkDocumentFolderParams = external_exports.object({ id: external_exports.coerce.number() });
+var WorkHistoryFetchInput = external_exports.object({
+  userId: external_exports.string().min(1),
+  password: external_exports.string().min(1)
+});
+router14.get("/onework/summary", async (_req, res) => {
+  res.json(await summaryPayload());
+});
+router14.put("/onework/profile", async (req, res) => {
+  const parsed = OneworkProfileInput.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [existing] = await db.select().from(oneworkProfileTable);
+  const [profile] = existing ? await db.update(oneworkProfileTable).set(parsed.data).where(eq(oneworkProfileTable.id, existing.id)).returning() : await db.insert(oneworkProfileTable).values(parsed.data).returning();
+  res.json(profile);
+});
+router14.post("/onework/companies", async (req, res) => {
+  const parsed = WorkCompanyInput.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [created] = await db.insert(workCompaniesTable).values(companyValues(parsed.data)).returning();
+  const companies = await toCompanyRows();
+  res.status(201).json(companies.find((company) => company.id === created.id));
+});
+router14.patch("/onework/companies/:id", async (req, res) => {
+  const params = UpdateWorkCompanyParams.safeParse(req.params);
+  const parsed = WorkCompanyUpdate.safeParse(req.body);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [updated] = await db.update(workCompaniesTable).set(companyValues(parsed.data)).where(eq(workCompaniesTable.id, params.data.id)).returning();
+  if (!updated) {
+    res.status(404).json({ error: "Company not found" });
+    return;
+  }
+  const companies = await toCompanyRows();
+  res.json(companies.find((company) => company.id === updated.id));
+});
+router14.delete("/onework/companies/:id", async (req, res) => {
+  const params = DeleteWorkCompanyParams.safeParse(req.params);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  const [deleted] = await db.delete(workCompaniesTable).where(eq(workCompaniesTable.id, params.data.id)).returning();
+  if (!deleted) {
+    res.status(404).json({ error: "Company not found" });
+    return;
+  }
+  res.sendStatus(204);
+});
+router14.post("/onework/folders", async (req, res) => {
+  const parsed = WorkDocumentFolderInput.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [created] = await db.insert(workDocumentFoldersTable).values(parsed.data).returning();
+  const folders = await toFolderRows();
+  res.status(201).json(folders.find((folder) => folder.id === created.id));
+});
+router14.patch("/onework/folders/:id", async (req, res) => {
+  const params = WorkDocumentFolderParams.safeParse(req.params);
+  const parsed = WorkDocumentFolderUpdate.safeParse(req.body);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [updated] = await db.update(workDocumentFoldersTable).set(parsed.data).where(eq(workDocumentFoldersTable.id, params.data.id)).returning();
+  if (!updated) {
+    res.status(404).json({ error: "Folder not found" });
+    return;
+  }
+  const folders = await toFolderRows();
+  res.json(folders.find((folder) => folder.id === updated.id));
+});
+router14.delete("/onework/folders/:id", async (req, res) => {
+  const params = WorkDocumentFolderParams.safeParse(req.params);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  const [deleted] = await db.delete(workDocumentFoldersTable).where(eq(workDocumentFoldersTable.id, params.data.id)).returning();
+  if (!deleted) {
+    res.status(404).json({ error: "Folder not found" });
+    return;
+  }
+  res.sendStatus(204);
+});
+router14.post("/onework/document-categories", async (req, res) => {
+  const parsed = WorkDocumentCategoryInput.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [created] = await db.insert(workDocumentCategoriesTable).values(parsed.data).returning();
+  res.status(201).json(WorkDocumentCategory.parse(created));
+});
+router14.patch("/onework/document-categories/:id", async (req, res) => {
+  const params = UpdateWorkDocumentCategoryParams.safeParse(req.params);
+  const parsed = WorkDocumentCategoryUpdate.safeParse(req.body);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [updated] = await db.update(workDocumentCategoriesTable).set(parsed.data).where(eq(workDocumentCategoriesTable.id, params.data.id)).returning();
+  res.json(WorkDocumentCategory.parse(updated));
+});
+router14.delete("/onework/document-categories/:id", async (req, res) => {
+  const params = DeleteWorkDocumentCategoryParams.safeParse(req.params);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  await db.delete(workDocumentCategoriesTable).where(eq(workDocumentCategoriesTable.id, params.data.id));
+  res.sendStatus(204);
+});
+router14.post("/onework/documents", async (req, res) => {
+  const parsed = WorkDocumentInput.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [created] = await db.insert(workDocumentsTable).values({
+    ...parsed.data,
+    documentDate: dateOrNull(parsed.data.documentDate)
+  }).returning();
+  const docs = await toDocumentRows();
+  res.status(201).json(docs.find((doc) => doc.id === created.id));
+});
+router14.patch("/onework/documents/:id", async (req, res) => {
+  const params = UpdateWorkDocumentParams.safeParse(req.params);
+  const parsed = WorkDocumentUpdate.safeParse(req.body);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const update = { ...parsed.data, documentDate: parsed.data.documentDate === void 0 ? void 0 : dateOrNull(parsed.data.documentDate) };
+  const [updated] = await db.update(workDocumentsTable).set(update).where(eq(workDocumentsTable.id, params.data.id)).returning();
+  const docs = await toDocumentRows();
+  res.json(docs.find((doc) => doc.id === updated.id));
+});
+router14.delete("/onework/documents/:id", async (req, res) => {
+  const params = DeleteWorkDocumentParams.safeParse(req.params);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  await db.delete(workDocumentsTable).where(eq(workDocumentsTable.id, params.data.id));
+  res.sendStatus(204);
+});
+router14.post("/onework/pf-entries", async (req, res) => {
+  const parsed = WorkPfEntryInput.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [created] = await db.insert(workPfEntriesTable).values(parsed.data).returning();
+  const entries = await toPfEntryRows();
+  res.status(201).json(entries.find((entry) => entry.id === created.id));
+});
+router14.patch("/onework/pf-entries/:id", async (req, res) => {
+  const params = UpdateWorkPfEntryParams.safeParse(req.params);
+  const parsed = WorkPfEntryUpdate.safeParse(req.body);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [updated] = await db.update(workPfEntriesTable).set(parsed.data).where(eq(workPfEntriesTable.id, params.data.id)).returning();
+  const entries = await toPfEntryRows();
+  res.json(entries.find((entry) => entry.id === updated.id));
+});
+router14.delete("/onework/pf-entries/:id", async (req, res) => {
+  const params = DeleteWorkPfEntryParams.safeParse(req.params);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  await db.delete(workPfEntriesTable).where(eq(workPfEntriesTable.id, params.data.id));
+  res.sendStatus(204);
+});
+router14.post("/onework/pf-withdrawals", async (req, res) => {
+  const parsed = WorkPfWithdrawalInput.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const [created] = await db.insert(workPfWithdrawalsTable).values({
+    ...parsed.data,
+    withdrawalDate: toDateStr(parsed.data.withdrawalDate)
+  }).returning();
+  const withdrawals = await toWithdrawalRows();
+  res.status(201).json(withdrawals.find((withdrawal) => withdrawal.id === created.id));
+});
+router14.patch("/onework/pf-withdrawals/:id", async (req, res) => {
+  const params = UpdateWorkPfWithdrawalParams.safeParse(req.params);
+  const parsed = WorkPfWithdrawalUpdate.safeParse(req.body);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const update = {
+    ...parsed.data,
+    withdrawalDate: parsed.data.withdrawalDate ? toDateStr(parsed.data.withdrawalDate) : void 0
+  };
+  const [updated] = await db.update(workPfWithdrawalsTable).set(update).where(eq(workPfWithdrawalsTable.id, params.data.id)).returning();
+  const withdrawals = await toWithdrawalRows();
+  res.json(withdrawals.find((withdrawal) => withdrawal.id === updated.id));
+});
+router14.delete("/onework/pf-withdrawals/:id", async (req, res) => {
+  const params = DeleteWorkPfWithdrawalParams.safeParse(req.params);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  await db.delete(workPfWithdrawalsTable).where(eq(workPfWithdrawalsTable.id, params.data.id));
+  res.sendStatus(204);
+});
+router14.post("/onework/epfo/sync", async (_req, res) => {
+  res.status(501).json({
+    error: "EPFO sync requires an authenticated UAN session, captcha/OTP handling, and user consent. OneWork stores UAN and PF records and is ready for a secure connector."
+  });
+});
+router14.post("/onework/history/fetch", async (req, res) => {
+  const parsed = WorkHistoryFetchInput.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  res.status(501).json({
+    status: "connector_required",
+    importedCompanies: 0,
+    message: "OneWork received credentials for this session only, but no official authenticated employment-history connector is configured. Passwords are not stored. Add a provider connector before importing company history automatically."
+  });
+});
+var onework_default = router14;
+
+// src/routes/index.ts
+var router15 = (0, import_express15.Router)();
+router15.use(health_default);
+router15.use(dashboard_default);
+router15.use(categories_default);
+router15.use(transactions_default);
+router15.use(loans_default);
+router15.use(emis_default);
+router15.use(insurances_default);
+router15.use(investments_default);
+router15.use(goals_default);
+router15.use(budgets_default);
+router15.use(reports_default);
+router15.use(db_default);
+router15.use(credit_cards_default);
+router15.use(onework_default);
+var routes_default = router15;
 
 // src/lib/logger.ts
 var import_pino = __toESM(require_pino(), 1);
@@ -58231,7 +58975,7 @@ var logger = (0, import_pino.default)({
 });
 
 // src/app.ts
-var app = (0, import_express15.default)();
+var app = (0, import_express16.default)();
 app.use(
   (0, import_pino_http.pinoHttp)({
     logger,
@@ -58252,8 +58996,8 @@ app.use(
   })
 );
 app.use((0, import_cors.default)());
-app.use(import_express15.default.json());
-app.use(import_express15.default.urlencoded({ extended: true }));
+app.use(import_express16.default.json());
+app.use(import_express16.default.urlencoded({ extended: true }));
 app.use("/api", routes_default);
 app.use((_req, res) => {
   res.status(404).json({

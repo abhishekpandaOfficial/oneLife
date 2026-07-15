@@ -12,6 +12,7 @@ import Insurance from "@/pages/Insurance";
 import Investments from "@/pages/Investments";
 import Goals from "@/pages/Goals";
 import Budget from "@/pages/Budget";
+import OneWork from "@/pages/OneWork";
 import Reports from "@/pages/Reports";
 import Categories from "@/pages/Categories";
 import Settings from "@/pages/Settings";
@@ -63,6 +64,7 @@ function Router() {
         <Route path="/investments" component={Investments} />
         <Route path="/goals" component={Goals} />
         <Route path="/budget" component={Budget} />
+        <Route path="/onework" component={OneWork} />
         <Route path="/reports" component={Reports} />
         <Route path="/categories" component={Categories} />
         <Route path="/settings" component={Settings} />

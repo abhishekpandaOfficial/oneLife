@@ -462,6 +462,224 @@ export interface DashboardSummary {
   expenseByCategory: CategoryAmount[];
   incomeVsExpenseTrend: TrendPoint[];
   upcomingPayments: UpcomingPayment[];
+  pfBalance?: number;
+}
+
+export type WorkEmploymentType = typeof WorkEmploymentType[keyof typeof WorkEmploymentType];
+export const WorkEmploymentType = {
+  full_time: 'full_time',
+  part_time: 'part_time',
+  contract: 'contract',
+  internship: 'internship',
+  freelance: 'freelance',
+} as const;
+
+export type WorkDocumentType = typeof WorkDocumentType[keyof typeof WorkDocumentType];
+export const WorkDocumentType = {
+  payslip: 'payslip',
+  joining_letter: 'joining_letter',
+  hike_letter: 'hike_letter',
+  relieving_letter: 'relieving_letter',
+  form16: 'form16',
+  pf_statement: 'pf_statement',
+  other: 'other',
+} as const;
+
+export type WorkPfSource = typeof WorkPfSource[keyof typeof WorkPfSource];
+export const WorkPfSource = {
+  manual: 'manual',
+  estimated: 'estimated',
+  epfo: 'epfo',
+} as const;
+
+export interface OneworkProfile {
+  id: number;
+  uanNumber?: string | null;
+  epfoMemberId?: string | null;
+  lastEpfoSyncAt?: string | null;
+  createdAt: string;
+}
+
+export interface OneworkProfileInput {
+  uanNumber?: string | null;
+  epfoMemberId?: string | null;
+}
+
+export interface WorkCompany {
+  id: number;
+  companyName: string;
+  position: string;
+  location?: string | null;
+  employmentType: WorkEmploymentType;
+  salaryMonthly: number;
+  startDate: string;
+  endDate: string | null;
+  pfAccountNumber?: string | null;
+  employeePfMonthly: number;
+  employerPfMonthly: number;
+  color: string;
+  icon: string;
+  logoUrl?: string | null;
+  notes?: string | null;
+  tenureMonths: number;
+  tenureLabel: string;
+  estimatedPfAmount: number;
+  documentsCount: number;
+  createdAt: string;
+}
+
+export interface WorkCompanyInput {
+  companyName: string;
+  position: string;
+  location?: string | null;
+  employmentType?: WorkEmploymentType;
+  salaryMonthly?: number;
+  startDate: string;
+  endDate?: string | null;
+  pfAccountNumber?: string | null;
+  employeePfMonthly?: number;
+  employerPfMonthly?: number;
+  color?: string;
+  icon?: string;
+  logoUrl?: string | null;
+  notes?: string | null;
+}
+
+export type WorkCompanyUpdate = Partial<WorkCompanyInput>;
+
+export interface WorkDocumentFolder {
+  id: number;
+  companyId: number;
+  companyName?: string | null;
+  name: string;
+  color: string;
+  icon: string;
+  notes?: string | null;
+  documentsCount: number;
+  createdAt: string;
+}
+
+export interface WorkDocumentFolderInput {
+  companyId: number;
+  name: string;
+  color?: string;
+  icon?: string;
+  notes?: string | null;
+}
+
+export type WorkDocumentFolderUpdate = Partial<WorkDocumentFolderInput>;
+
+export interface WorkDocumentCategory {
+  id: number;
+  name: string;
+  color: string;
+  icon: string;
+  createdAt: string;
+}
+
+export interface WorkDocumentCategoryInput {
+  name: string;
+  color?: string;
+  icon?: string;
+}
+
+export type WorkDocumentCategoryUpdate = Partial<WorkDocumentCategoryInput>;
+
+export interface WorkDocument {
+  id: number;
+  companyId: number | null;
+  companyName?: string | null;
+  folderId: number | null;
+  folderName?: string | null;
+  categoryId: number | null;
+  categoryName?: string | null;
+  categoryColor?: string | null;
+  categoryIcon?: string | null;
+  name: string;
+  documentType: WorkDocumentType;
+  fileName: string;
+  fileUrl?: string | null;
+  documentDate: string | null;
+  notes?: string | null;
+  createdAt: string;
+}
+
+export interface WorkDocumentInput {
+  companyId?: number | null;
+  folderId?: number | null;
+  categoryId?: number | null;
+  name: string;
+  documentType?: WorkDocumentType;
+  fileName: string;
+  fileUrl?: string | null;
+  documentDate?: string | null;
+  notes?: string | null;
+}
+
+export type WorkDocumentUpdate = Partial<WorkDocumentInput>;
+
+export interface WorkPfEntry {
+  id: number;
+  companyId: number | null;
+  companyName?: string | null;
+  month: string;
+  employeeAmount: number;
+  employerAmount: number;
+  interestAmount: number;
+  source: WorkPfSource;
+  notes?: string | null;
+  createdAt: string;
+}
+
+export interface WorkPfEntryInput {
+  companyId?: number | null;
+  month: string;
+  employeeAmount?: number;
+  employerAmount?: number;
+  interestAmount?: number;
+  source?: WorkPfSource;
+  notes?: string | null;
+}
+
+export type WorkPfEntryUpdate = Partial<WorkPfEntryInput>;
+
+export interface WorkPfWithdrawal {
+  id: number;
+  companyId: number | null;
+  companyName?: string | null;
+  amount: number;
+  withdrawalDate: string;
+  reason?: string | null;
+  notes?: string | null;
+  createdAt: string;
+}
+
+export interface WorkPfWithdrawalInput {
+  companyId?: number | null;
+  amount: number;
+  withdrawalDate: string;
+  reason?: string | null;
+  notes?: string | null;
+}
+
+export type WorkPfWithdrawalUpdate = Partial<WorkPfWithdrawalInput>;
+
+export interface OneworkSummary {
+  profile: OneworkProfile | null;
+  companies: WorkCompany[];
+  folders: WorkDocumentFolder[];
+  documents: WorkDocument[];
+  documentCategories: WorkDocumentCategory[];
+  pfEntries: WorkPfEntry[];
+  pfWithdrawals: WorkPfWithdrawal[];
+  totalCompanies: number;
+  activeCompanyName?: string | null;
+  totalExperienceMonths: number;
+  totalSalaryMonthly: number;
+  pfContributions: number;
+  pfWithdrawalsTotal: number;
+  pfBalance: number;
+  epfoSyncStatus: string;
 }
 
 export interface ReportSummary {
@@ -552,4 +770,3 @@ export const GetReportSummaryPeriod = {
   monthly: 'monthly',
   yearly: 'yearly',
 } as const;
-

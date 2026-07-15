@@ -64,6 +64,7 @@ export async function deleteEmiExpenseTransaction(emiId) {
         .where(ilike(transactionsTable.description, `%${emiMarker(emiId)}%`));
 }
 export async function syncPaidEmiExpenseTransactions(start, end) {
+    const conditions = [eq(emisTable.status, "paid")];
     const paidEmis = await db
         .select({
         id: emisTable.id,
@@ -74,7 +75,7 @@ export async function syncPaidEmiExpenseTransactions(start, end) {
     })
         .from(emisTable)
         .innerJoin(loansTable, eq(emisTable.loanId, loansTable.id))
-        .where(eq(emisTable.status, "paid"));
+        .where(and(...conditions));
     for (const emi of paidEmis) {
         const paymentDate = emi.paidDate ?? emi.dueDate;
         if (start && paymentDate < start)

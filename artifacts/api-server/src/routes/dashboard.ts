@@ -14,6 +14,7 @@ import {
   upcomingPayments,
   totalCreditCardOutstanding,
   monthlyBudgetSummary,
+  totalPfBalance,
 } from "../lib/finance";
 import { syncPaidEmiExpenseTransactions } from "../lib/emi-transactions";
 
@@ -39,6 +40,7 @@ router.get("/dashboard/summary", async (_req, res): Promise<void> => {
     payments,
     creditCardOutstanding,
     budgetSummary,
+    pfBalance,
   ] = await Promise.all([
     incomeExpenseTotals(start, end),
     expenseByCategory(start, end),
@@ -52,9 +54,10 @@ router.get("/dashboard/summary", async (_req, res): Promise<void> => {
     upcomingPayments(),
     totalCreditCardOutstanding(),
     monthlyBudgetSummary(key),
+    totalPfBalance(),
   ]);
 
-  const netWorth = investmentValue + savings - loanOutstanding - creditCardOutstanding;
+  const netWorth = investmentValue + savings + pfBalance - loanOutstanding - creditCardOutstanding;
   const netWorthChange = income - expense;
   const openingNetWorth = netWorth - netWorthChange;
   const netWorthChangePercent = openingNetWorth !== 0 ? (netWorthChange / Math.abs(openingNetWorth)) * 100 : 0;
@@ -70,6 +73,7 @@ router.get("/dashboard/summary", async (_req, res): Promise<void> => {
       totalCreditCardOutstanding: creditCardOutstanding,
       totalInvestmentValue: investmentValue,
       totalInsuranceCoverage: insuranceCoverage,
+      pfBalance,
       netWorthChange,
       netWorthChangePercent,
       emisDueCount: dueCount,

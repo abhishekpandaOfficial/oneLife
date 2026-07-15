@@ -51,10 +51,28 @@ import type {
   LoanDetail,
   LoanInput,
   LoanUpdate,
+  OneworkProfile,
+  OneworkProfileInput,
+  OneworkSummary,
   ReportSummary,
   Transaction,
   TransactionInput,
-  TransactionUpdate
+  TransactionUpdate,
+  WorkCompany,
+  WorkCompanyInput,
+  WorkCompanyUpdate,
+  WorkDocument,
+  WorkDocumentCategory,
+  WorkDocumentCategoryInput,
+  WorkDocumentCategoryUpdate,
+  WorkDocumentInput,
+  WorkDocumentUpdate,
+  WorkPfEntry,
+  WorkPfEntryInput,
+  WorkPfEntryUpdate,
+  WorkPfWithdrawal,
+  WorkPfWithdrawalInput,
+  WorkPfWithdrawalUpdate
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -2984,3 +3002,49 @@ export const useDeleteCreditCard = <TError = ErrorType<void>,
       return useMutation(getDeleteCreditCardMutationOptions(options));
     }
 
+export const getGetOneworkSummaryUrl = () => `/api/onework/summary`;
+export const getGetOneworkSummaryQueryKey = () => [`/api/onework/summary`] as const;
+export const getOneworkSummary = async (options?: RequestInit): Promise<OneworkSummary> => customFetch<OneworkSummary>(getGetOneworkSummaryUrl(), { ...options, method: 'GET' });
+export function useGetOneworkSummary<TData = Awaited<ReturnType<typeof getOneworkSummary>>, TError = ErrorType<unknown>>(options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getOneworkSummary>>, TError, TData>, request?: SecondParameter<typeof customFetch>}): UseQueryResult<TData, TError> {
+  const queryKey = options?.query?.queryKey ?? getGetOneworkSummaryQueryKey();
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneworkSummary>>> = ({ signal }) => getOneworkSummary({ signal, ...options?.request });
+  return useQuery({ queryKey, queryFn, ...options?.query } as UseQueryOptions<Awaited<ReturnType<typeof getOneworkSummary>>, TError, TData> & { queryKey: QueryKey });
+}
+
+export const updateOneworkProfile = async (data: OneworkProfileInput, options?: RequestInit): Promise<OneworkProfile> => customFetch<OneworkProfile>(`/api/onework/profile`, { ...options, method: 'PUT', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(data) });
+export function useUpdateOneworkProfile<TError = ErrorType<unknown>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateOneworkProfile>>, TError,{data: BodyType<OneworkProfileInput>}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['updateOneworkProfile'], mutationFn: ({ data }) => updateOneworkProfile(data, options?.request), ...options?.mutation }); }
+
+export const createWorkCompany = async (data: WorkCompanyInput, options?: RequestInit): Promise<WorkCompany> => customFetch<WorkCompany>(`/api/onework/companies`, { ...options, method: 'POST', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(data) });
+export const updateWorkCompany = async (id: number, data: WorkCompanyUpdate, options?: RequestInit): Promise<WorkCompany> => customFetch<WorkCompany>(`/api/onework/companies/${id}`, { ...options, method: 'PATCH', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(data) });
+export const deleteWorkCompany = async (id: number, options?: RequestInit): Promise<void> => customFetch<void>(`/api/onework/companies/${id}`, { ...options, method: 'DELETE' });
+export function useCreateWorkCompany<TError = ErrorType<unknown>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createWorkCompany>>, TError,{data: BodyType<WorkCompanyInput>}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['createWorkCompany'], mutationFn: ({ data }) => createWorkCompany(data, options?.request), ...options?.mutation }); }
+export function useUpdateWorkCompany<TError = ErrorType<unknown>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateWorkCompany>>, TError,{id: number; data: BodyType<WorkCompanyUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['updateWorkCompany'], mutationFn: ({ id, data }) => updateWorkCompany(id, data, options?.request), ...options?.mutation }); }
+export function useDeleteWorkCompany<TError = ErrorType<void>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkCompany>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['deleteWorkCompany'], mutationFn: ({ id }) => deleteWorkCompany(id, options?.request), ...options?.mutation }); }
+
+export const createWorkDocumentCategory = async (data: WorkDocumentCategoryInput, options?: RequestInit): Promise<WorkDocumentCategory> => customFetch<WorkDocumentCategory>(`/api/onework/document-categories`, { ...options, method: 'POST', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(data) });
+export const updateWorkDocumentCategory = async (id: number, data: WorkDocumentCategoryUpdate, options?: RequestInit): Promise<WorkDocumentCategory> => customFetch<WorkDocumentCategory>(`/api/onework/document-categories/${id}`, { ...options, method: 'PATCH', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(data) });
+export const deleteWorkDocumentCategory = async (id: number, options?: RequestInit): Promise<void> => customFetch<void>(`/api/onework/document-categories/${id}`, { ...options, method: 'DELETE' });
+export function useCreateWorkDocumentCategory<TError = ErrorType<unknown>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createWorkDocumentCategory>>, TError,{data: BodyType<WorkDocumentCategoryInput>}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['createWorkDocumentCategory'], mutationFn: ({ data }) => createWorkDocumentCategory(data, options?.request), ...options?.mutation }); }
+export function useUpdateWorkDocumentCategory<TError = ErrorType<unknown>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateWorkDocumentCategory>>, TError,{id: number; data: BodyType<WorkDocumentCategoryUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['updateWorkDocumentCategory'], mutationFn: ({ id, data }) => updateWorkDocumentCategory(id, data, options?.request), ...options?.mutation }); }
+export function useDeleteWorkDocumentCategory<TError = ErrorType<void>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkDocumentCategory>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['deleteWorkDocumentCategory'], mutationFn: ({ id }) => deleteWorkDocumentCategory(id, options?.request), ...options?.mutation }); }
+
+export const createWorkDocument = async (data: WorkDocumentInput, options?: RequestInit): Promise<WorkDocument> => customFetch<WorkDocument>(`/api/onework/documents`, { ...options, method: 'POST', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(data) });
+export const updateWorkDocument = async (id: number, data: WorkDocumentUpdate, options?: RequestInit): Promise<WorkDocument> => customFetch<WorkDocument>(`/api/onework/documents/${id}`, { ...options, method: 'PATCH', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(data) });
+export const deleteWorkDocument = async (id: number, options?: RequestInit): Promise<void> => customFetch<void>(`/api/onework/documents/${id}`, { ...options, method: 'DELETE' });
+export function useCreateWorkDocument<TError = ErrorType<unknown>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createWorkDocument>>, TError,{data: BodyType<WorkDocumentInput>}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['createWorkDocument'], mutationFn: ({ data }) => createWorkDocument(data, options?.request), ...options?.mutation }); }
+export function useUpdateWorkDocument<TError = ErrorType<unknown>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateWorkDocument>>, TError,{id: number; data: BodyType<WorkDocumentUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['updateWorkDocument'], mutationFn: ({ id, data }) => updateWorkDocument(id, data, options?.request), ...options?.mutation }); }
+export function useDeleteWorkDocument<TError = ErrorType<void>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkDocument>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['deleteWorkDocument'], mutationFn: ({ id }) => deleteWorkDocument(id, options?.request), ...options?.mutation }); }
+
+export const createWorkPfEntry = async (data: WorkPfEntryInput, options?: RequestInit): Promise<WorkPfEntry> => customFetch<WorkPfEntry>(`/api/onework/pf-entries`, { ...options, method: 'POST', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(data) });
+export const updateWorkPfEntry = async (id: number, data: WorkPfEntryUpdate, options?: RequestInit): Promise<WorkPfEntry> => customFetch<WorkPfEntry>(`/api/onework/pf-entries/${id}`, { ...options, method: 'PATCH', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(data) });
+export const deleteWorkPfEntry = async (id: number, options?: RequestInit): Promise<void> => customFetch<void>(`/api/onework/pf-entries/${id}`, { ...options, method: 'DELETE' });
+export function useCreateWorkPfEntry<TError = ErrorType<unknown>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createWorkPfEntry>>, TError,{data: BodyType<WorkPfEntryInput>}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['createWorkPfEntry'], mutationFn: ({ data }) => createWorkPfEntry(data, options?.request), ...options?.mutation }); }
+export function useUpdateWorkPfEntry<TError = ErrorType<unknown>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateWorkPfEntry>>, TError,{id: number; data: BodyType<WorkPfEntryUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['updateWorkPfEntry'], mutationFn: ({ id, data }) => updateWorkPfEntry(id, data, options?.request), ...options?.mutation }); }
+export function useDeleteWorkPfEntry<TError = ErrorType<void>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkPfEntry>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['deleteWorkPfEntry'], mutationFn: ({ id }) => deleteWorkPfEntry(id, options?.request), ...options?.mutation }); }
+
+export const createWorkPfWithdrawal = async (data: WorkPfWithdrawalInput, options?: RequestInit): Promise<WorkPfWithdrawal> => customFetch<WorkPfWithdrawal>(`/api/onework/pf-withdrawals`, { ...options, method: 'POST', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(data) });
+export const updateWorkPfWithdrawal = async (id: number, data: WorkPfWithdrawalUpdate, options?: RequestInit): Promise<WorkPfWithdrawal> => customFetch<WorkPfWithdrawal>(`/api/onework/pf-withdrawals/${id}`, { ...options, method: 'PATCH', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(data) });
+export const deleteWorkPfWithdrawal = async (id: number, options?: RequestInit): Promise<void> => customFetch<void>(`/api/onework/pf-withdrawals/${id}`, { ...options, method: 'DELETE' });
+export function useCreateWorkPfWithdrawal<TError = ErrorType<unknown>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createWorkPfWithdrawal>>, TError,{data: BodyType<WorkPfWithdrawalInput>}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['createWorkPfWithdrawal'], mutationFn: ({ data }) => createWorkPfWithdrawal(data, options?.request), ...options?.mutation }); }
+export function useUpdateWorkPfWithdrawal<TError = ErrorType<unknown>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateWorkPfWithdrawal>>, TError,{id: number; data: BodyType<WorkPfWithdrawalUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['updateWorkPfWithdrawal'], mutationFn: ({ id, data }) => updateWorkPfWithdrawal(id, data, options?.request), ...options?.mutation }); }
+export function useDeleteWorkPfWithdrawal<TError = ErrorType<void>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkPfWithdrawal>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['deleteWorkPfWithdrawal'], mutationFn: ({ id }) => deleteWorkPfWithdrawal(id, options?.request), ...options?.mutation }); }

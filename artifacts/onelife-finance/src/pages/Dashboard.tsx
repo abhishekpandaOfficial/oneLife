@@ -17,7 +17,8 @@ import {
   Activity,
   Plus,
   CalendarDays,
-  Gauge
+  Gauge,
+  Landmark
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -105,7 +106,7 @@ export default function Dashboard() {
   }
 
   const rates = getGlobalRates();
-  const totalAssets = summary.totalSavings + summary.totalInvestmentValue;
+  const totalAssets = summary.totalSavings + summary.totalInvestmentValue + (summary.pfBalance || 0);
   const totalLiabilities = summary.totalLoanOutstanding + summary.totalCreditCardOutstanding;
   const netWorthTrendUp = summary.netWorthChange >= 0;
   const netWorthTrendLabel = `${netWorthTrendUp ? "+" : "-"}${formatCurrency(Math.abs(summary.netWorthChange))} this month (${netWorthTrendUp ? "+" : "-"}${Math.abs(summary.netWorthChangePercent).toFixed(1)}%)`;
@@ -194,6 +195,11 @@ export default function Dashboard() {
           title="Investments" 
           amount={summary.totalInvestmentValue} 
           icon={<TrendingUp className="h-5 w-5 text-indigo-500" />} 
+        />
+        <KpiCard 
+          title="PF Balance" 
+          amount={summary.pfBalance || 0} 
+          icon={<Landmark className="h-5 w-5 text-teal-500" />} 
         />
         <KpiCard 
           title="Loans Outstanding" 
@@ -311,6 +317,22 @@ export default function Dashboard() {
                   <div
                     className="h-full bg-indigo-400 rounded-full transition-all duration-700"
                     style={{ width: totalAssets > 0 ? `${Math.min(100, (summary.totalInvestmentValue / totalAssets) * 100)}%` : "0%" }}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="flex items-center gap-2 text-muted-foreground">
+                    <Landmark className="h-3.5 w-3.5" />
+                    PF Balance
+                  </span>
+                  <span className="font-mono font-semibold text-foreground">{formatCurrency(summary.pfBalance || 0)}</span>
+                </div>
+                <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full bg-teal-400 rounded-full transition-all duration-700"
+                    style={{ width: totalAssets > 0 ? `${Math.min(100, ((summary.pfBalance || 0) / totalAssets) * 100)}%` : "0%" }}
                   />
                 </div>
               </div>

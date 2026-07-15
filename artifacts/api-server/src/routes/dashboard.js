@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { GetDashboardSummaryResponse } from "@workspace/api-zod";
 import { monthKey, monthRange, lastMonthKeys } from "../lib/dates";
-import { incomeExpenseTotals, expenseByCategory, monthlyTrend, totalLoanOutstanding, totalInvestmentValue, totalInsuranceCoverage, emisDueCount, emergencyFundAmount, totalSavings, upcomingPayments, totalCreditCardOutstanding, monthlyBudgetSummary, } from "../lib/finance";
+import { incomeExpenseTotals, expenseByCategory, monthlyTrend, totalLoanOutstanding, totalInvestmentValue, totalInsuranceCoverage, emisDueCount, emergencyFundAmount, totalSavings, upcomingPayments, totalCreditCardOutstanding, monthlyBudgetSummary, totalPfBalance, } from "../lib/finance";
 import { syncPaidEmiExpenseTransactions } from "../lib/emi-transactions";
 const router = Router();
 router.get("/dashboard/summary", async (_req, res) => {
@@ -9,7 +9,7 @@ router.get("/dashboard/summary", async (_req, res) => {
     const key = monthKey(now);
     const { start, end } = monthRange(key);
     await syncPaidEmiExpenseTransactions(start, end);
-    const [{ income, expense }, categoryBreakdown, trend, loanOutstanding, investmentValue, insuranceCoverage, dueCount, emergencyFund, savings, payments, creditCardOutstanding, budgetSummary,] = await Promise.all([
+    const [{ income, expense }, categoryBreakdown, trend, loanOutstanding, investmentValue, insuranceCoverage, dueCount, emergencyFund, savings, payments, creditCardOutstanding, budgetSummary, pfBalance,] = await Promise.all([
         incomeExpenseTotals(start, end),
         expenseByCategory(start, end),
         monthlyTrend(lastMonthKeys(now, 6)),
@@ -22,8 +22,9 @@ router.get("/dashboard/summary", async (_req, res) => {
         upcomingPayments(),
         totalCreditCardOutstanding(),
         monthlyBudgetSummary(key),
+        totalPfBalance(),
     ]);
-    const netWorth = investmentValue + savings - loanOutstanding - creditCardOutstanding;
+    const netWorth = investmentValue + savings + pfBalance - loanOutstanding - creditCardOutstanding;
     const netWorthChange = income - expense;
     const openingNetWorth = netWorth - netWorthChange;
     const netWorthChangePercent = openingNetWorth !== 0 ? (netWorthChange / Math.abs(openingNetWorth)) * 100 : 0;
@@ -37,6 +38,7 @@ router.get("/dashboard/summary", async (_req, res) => {
         totalCreditCardOutstanding: creditCardOutstanding,
         totalInvestmentValue: investmentValue,
         totalInsuranceCoverage: insuranceCoverage,
+        pfBalance,
         netWorthChange,
         netWorthChangePercent,
         emisDueCount: dueCount,

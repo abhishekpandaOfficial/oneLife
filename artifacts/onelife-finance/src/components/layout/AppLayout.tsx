@@ -22,6 +22,7 @@ import {
   Zap,
   LogOut,
   CreditCard,
+  BriefcaseBusiness,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -69,6 +70,7 @@ const navItems = [
   { label: "Investments",  href: "/investments",  icon: TrendingUp },
   { label: "Goals",        href: "/goals",        icon: Target },
   { label: "Budget",       href: "/budget",       icon: PieChart },
+  { label: "OneWork",      href: "/onework",      icon: BriefcaseBusiness },
   { label: "Reports",      href: "/reports",      icon: BarChart3 },
   { label: "Categories",   href: "/categories",   icon: Tags },
   { label: "Settings",     href: "/settings",     icon: Settings },

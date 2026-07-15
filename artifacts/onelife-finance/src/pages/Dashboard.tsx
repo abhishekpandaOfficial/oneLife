@@ -6,8 +6,8 @@ import {
   type Transaction,
 } from "@workspace/api-client-react";
 import { 
-  ArrowUpRight, 
   ArrowDownRight, 
+  BadgeIndianRupee,
   Wallet, 
   PiggyBank, 
   TrendingUp, 
@@ -18,7 +18,10 @@ import {
   Plus,
   CalendarDays,
   Gauge,
-  Landmark
+  Landmark,
+  ReceiptText,
+  Scale,
+  Umbrella
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -164,52 +167,60 @@ export default function Dashboard() {
         <KpiCard 
           title="Net Worth" 
           amount={summary.netWorth} 
-          icon={<Activity className="h-5 w-5 text-primary" />} 
+          icon={<Scale />} 
           trend={netWorthTrendLabel}
           trendUp={netWorthTrendUp}
-          featured
+          tone="netWorth"
         />
         <KpiCard 
           title="Remaining Balance" 
           amount={summary.remainingBalance} 
-          icon={<Wallet className="h-5 w-5 text-emerald-500" />} 
+          icon={<Wallet />} 
+          tone="balance"
         />
         <KpiCard 
           title="Monthly Income" 
           amount={summary.monthlyIncome} 
-          icon={<ArrowDownRight className="h-5 w-5 text-emerald-500" />} 
+          icon={<ArrowDownRight />} 
+          tone="income"
         />
         <KpiCard 
           title="Monthly Expenses" 
           amount={summary.monthlyExpenses} 
-          icon={<ArrowUpRight className="h-5 w-5 text-destructive" />} 
+          icon={<ReceiptText />} 
+          tone="expenses"
           onClick={() => setIsExpenseDialogOpen(true)}
         />
         <BudgetKpiCard budget={summary.budgetSummary} />
         <KpiCard 
           title="Total Savings" 
           amount={summary.totalSavings} 
-          icon={<PiggyBank className="h-5 w-5 text-blue-500" />} 
+          icon={<PiggyBank />} 
+          tone="savings"
         />
         <KpiCard 
           title="Investments" 
           amount={summary.totalInvestmentValue} 
-          icon={<TrendingUp className="h-5 w-5 text-indigo-500" />} 
+          icon={<TrendingUp />} 
+          tone="investments"
         />
         <KpiCard 
           title="PF Balance" 
           amount={summary.pfBalance || 0} 
-          icon={<Landmark className="h-5 w-5 text-teal-500" />} 
+          icon={<BadgeIndianRupee />} 
+          tone="pf"
         />
         <KpiCard 
           title="Loans Outstanding" 
           amount={summary.totalLoanOutstanding} 
-          icon={<CreditCard className="h-5 w-5 text-orange-500" />} 
+          icon={<Landmark />} 
+          tone="loans"
         />
         <KpiCard 
           title="Insurance Coverage" 
           amount={summary.totalInsuranceCoverage} 
-          icon={<ShieldCheck className="h-5 w-5 text-teal-500" />} 
+          icon={<Umbrella />} 
+          tone="insurance"
         />
       </div>
 
@@ -775,13 +786,87 @@ function MonthlyExpensesDialog({
   );
 }
 
+type KpiTone = "netWorth" | "balance" | "income" | "expenses" | "savings" | "investments" | "pf" | "loans" | "insurance";
+
+const kpiToneStyles: Record<KpiTone, {
+  card: string;
+  iconWrap: string;
+  icon: string;
+  trendUp: string;
+  trendDown: string;
+}> = {
+  netWorth: {
+    card: "border-violet-500/25 bg-gradient-to-br from-violet-500/12 via-card to-card",
+    iconWrap: "bg-violet-500/15 text-violet-600 dark:text-violet-300",
+    icon: "text-violet-600 dark:text-violet-300",
+    trendUp: "text-emerald-600 dark:text-emerald-400",
+    trendDown: "text-rose-600 dark:text-rose-400",
+  },
+  balance: {
+    card: "border-emerald-500/25 bg-gradient-to-br from-emerald-500/12 via-card to-card",
+    iconWrap: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300",
+    icon: "text-emerald-600 dark:text-emerald-300",
+    trendUp: "text-emerald-600 dark:text-emerald-400",
+    trendDown: "text-rose-600 dark:text-rose-400",
+  },
+  income: {
+    card: "border-lime-500/25 bg-gradient-to-br from-lime-500/12 via-card to-card",
+    iconWrap: "bg-lime-500/15 text-lime-700 dark:text-lime-300",
+    icon: "text-lime-700 dark:text-lime-300",
+    trendUp: "text-lime-700 dark:text-lime-300",
+    trendDown: "text-rose-600 dark:text-rose-400",
+  },
+  expenses: {
+    card: "border-rose-500/25 bg-gradient-to-br from-rose-500/12 via-card to-card",
+    iconWrap: "bg-rose-500/15 text-rose-600 dark:text-rose-300",
+    icon: "text-rose-600 dark:text-rose-300",
+    trendUp: "text-emerald-600 dark:text-emerald-400",
+    trendDown: "text-rose-600 dark:text-rose-400",
+  },
+  savings: {
+    card: "border-sky-500/25 bg-gradient-to-br from-sky-500/12 via-card to-card",
+    iconWrap: "bg-sky-500/15 text-sky-600 dark:text-sky-300",
+    icon: "text-sky-600 dark:text-sky-300",
+    trendUp: "text-sky-600 dark:text-sky-300",
+    trendDown: "text-rose-600 dark:text-rose-400",
+  },
+  investments: {
+    card: "border-indigo-500/25 bg-gradient-to-br from-indigo-500/12 via-card to-card",
+    iconWrap: "bg-indigo-500/15 text-indigo-600 dark:text-indigo-300",
+    icon: "text-indigo-600 dark:text-indigo-300",
+    trendUp: "text-indigo-600 dark:text-indigo-300",
+    trendDown: "text-rose-600 dark:text-rose-400",
+  },
+  pf: {
+    card: "border-teal-500/25 bg-gradient-to-br from-teal-500/12 via-card to-card",
+    iconWrap: "bg-teal-500/15 text-teal-600 dark:text-teal-300",
+    icon: "text-teal-600 dark:text-teal-300",
+    trendUp: "text-teal-600 dark:text-teal-300",
+    trendDown: "text-rose-600 dark:text-rose-400",
+  },
+  loans: {
+    card: "border-amber-500/25 bg-gradient-to-br from-amber-500/12 via-card to-card",
+    iconWrap: "bg-amber-500/15 text-amber-700 dark:text-amber-300",
+    icon: "text-amber-700 dark:text-amber-300",
+    trendUp: "text-emerald-600 dark:text-emerald-400",
+    trendDown: "text-amber-700 dark:text-amber-300",
+  },
+  insurance: {
+    card: "border-cyan-500/25 bg-gradient-to-br from-cyan-500/12 via-card to-card",
+    iconWrap: "bg-cyan-500/15 text-cyan-700 dark:text-cyan-300",
+    icon: "text-cyan-700 dark:text-cyan-300",
+    trendUp: "text-cyan-700 dark:text-cyan-300",
+    trendDown: "text-rose-600 dark:text-rose-400",
+  },
+};
+
 function KpiCard({ 
   title, 
   amount, 
   icon, 
   trend, 
   trendUp, 
-  featured,
+  tone,
   onClick,
 }: { 
   title: string; 
@@ -789,9 +874,11 @@ function KpiCard({
   icon: React.ReactNode; 
   trend?: string; 
   trendUp?: boolean;
-  featured?: boolean;
+  tone: KpiTone;
   onClick?: () => void;
 }) {
+  const styles = kpiToneStyles[tone];
+
   return (
     <Card
       role={onClick ? "button" : undefined}
@@ -804,15 +891,15 @@ function KpiCard({
           onClick();
         }
       }}
-      className={`rounded-2xl transition-all duration-300 hover:shadow-md ${onClick ? "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" : ""} ${featured ? 'bg-primary text-primary-foreground border-transparent shadow-md' : 'shadow-sm border-primary/5'}`}
+      className={`rounded-2xl shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md ${styles.card} ${onClick ? "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2" : ""}`}
     >
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-        <CardTitle className={`text-sm font-medium ${featured ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>
+        <CardTitle className="text-sm font-medium text-muted-foreground">
           {title}
         </CardTitle>
-        <div className={`p-2 rounded-xl ${featured ? 'bg-primary-foreground/10' : 'bg-primary/5'}`}>
+        <div className={`p-2 rounded-xl ${styles.iconWrap}`}>
           {React.cloneElement(icon as React.ReactElement<any>, {
-            className: `h-4 w-4 ${featured ? 'text-primary-foreground' : (icon as any).props.className}`
+            className: `h-4 w-4 ${styles.icon}`
           })}
         </div>
       </CardHeader>
@@ -821,7 +908,7 @@ function KpiCard({
           <AnimatedNumber value={amount} format={formatCurrency} />
         </div>
         {trend && (
-          <p className={`text-xs mt-2 font-medium flex items-center ${featured ? 'text-primary-foreground/80' : (trendUp ? 'text-emerald-500' : 'text-destructive')}`}>
+          <p className={`text-xs mt-2 font-medium flex items-center ${trendUp ? styles.trendUp : styles.trendDown}`}>
             {trendUp ? <TrendingUp className="w-3 h-3 mr-1" /> : <Activity className="w-3 h-3 mr-1" />}
             {trend}
           </p>

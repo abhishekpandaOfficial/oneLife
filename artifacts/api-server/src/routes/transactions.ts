@@ -13,7 +13,6 @@ import {
   DeleteTransactionParams,
 } from "@workspace/api-zod";
 import { toDateStr } from "../lib/dates";
-import { syncPaidEmiExpenseTransactions } from "../lib/emi-transactions";
 
 const router: IRouter = Router();
 
@@ -39,8 +38,6 @@ router.get("/transactions", async (req, res): Promise<void> => {
   const { type, categoryId, from, to, search } = req.query;
   const fromDate = typeof from === "string" && from.trim() !== "" ? toDateStr(new Date(from)) : undefined;
   const toDate = typeof to === "string" && to.trim() !== "" ? toDateStr(new Date(to)) : undefined;
-
-  await syncPaidEmiExpenseTransactions(fromDate, toDate);
 
   const conditions: SQL[] = [];
   if (type === "income" || type === "expense") {

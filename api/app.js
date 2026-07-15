@@ -57432,84 +57432,12 @@ async function upcomingPayments(limit = 8) {
   return payments.sort((a, b) => a.dueDate.localeCompare(b.dueDate)).slice(0, limit);
 }
 
-// src/lib/emi-transactions.ts
-function emiMarker(emiId) {
-  return `[EMI:${emiId}]`;
-}
-function emiTransactionDescription(emiId, loanName) {
-  return `Loan EMI payment: ${loanName} ${emiMarker(emiId)}`;
-}
-async function loanEmiCategoryId() {
-  const [existing] = await db.select({ id: categoriesTable.id }).from(categoriesTable).where(and(eq(categoriesTable.name, "Loan EMI"), eq(categoriesTable.type, "expense")));
-  if (existing) return existing.id;
-  const [created] = await db.insert(categoriesTable).values({
-    name: "Loan EMI",
-    type: "expense",
-    color: "#dc2626",
-    icon: "Landmark"
-  }).returning({ id: categoriesTable.id });
-  return created.id;
-}
-async function existingEmiTransactionId(emiId) {
-  const [existing] = await db.select({ id: transactionsTable.id }).from(transactionsTable).where(ilike(transactionsTable.description, `%${emiMarker(emiId)}%`));
-  return existing?.id ?? null;
-}
-async function upsertEmiExpenseTransaction(emiId, loanName, amount, date6) {
-  const description = emiTransactionDescription(emiId, loanName);
-  const categoryId = await loanEmiCategoryId();
-  const existingId = await existingEmiTransactionId(emiId);
-  if (existingId) {
-    await db.update(transactionsTable).set({
-      type: "expense",
-      amount,
-      description,
-      date: date6,
-      categoryId,
-      isRecurring: false
-    }).where(eq(transactionsTable.id, existingId));
-    return;
-  }
-  await db.insert(transactionsTable).values({
-    type: "expense",
-    amount,
-    description,
-    date: date6,
-    categoryId,
-    isRecurring: false
-  });
-}
-async function deleteEmiExpenseTransaction(emiId) {
-  await db.delete(transactionsTable).where(ilike(transactionsTable.description, `%${emiMarker(emiId)}%`));
-}
-async function syncPaidEmiExpenseTransactions(start, end) {
-  const conditions = [eq(emisTable.status, "paid")];
-  const paidEmis = await db.select({
-    id: emisTable.id,
-    amount: emisTable.amount,
-    dueDate: emisTable.dueDate,
-    paidDate: emisTable.paidDate,
-    loanName: loansTable.name
-  }).from(emisTable).innerJoin(loansTable, eq(emisTable.loanId, loansTable.id)).where(and(...conditions));
-  for (const emi of paidEmis) {
-    const paymentDate = emi.paidDate ?? emi.dueDate;
-    if (start && paymentDate < start) continue;
-    if (end && paymentDate > end) continue;
-    await upsertEmiExpenseTransaction(
-      emi.id,
-      emi.loanName,
-      Number(emi.amount),
-      paymentDate
-    );
-  }
-}
-
 // src/routes/dashboard.ts
 var router2 = (0, import_express2.Router)();
 router2.get("/dashboard/summary", async (_req, res) => {
   const now = /* @__PURE__ */ new Date();
   const key = monthKey(now);
   const { start, end } = monthRange(key);
-  await syncPaidEmiExpenseTransactions(start, end);
   const [
     { income, expense },
     categoryBreakdown,
@@ -57643,7 +57571,6 @@ router4.get("/transactions", async (req, res) => {
   const { type, categoryId, from, to, search } = req.query;
   const fromDate = typeof from === "string" && from.trim() !== "" ? toDateStr(new Date(from)) : void 0;
   const toDate = typeof to === "string" && to.trim() !== "" ? toDateStr(new Date(to)) : void 0;
-  await syncPaidEmiExpenseTransactions(fromDate, toDate);
   const conditions = [];
   if (type === "income" || type === "expense") {
     conditions.push(eq(transactionsTable.type, type));
@@ -57877,6 +57804,58 @@ var loans_default = router5;
 
 // src/routes/emis.ts
 var import_express6 = __toESM(require_express2(), 1);
+
+// src/lib/emi-transactions.ts
+function emiMarker(emiId) {
+  return `[EMI:${emiId}]`;
+}
+function emiTransactionDescription(emiId, loanName) {
+  return `Loan EMI payment: ${loanName} ${emiMarker(emiId)}`;
+}
+async function loanEmiCategoryId() {
+  const [existing] = await db.select({ id: categoriesTable.id }).from(categoriesTable).where(and(eq(categoriesTable.name, "Loan EMI"), eq(categoriesTable.type, "expense")));
+  if (existing) return existing.id;
+  const [created] = await db.insert(categoriesTable).values({
+    name: "Loan EMI",
+    type: "expense",
+    color: "#dc2626",
+    icon: "Landmark"
+  }).returning({ id: categoriesTable.id });
+  return created.id;
+}
+async function existingEmiTransactionId(emiId) {
+  const [existing] = await db.select({ id: transactionsTable.id }).from(transactionsTable).where(ilike(transactionsTable.description, `%${emiMarker(emiId)}%`));
+  return existing?.id ?? null;
+}
+async function upsertEmiExpenseTransaction(emiId, loanName, amount, date6) {
+  const description = emiTransactionDescription(emiId, loanName);
+  const categoryId = await loanEmiCategoryId();
+  const existingId = await existingEmiTransactionId(emiId);
+  if (existingId) {
+    await db.update(transactionsTable).set({
+      type: "expense",
+      amount,
+      description,
+      date: date6,
+      categoryId,
+      isRecurring: false
+    }).where(eq(transactionsTable.id, existingId));
+    return;
+  }
+  await db.insert(transactionsTable).values({
+    type: "expense",
+    amount,
+    description,
+    date: date6,
+    categoryId,
+    isRecurring: false
+  });
+}
+async function deleteEmiExpenseTransaction(emiId) {
+  await db.delete(transactionsTable).where(ilike(transactionsTable.description, `%${emiMarker(emiId)}%`));
+}
+
+// src/routes/emis.ts
 var router6 = (0, import_express6.Router)();
 function roundMoney(value) {
   return Number(value.toFixed(2));
@@ -58291,7 +58270,6 @@ router11.get("/reports/summary", async (req, res) => {
   if (query.data.period === "monthly") {
     const key = monthKey(now);
     const { start: start2, end: end2 } = monthRange(key);
-    await syncPaidEmiExpenseTransactions(start2, end2);
     const [totals2, categoryBreakdown2, trend2] = await Promise.all([
       incomeExpenseTotals(start2, end2),
       expenseByCategory(start2, end2),
@@ -58321,7 +58299,6 @@ router11.get("/reports/summary", async (req, res) => {
   }
   const year = now.getFullYear();
   const { start, end } = yearRange(year);
-  await syncPaidEmiExpenseTransactions(start, end);
   const [totals, categoryBreakdown, trend] = await Promise.all([
     incomeExpenseTotals(start, end),
     expenseByCategory(start, end),

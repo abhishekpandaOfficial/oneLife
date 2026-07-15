@@ -2,7 +2,6 @@ import { Router } from "express";
 import { GetReportSummaryQueryParams, GetReportSummaryResponse } from "@workspace/api-zod";
 import { monthKey, monthRange, yearRange, lastMonthKeys, lastYears } from "../lib/dates";
 import { incomeExpenseTotals, expenseByCategory, monthlyTrend, yearlyTrend, totalInvestmentValue, totalLoanOutstanding, totalSavings, } from "../lib/finance";
-import { syncPaidEmiExpenseTransactions } from "../lib/emi-transactions";
 const router = Router();
 router.get("/reports/summary", async (req, res) => {
     const query = GetReportSummaryQueryParams.safeParse(req.query);
@@ -14,7 +13,6 @@ router.get("/reports/summary", async (req, res) => {
     if (query.data.period === "monthly") {
         const key = monthKey(now);
         const { start, end } = monthRange(key);
-        await syncPaidEmiExpenseTransactions(start, end);
         const [totals, categoryBreakdown, trend] = await Promise.all([
             incomeExpenseTotals(start, end),
             expenseByCategory(start, end),
@@ -42,7 +40,6 @@ router.get("/reports/summary", async (req, res) => {
     }
     const year = now.getFullYear();
     const { start, end } = yearRange(year);
-    await syncPaidEmiExpenseTransactions(start, end);
     const [totals, categoryBreakdown, trend] = await Promise.all([
         incomeExpenseTotals(start, end),
         expenseByCategory(start, end),

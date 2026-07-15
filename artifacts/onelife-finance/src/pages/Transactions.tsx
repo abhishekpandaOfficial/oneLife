@@ -136,26 +136,36 @@ export default function Transactions({ type }: { type?: TransactionType }) {
     setToDate(nextRange.to);
   }, [type]);
 
-  const queryParams = {
+  const queryParams = React.useMemo(() => ({
     type: filterType === "all" ? undefined : filterType,
     categoryId: categoryId === "all" ? undefined : categoryId,
     from: fromDate || undefined,
     to: toDate || undefined,
     search: debouncedSearch || undefined,
-  };
+  }), [categoryId, debouncedSearch, filterType, fromDate, toDate]);
   const todayRange = getPresetRange("today");
   const weekRange = getPresetRange("week");
   const monthRange = getPresetRange("month");
+  const showExpenseSummary = filterType === "expense" || type === "expense";
 
-  const { data: transactions, isLoading } = useListTransactions(queryParams, {
+  const { data: transactions, isLoading, isError, error, refetch } = useListTransactions(queryParams, {
     query: {
-      queryKey: getListTransactionsQueryKey(queryParams)
+      queryKey: getListTransactionsQueryKey(queryParams),
+      staleTime: 15_000,
     }
   });
-  const { data: todayExpenses } = useListTransactions({ type: "expense", ...todayRange });
-  const { data: weekExpenses } = useListTransactions({ type: "expense", ...weekRange });
-  const { data: monthExpenses } = useListTransactions({ type: "expense", ...monthRange });
-  const { data: categories } = useListCategories({ type: filterType === "all" ? undefined : filterType });
+  const { data: todayExpenses } = useListTransactions({ type: "expense", ...todayRange }, {
+    query: { enabled: showExpenseSummary, staleTime: 30_000 } as any,
+  });
+  const { data: weekExpenses } = useListTransactions({ type: "expense", ...weekRange }, {
+    query: { enabled: showExpenseSummary, staleTime: 30_000 } as any,
+  });
+  const { data: monthExpenses } = useListTransactions({ type: "expense", ...monthRange }, {
+    query: { enabled: showExpenseSummary, staleTime: 30_000 } as any,
+  });
+  const { data: categories } = useListCategories({ type: filterType === "all" ? undefined : filterType }, {
+    query: { staleTime: 60_000 } as any,
+  });
 
   const deleteTx = useDeleteTransaction({
     mutation: {
@@ -201,7 +211,6 @@ export default function Transactions({ type }: { type?: TransactionType }) {
   const weekTotal = sumExpenses(weekExpenses);
   const monthTotal = sumExpenses(monthExpenses);
   const filteredExpenseTotal = sumExpenses(transactions);
-  const showExpenseSummary = filterType === "expense" || type === "expense";
   const pageTitle = type === "income" ? "Income" : type === "expense" ? "Expenses" : "All Transactions";
   
   return (
@@ -362,6 +371,26 @@ export default function Transactions({ type }: { type?: TransactionType }) {
                     <td className="px-6 py-4"><Skeleton className="h-8 w-8 rounded-md" /></td>
                   </tr>
                 ))
+              ) : isError ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-12 text-center">
+                    <div className="flex flex-col items-center justify-center gap-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+                        <ArrowLeftRight className="h-6 w-6" />
+                      </div>
+                      <div>
+                        <p className="text-base font-medium">Transactions could not load</p>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          {error instanceof Error ? error.message : "Please check the API server and try again."}
+                        </p>
+                      </div>
+                      <Button type="button" variant="outline" size="sm" onClick={() => refetch()}>
+                        <RotateCcw className="mr-2 h-3.5 w-3.5" />
+                        Retry
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
               ) : transactions?.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-12 text-center text-muted-foreground">

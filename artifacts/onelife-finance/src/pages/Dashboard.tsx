@@ -26,6 +26,7 @@ import {
   BriefcaseBusiness,
   Building2,
   FileText,
+  HeartPulse,
   Lightbulb,
   Notebook,
   Plane,
@@ -168,6 +169,17 @@ export default function Dashboard({ mode = "one" }: { mode?: "one" | "finance" }
       progress: 22,
     },
     {
+      title: "OneHealth",
+      os: "HealthOS",
+      href: "/onehealth",
+      icon: HeartPulse,
+      tone: "border-red-500/25 bg-red-500/10 text-red-600 dark:text-red-300",
+      metric: "0",
+      label: "Members",
+      details: ["Family profiles ready", "Records planned", "Medicine reminders mapped"],
+      progress: 24,
+    },
+    {
       title: "OneNote",
       os: "KnowledgeOS",
       href: "/onenote",
@@ -214,7 +226,7 @@ export default function Dashboard({ mode = "one" }: { mode?: "one" | "finance" }
           <p className="text-muted-foreground mt-1">
             {isFinanceDashboard
               ? "Net worth, cash flow, budgets, debt, investments, insurance, and payments in one finance cockpit."
-              : "A beautiful command center for finance, work, social, notes, ideas, and travel."}
+              : "A beautiful command center for finance, work, health, social, notes, ideas, and travel."}
           </p>
           
           {/* Live Exchange Rates Row */}
@@ -317,6 +329,7 @@ export default function Dashboard({ mode = "one" }: { mode?: "one" | "finance" }
             <CoverageRow icon={Wallet} label="OneFinance" value="Live" />
             <CoverageRow icon={BriefcaseBusiness} label="OneWork" value="Live" />
             <CoverageRow icon={Users} label="OneSocial" value="Mapped" />
+            <CoverageRow icon={HeartPulse} label="OneHealth" value="Mapped" />
             <CoverageRow icon={Notebook} label="OneNote" value="Mapped" />
             <CoverageRow icon={Lightbulb} label="OneIdea" value="Mapped" />
             <CoverageRow icon={Plane} label="OneTravel" value="Mapped" />

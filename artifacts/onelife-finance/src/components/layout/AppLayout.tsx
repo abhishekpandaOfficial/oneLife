@@ -35,6 +35,11 @@ import {
   Handshake,
   MapPinned,
   BadgeIndianRupee,
+  HeartPulse,
+  UserRound,
+  Stethoscope,
+  Pill,
+  CalendarDays,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -136,6 +141,20 @@ const navModules: Array<{
     ],
   },
   {
+    id: "health",
+    label: "OneHealth",
+    os: "HealthOS",
+    icon: HeartPulse,
+    accent: "text-red-600 dark:text-red-300",
+    items: [
+      { label: "Dashboard", href: "/onehealth", icon: LayoutDashboard, exact: true },
+      { label: "Family Members", href: "/onehealth/members", icon: UserRound, exact: true },
+      { label: "Health Records", href: "/onehealth/records", icon: Stethoscope, exact: true },
+      { label: "Medicines", href: "/onehealth/medicines", icon: Pill, exact: true },
+      { label: "Appointments", href: "/onehealth/appointments", icon: CalendarDays, exact: true },
+    ],
+  },
+  {
     id: "note",
     label: "OneNote",
     os: "KnowledgeOS",
@@ -190,6 +209,7 @@ function readOpenModules(): Record<string, boolean> {
     finance: true,
     work: true,
     social: false,
+    health: false,
     note: false,
     idea: false,
     travel: false,

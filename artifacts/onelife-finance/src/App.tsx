@@ -78,6 +78,12 @@ function Router() {
         <Route path="/onesocial">
           {() => <EcosystemModule module="social" />}
         </Route>
+        <Route path="/onehealth/:section">
+          {() => <EcosystemModule module="health" />}
+        </Route>
+        <Route path="/onehealth">
+          {() => <EcosystemModule module="health" />}
+        </Route>
         <Route path="/onenote/:section">
           {() => <EcosystemModule module="note" />}
         </Route>

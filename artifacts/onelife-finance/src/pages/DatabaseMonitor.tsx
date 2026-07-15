@@ -18,6 +18,7 @@ import {
   Wallet,
   BriefcaseBusiness,
   Users,
+  HeartPulse,
   Notebook,
   Lightbulb,
   Plane,
@@ -97,6 +98,7 @@ const MODULE_ICONS: Record<string, React.ElementType> = {
   finance: Wallet,
   work: BriefcaseBusiness,
   social: Users,
+  health: HeartPulse,
   note: Notebook,
   idea: Lightbulb,
   travel: Plane,
@@ -118,12 +120,13 @@ const COLOR_DOT: Record<string, string> = {
   red: "bg-red-500",
 };
 
-const MODULE_ORDER = ["finance", "work", "social", "note", "idea", "travel", "system"];
+const MODULE_ORDER = ["finance", "work", "social", "health", "note", "idea", "travel", "system"];
 
 const MODULE_TONE: Record<string, string> = {
   finance: "border-emerald-500/20 bg-emerald-500/5",
   work: "border-blue-500/20 bg-blue-500/5",
   social: "border-rose-500/20 bg-rose-500/5",
+  health: "border-red-500/20 bg-red-500/5",
   note: "border-amber-500/20 bg-amber-500/5",
   idea: "border-fuchsia-500/20 bg-fuchsia-500/5",
   travel: "border-cyan-500/20 bg-cyan-500/5",

@@ -58478,6 +58478,7 @@ var TABLE_MODULE_META = {
 };
 var PLANNED_MODULES = [
   { module: "OneSocial", moduleKey: "social", tables: ["social_people", "social_circles", "social_followups"] },
+  { module: "OneHealth", moduleKey: "health", tables: ["health_members", "health_records", "health_medicines", "health_appointments"] },
   { module: "OneNote", moduleKey: "note", tables: ["note_entries", "note_collections", "note_resources"] },
   { module: "OneIdea", moduleKey: "idea", tables: ["idea_entries", "idea_experiments", "idea_roadmap"] },
   { module: "OneTravel", moduleKey: "travel", tables: ["travel_trips", "travel_places", "travel_documents"] }

@@ -8,13 +8,17 @@ import {
   FileText,
   Folder,
   Handshake,
+  HeartPulse,
   Lightbulb,
   MapPinned,
   Notebook,
+  Pill,
   Plane,
   Plus,
   Sparkles,
+  Stethoscope,
   Target,
+  UserRound,
   Users,
   Zap,
 } from "lucide-react";
@@ -24,7 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
-type ModuleKey = "social" | "note" | "idea" | "travel";
+type ModuleKey = "social" | "health" | "note" | "idea" | "travel";
 
 const moduleConfig: Record<ModuleKey, {
   eyebrow: string;
@@ -51,6 +55,21 @@ const moduleConfig: Record<ModuleKey, {
     ],
     workflow: ["Add people", "Group into circles", "Schedule follow-ups", "Review weekly"],
     nextActions: ["Create people database", "Add relationship timeline", "Connect reminders to dashboard"],
+  },
+  health: {
+    eyebrow: "HealthOS",
+    title: "OneHealth",
+    description: "Self and family health profiles, medical records, appointments, medicines, vitals, and care reminders in one trusted hub.",
+    icon: HeartPulse,
+    accent: "from-red-500/15 via-card to-emerald-500/10 border-red-500/20",
+    status: "Health module mapped",
+    features: [
+      { title: "Family Members", description: "Profiles for self, parents, partner, children, and dependents with basic medical context.", icon: UserRound, metric: "Members" },
+      { title: "Health Records", description: "Reports, prescriptions, diagnoses, allergies, insurance notes, and doctor summaries.", icon: Stethoscope, metric: "Records" },
+      { title: "Medicines", description: "Medicine schedules, dosage, refill reminders, and active/inactive medication history.", icon: Pill, metric: "Meds" },
+    ],
+    workflow: ["Add family", "Upload records", "Track medicines", "Review care"],
+    nextActions: ["Create family member profiles", "Add health document vault", "Connect appointment reminders to dashboard"],
   },
   note: {
     eyebrow: "KnowledgeOS",

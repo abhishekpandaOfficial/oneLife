@@ -7,7 +7,6 @@ import {
   useCreateTransaction, 
   useUpdateTransaction, 
   useGetTransaction,
-  useListCategories,
   TransactionType,
   getListTransactionsQueryKey,
   getGetDashboardSummaryQueryKey,
@@ -25,6 +24,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
+import { CategorySelect } from "@/components/CategorySelect";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { useCurrencyRefresh, getGlobalRates } from "@/components/ui/animated-number";
@@ -75,8 +75,6 @@ export default function TransactionForm({ params }: { params?: { id?: string } }
   const { data: transaction, isLoading: isTxLoading } = useGetTransaction(transactionId!, {
     query: { enabled: isEditing } as any
   });
-
-  const { data: categories } = useListCategories();
 
   const createMutation = useCreateTransaction({
     mutation: {
@@ -156,10 +154,16 @@ export default function TransactionForm({ params }: { params?: { id?: string } }
   };
 
   const isPending = createMutation.isPending || updateMutation.isPending;
-  
-  // Filter categories based on selected type
   const selectedType = form.watch("type");
-  const filteredCategories = categories?.filter(c => c.type === selectedType) || [];
+  const prevTypeRef = useRef(selectedType);
+
+  // Clear category when transaction type changes
+  useEffect(() => {
+    if (prevTypeRef.current !== selectedType) {
+      form.setValue("categoryId", null);
+      prevTypeRef.current = selectedType;
+    }
+  }, [selectedType, form]);
 
   if (isEditing && isTxLoading) {
     return <div className="p-8 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
@@ -244,27 +248,16 @@ export default function TransactionForm({ params }: { params?: { id?: string } }
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Category</FormLabel>
-                      <Select 
-                        onValueChange={(val) => field.onChange(val === "none" ? null : parseInt(val))} 
-                        value={field.value?.toString() || "none"}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select category" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="none">Uncategorized</SelectItem>
-                          {filteredCategories.map(cat => (
-                            <SelectItem key={cat.id} value={cat.id.toString()}>
-                              <div className="flex items-center gap-2">
-                                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: cat.color }} />
-                                {cat.name}
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormControl>
+                        <CategorySelect
+                          type={selectedType}
+                          value={field.value ?? null}
+                          onChange={field.onChange}
+                          allowCreate
+                          allowUncategorized
+                          placeholder="Select category"
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}

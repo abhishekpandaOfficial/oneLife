@@ -32,6 +32,8 @@ tags:
     description: Financial reports
   - name: credit_cards
     description: Credit card management
+  - name: onework
+    description: Career, employment documents, salary, and PF ledger
 paths:
   /healthz:
     get:
@@ -796,7 +798,292 @@ paths:
         "404":
           description: Not found
 
+  /onework/summary:
+    get:
+      operationId: getOneworkSummary
+      tags: [onework]
+      summary: Get OneWork summary
+      responses:
+        "200":
+          description: OneWork summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OneworkSummary"
+
+  /onework/profile:
+    put:
+      operationId: updateOneworkProfile
+      tags: [onework]
+      summary: Update OneWork profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OneworkProfileInput"
+      responses:
+        "200":
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OneworkProfile"
+
+  /onework/companies:
+    post:
+      operationId: createWorkCompany
+      tags: [onework]
+      summary: Create a work company
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkCompanyInput"
+      responses:
+        "201":
+          description: Created company
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkCompany"
+
+  /onework/companies/{id}:
+    patch:
+      operationId: updateWorkCompany
+      tags: [onework]
+      summary: Update a work company
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkCompanyUpdate"
+      responses:
+        "200":
+          description: Updated company
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkCompany"
+    delete:
+      operationId: deleteWorkCompany
+      tags: [onework]
+      summary: Delete a work company
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "204":
+          description: Deleted
+
+  /onework/document-categories:
+    post:
+      operationId: createWorkDocumentCategory
+      tags: [onework]
+      summary: Create a work document category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkDocumentCategoryInput"
+      responses:
+        "201":
+          description: Created document category
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkDocumentCategory"
+
+  /onework/document-categories/{id}:
+    patch:
+      operationId: updateWorkDocumentCategory
+      tags: [onework]
+      summary: Update a work document category
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkDocumentCategoryUpdate"
+      responses:
+        "200":
+          description: Updated document category
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkDocumentCategory"
+    delete:
+      operationId: deleteWorkDocumentCategory
+      tags: [onework]
+      summary: Delete a work document category
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "204":
+          description: Deleted
+
+  /onework/documents:
+    post:
+      operationId: createWorkDocument
+      tags: [onework]
+      summary: Create a work document
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkDocumentInput"
+      responses:
+        "201":
+          description: Created document
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkDocument"
+
+  /onework/documents/{id}:
+    patch:
+      operationId: updateWorkDocument
+      tags: [onework]
+      summary: Update a work document
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkDocumentUpdate"
+      responses:
+        "200":
+          description: Updated document
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkDocument"
+    delete:
+      operationId: deleteWorkDocument
+      tags: [onework]
+      summary: Delete a work document
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "204":
+          description: Deleted
+
+  /onework/pf-entries:
+    post:
+      operationId: createWorkPfEntry
+      tags: [onework]
+      summary: Create a PF entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkPfEntryInput"
+      responses:
+        "201":
+          description: Created PF entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkPfEntry"
+
+  /onework/pf-entries/{id}:
+    patch:
+      operationId: updateWorkPfEntry
+      tags: [onework]
+      summary: Update a PF entry
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkPfEntryUpdate"
+      responses:
+        "200":
+          description: Updated PF entry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkPfEntry"
+    delete:
+      operationId: deleteWorkPfEntry
+      tags: [onework]
+      summary: Delete a PF entry
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "204":
+          description: Deleted
+
+  /onework/pf-withdrawals:
+    post:
+      operationId: createWorkPfWithdrawal
+      tags: [onework]
+      summary: Create a PF withdrawal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkPfWithdrawalInput"
+      responses:
+        "201":
+          description: Created PF withdrawal
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkPfWithdrawal"
+
+  /onework/pf-withdrawals/{id}:
+    patch:
+      operationId: updateWorkPfWithdrawal
+      tags: [onework]
+      summary: Update a PF withdrawal
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkPfWithdrawalUpdate"
+      responses:
+        "200":
+          description: Updated PF withdrawal
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkPfWithdrawal"
+    delete:
+      operationId: deleteWorkPfWithdrawal
+      tags: [onework]
+      summary: Delete a PF withdrawal
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "204":
+          description: Deleted
+
 components:
+  parameters:
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+
   schemas:
     HealthStatus:
       type: object
@@ -837,6 +1124,18 @@ components:
     GoalType:
       type: string
       enum: [emergency_fund, vacation, car, house, kids_education, retirement, other]
+
+    WorkEmploymentType:
+      type: string
+      enum: [full_time, part_time, contract, internship, freelance]
+
+    WorkDocumentType:
+      type: string
+      enum: [offer_letter, payslip, joining_letter, hike_letter, relieving_letter, form16, pf_statement, other]
+
+    WorkPfSource:
+      type: string
+      enum: [manual, estimated, epfo]
 
     Category:
       type: object
@@ -1219,6 +1518,7 @@ components:
         totalCreditCardOutstanding: { type: number }
         totalInvestmentValue: { type: number }
         totalInsuranceCoverage: { type: number }
+        pfBalance: { type: number }
         netWorthChange: { type: number }
         netWorthChangePercent: { type: number }
         emisDueCount: { type: integer }
@@ -1295,3 +1595,382 @@ components:
         outstandingAmount: { type: number, minimum: 0 }
         dueDate: { type: string, format: date }
         minimumDue: { type: number, minimum: 0 }
+
+    OneworkProfile:
+      type: object
+      required: [id, createdAt]
+      properties:
+        id: { type: integer }
+        uanNumber: { type: ["string", "null"] }
+        epfoMemberId: { type: ["string", "null"] }
+        googleDriveConnected: { type: ["string", "null"] }
+        googleDriveEmail: { type: ["string", "null"] }
+        googleDriveFolderId: { type: ["string", "null"] }
+        lastEpfoSyncAt: { type: ["string", "null"], format: date-time }
+        createdAt: { type: string, format: date-time }
+
+    OneworkProfileInput:
+      type: object
+      properties:
+        uanNumber: { type: ["string", "null"] }
+        epfoMemberId: { type: ["string", "null"] }
+        googleDriveConnected: { type: ["string", "null"] }
+        googleDriveEmail: { type: ["string", "null"] }
+        googleDriveFolderId: { type: ["string", "null"] }
+        lastEpfoSyncAt: { type: ["string", "null"], format: date-time }
+
+    WorkCompany:
+      type: object
+      required:
+        [id, companyName, position, employmentType, salaryMonthly, startDate, endDate,
+         employeePfMonthly, employerPfMonthly, color, icon, tenureMonths, tenureLabel,
+         estimatedPfAmount, documentsCount, createdAt]
+      properties:
+        id: { type: integer }
+        companyName: { type: string }
+        position: { type: string }
+        location: { type: ["string", "null"] }
+        employmentType:
+          $ref: "#/components/schemas/WorkEmploymentType"
+        salaryMonthly: { type: number }
+        startDate: { type: string, format: date }
+        endDate: { type: ["string", "null"], format: date }
+        pfAccountNumber: { type: ["string", "null"] }
+        employeePfMonthly: { type: number }
+        employerPfMonthly: { type: number }
+        color: { type: string }
+        icon: { type: string }
+        logoUrl: { type: ["string", "null"] }
+        notes: { type: ["string", "null"] }
+        tenureMonths: { type: integer }
+        tenureLabel: { type: string }
+        estimatedPfAmount: { type: number }
+        documentsCount: { type: integer }
+        createdAt: { type: string, format: date-time }
+
+    WorkCompanyInput:
+      type: object
+      required: [companyName, position, startDate]
+      properties:
+        companyName: { type: string, minLength: 1 }
+        position: { type: string, minLength: 1 }
+        location: { type: ["string", "null"] }
+        employmentType:
+          $ref: "#/components/schemas/WorkEmploymentType"
+        salaryMonthly: { type: number, minimum: 0, default: 0 }
+        startDate: { type: string, format: date }
+        endDate: { type: ["string", "null"], format: date }
+        pfAccountNumber: { type: ["string", "null"] }
+        employeePfMonthly: { type: number, minimum: 0, default: 0 }
+        employerPfMonthly: { type: number, minimum: 0, default: 0 }
+        color: { type: string, default: "#2563eb" }
+        icon: { type: string, default: "Building2" }
+        logoUrl: { type: ["string", "null"] }
+        notes: { type: ["string", "null"] }
+
+    WorkCompanyUpdate:
+      type: object
+      properties:
+        companyName: { type: string, minLength: 1 }
+        position: { type: string, minLength: 1 }
+        location: { type: ["string", "null"] }
+        employmentType:
+          $ref: "#/components/schemas/WorkEmploymentType"
+        salaryMonthly: { type: number, minimum: 0 }
+        startDate: { type: string, format: date }
+        endDate: { type: ["string", "null"], format: date }
+        pfAccountNumber: { type: ["string", "null"] }
+        employeePfMonthly: { type: number, minimum: 0 }
+        employerPfMonthly: { type: number, minimum: 0 }
+        color: { type: string }
+        icon: { type: string }
+        logoUrl: { type: ["string", "null"] }
+        notes: { type: ["string", "null"] }
+
+    WorkDocumentFolder:
+      type: object
+      required: [id, companyId, name, color, icon, documentsCount, createdAt]
+      properties:
+        id: { type: integer }
+        companyId: { type: integer }
+        companyName: { type: ["string", "null"] }
+        name: { type: string }
+        color: { type: string }
+        icon: { type: string }
+        googleDriveFolderId: { type: ["string", "null"] }
+        notes: { type: ["string", "null"] }
+        documentsCount: { type: integer }
+        createdAt: { type: string, format: date-time }
+
+    WorkDocumentFolderInput:
+      type: object
+      required: [companyId, name]
+      properties:
+        companyId: { type: integer }
+        name: { type: string, minLength: 1 }
+        color: { type: string, default: "#2563eb" }
+        icon: { type: string, default: "FileText" }
+        googleDriveFolderId: { type: ["string", "null"] }
+        notes: { type: ["string", "null"] }
+
+    WorkDocumentFolderUpdate:
+      type: object
+      properties:
+        companyId: { type: integer }
+        name: { type: string, minLength: 1 }
+        color: { type: string }
+        icon: { type: string }
+        googleDriveFolderId: { type: ["string", "null"] }
+        notes: { type: ["string", "null"] }
+
+    WorkDocumentCategory:
+      type: object
+      required: [id, name, color, icon, createdAt]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        color: { type: string }
+        icon: { type: string }
+        createdAt: { type: string, format: date-time }
+
+    WorkDocumentCategoryInput:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, minLength: 1 }
+        color: { type: string, default: "#64748b" }
+        icon: { type: string, default: "FileText" }
+
+    WorkDocumentCategoryUpdate:
+      type: object
+      properties:
+        name: { type: string, minLength: 1 }
+        color: { type: string }
+        icon: { type: string }
+
+    WorkDocument:
+      type: object
+      required:
+        [id, companyId, folderId, categoryId, name, documentType, fileName,
+         documentDate, createdAt]
+      properties:
+        id: { type: integer }
+        companyId: { type: ["integer", "null"] }
+        companyName: { type: ["string", "null"] }
+        folderId: { type: ["integer", "null"] }
+        folderName: { type: ["string", "null"] }
+        categoryId: { type: ["integer", "null"] }
+        categoryName: { type: ["string", "null"] }
+        categoryColor: { type: ["string", "null"] }
+        categoryIcon: { type: ["string", "null"] }
+        name: { type: string }
+        documentType:
+          $ref: "#/components/schemas/WorkDocumentType"
+        fileName: { type: string }
+        fileUrl: { type: ["string", "null"] }
+        googleDriveFileId: { type: ["string", "null"] }
+        documentDate: { type: ["string", "null"], format: date }
+        notes: { type: ["string", "null"] }
+        createdAt: { type: string, format: date-time }
+
+    WorkDocumentInput:
+      type: object
+      required: [name, fileName]
+      properties:
+        companyId: { type: ["integer", "null"] }
+        folderId: { type: ["integer", "null"] }
+        categoryId: { type: ["integer", "null"] }
+        name: { type: string, minLength: 1 }
+        documentType:
+          $ref: "#/components/schemas/WorkDocumentType"
+        fileName: { type: string, minLength: 1 }
+        fileUrl: { type: ["string", "null"] }
+        googleDriveFileId: { type: ["string", "null"] }
+        documentDate: { type: ["string", "null"], format: date }
+        notes: { type: ["string", "null"] }
+
+    WorkDocumentUpdate:
+      type: object
+      properties:
+        companyId: { type: ["integer", "null"] }
+        folderId: { type: ["integer", "null"] }
+        categoryId: { type: ["integer", "null"] }
+        name: { type: string, minLength: 1 }
+        documentType:
+          $ref: "#/components/schemas/WorkDocumentType"
+        fileName: { type: string, minLength: 1 }
+        fileUrl: { type: ["string", "null"] }
+        googleDriveFileId: { type: ["string", "null"] }
+        documentDate: { type: ["string", "null"], format: date }
+        notes: { type: ["string", "null"] }
+
+    WorkSalaryRecord:
+      type: object
+      required:
+        [id, companyId, documentId, month, netSalary, grossSalary, ctcAnnual,
+         taxDeduction, otherDeductions, source, createdAt]
+      properties:
+        id: { type: integer }
+        companyId: { type: integer }
+        companyName: { type: ["string", "null"] }
+        documentId: { type: ["integer", "null"] }
+        month: { type: string }
+        netSalary: { type: number }
+        grossSalary: { type: number }
+        ctcAnnual: { type: number }
+        taxDeduction: { type: number }
+        otherDeductions: { type: number }
+        source: { type: string }
+        notes: { type: ["string", "null"] }
+        createdAt: { type: string, format: date-time }
+
+    WorkSalaryRecordInput:
+      type: object
+      required: [companyId, month]
+      properties:
+        companyId: { type: integer }
+        documentId: { type: ["integer", "null"] }
+        month: { type: string, minLength: 7 }
+        netSalary: { type: number, minimum: 0, default: 0 }
+        grossSalary: { type: number, minimum: 0, default: 0 }
+        ctcAnnual: { type: number, minimum: 0, default: 0 }
+        taxDeduction: { type: number, minimum: 0, default: 0 }
+        otherDeductions: { type: number, minimum: 0, default: 0 }
+        source: { type: string, default: manual }
+        notes: { type: ["string", "null"] }
+
+    WorkSalaryRecordUpdate:
+      type: object
+      properties:
+        companyId: { type: integer }
+        documentId: { type: ["integer", "null"] }
+        month: { type: string, minLength: 7 }
+        netSalary: { type: number, minimum: 0 }
+        grossSalary: { type: number, minimum: 0 }
+        ctcAnnual: { type: number, minimum: 0 }
+        taxDeduction: { type: number, minimum: 0 }
+        otherDeductions: { type: number, minimum: 0 }
+        source: { type: string }
+        notes: { type: ["string", "null"] }
+
+    WorkPfEntry:
+      type: object
+      required: [id, companyId, month, employeeAmount, employerAmount, interestAmount, source, createdAt]
+      properties:
+        id: { type: integer }
+        companyId: { type: ["integer", "null"] }
+        companyName: { type: ["string", "null"] }
+        month: { type: string }
+        employeeAmount: { type: number }
+        employerAmount: { type: number }
+        interestAmount: { type: number }
+        source:
+          $ref: "#/components/schemas/WorkPfSource"
+        notes: { type: ["string", "null"] }
+        createdAt: { type: string, format: date-time }
+
+    WorkPfEntryInput:
+      type: object
+      required: [month]
+      properties:
+        companyId: { type: ["integer", "null"] }
+        month: { type: string, minLength: 7 }
+        employeeAmount: { type: number, minimum: 0, default: 0 }
+        employerAmount: { type: number, minimum: 0, default: 0 }
+        interestAmount: { type: number, minimum: 0, default: 0 }
+        source:
+          $ref: "#/components/schemas/WorkPfSource"
+        notes: { type: ["string", "null"] }
+
+    WorkPfEntryUpdate:
+      type: object
+      properties:
+        companyId: { type: ["integer", "null"] }
+        month: { type: string, minLength: 7 }
+        employeeAmount: { type: number, minimum: 0 }
+        employerAmount: { type: number, minimum: 0 }
+        interestAmount: { type: number, minimum: 0 }
+        source:
+          $ref: "#/components/schemas/WorkPfSource"
+        notes: { type: ["string", "null"] }
+
+    WorkPfWithdrawal:
+      type: object
+      required: [id, companyId, amount, withdrawalDate, createdAt]
+      properties:
+        id: { type: integer }
+        companyId: { type: ["integer", "null"] }
+        companyName: { type: ["string", "null"] }
+        amount: { type: number }
+        withdrawalDate: { type: string, format: date }
+        reason: { type: ["string", "null"] }
+        notes: { type: ["string", "null"] }
+        createdAt: { type: string, format: date-time }
+
+    WorkPfWithdrawalInput:
+      type: object
+      required: [amount, withdrawalDate]
+      properties:
+        companyId: { type: ["integer", "null"] }
+        amount: { type: number, minimum: 0 }
+        withdrawalDate: { type: string, format: date }
+        reason: { type: ["string", "null"] }
+        notes: { type: ["string", "null"] }
+
+    WorkPfWithdrawalUpdate:
+      type: object
+      properties:
+        companyId: { type: ["integer", "null"] }
+        amount: { type: number, minimum: 0 }
+        withdrawalDate: { type: string, format: date }
+        reason: { type: ["string", "null"] }
+        notes: { type: ["string", "null"] }
+
+    OneworkSummary:
+      type: object
+      required:
+        [profile, companies, folders, documents, documentCategories, salaryRecords,
+         pfEntries, pfWithdrawals, totalCompanies, totalExperienceMonths,
+         totalSalaryMonthly, pfContributions, pfWithdrawalsTotal, pfBalance,
+         epfoSyncStatus]
+      properties:
+        profile:
+          oneOf:
+            - $ref: "#/components/schemas/OneworkProfile"
+            - type: "null"
+        companies:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkCompany"
+        folders:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkDocumentFolder"
+        documents:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkDocument"
+        documentCategories:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkDocumentCategory"
+        salaryRecords:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkSalaryRecord"
+        pfEntries:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkPfEntry"
+        pfWithdrawals:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkPfWithdrawal"
+        totalCompanies: { type: integer }
+        activeCompanyName: { type: ["string", "null"] }
+        totalExperienceMonths: { type: integer }
+        totalSalaryMonthly: { type: number }
+        pfContributions: { type: number }
+        pfWithdrawalsTotal: { type: number }
+        pfBalance: { type: number }
+        epfoSyncStatus: { type: string }

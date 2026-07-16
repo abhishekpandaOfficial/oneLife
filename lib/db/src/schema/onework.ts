@@ -6,6 +6,9 @@ export const oneworkProfileTable = pgTable("onework_profile", {
   id: serial("id").primaryKey(),
   uanNumber: text("uan_number"),
   epfoMemberId: text("epfo_member_id"),
+  googleDriveConnected: text("google_drive_connected"),
+  googleDriveEmail: text("google_drive_email"),
+  googleDriveFolderId: text("google_drive_folder_id"),
   lastEpfoSyncAt: timestamp("last_epfo_sync_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -37,6 +40,7 @@ export const workDocumentFoldersTable = pgTable("work_document_folders", {
   name: text("name").notNull(),
   color: text("color").notNull().default("#2563eb"),
   icon: text("icon").notNull().default("FileText"),
+  googleDriveFolderId: text("google_drive_folder_id"),
   notes: text("notes"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -56,11 +60,27 @@ export const workDocumentsTable = pgTable("work_documents", {
   categoryId: integer("category_id").references(() => workDocumentCategoriesTable.id, { onDelete: "set null" }),
   name: text("name").notNull(),
   documentType: text("document_type", {
-    enum: ["payslip", "joining_letter", "hike_letter", "relieving_letter", "form16", "pf_statement", "other"],
+    enum: ["offer_letter", "payslip", "joining_letter", "hike_letter", "relieving_letter", "form16", "pf_statement", "other"],
   }).notNull().default("other"),
   fileName: text("file_name").notNull(),
   fileUrl: text("file_url"),
+  googleDriveFileId: text("google_drive_file_id"),
   documentDate: date("document_date", { mode: "string" }),
+  notes: text("notes"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const workSalaryRecordsTable = pgTable("work_salary_records", {
+  id: serial("id").primaryKey(),
+  companyId: integer("company_id").notNull().references(() => workCompaniesTable.id, { onDelete: "cascade" }),
+  documentId: integer("document_id").references(() => workDocumentsTable.id, { onDelete: "set null" }),
+  month: text("month").notNull(),
+  netSalary: numeric("net_salary", { precision: 14, scale: 2, mode: "number" }).notNull().default(0),
+  grossSalary: numeric("gross_salary", { precision: 14, scale: 2, mode: "number" }).notNull().default(0),
+  ctcAnnual: numeric("ctc_annual", { precision: 14, scale: 2, mode: "number" }).notNull().default(0),
+  taxDeduction: numeric("tax_deduction", { precision: 14, scale: 2, mode: "number" }).notNull().default(0),
+  otherDeductions: numeric("other_deductions", { precision: 14, scale: 2, mode: "number" }).notNull().default(0),
+  source: text("source").notNull().default("manual"),
   notes: text("notes"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
@@ -92,6 +112,7 @@ export const insertWorkCompanySchema = createInsertSchema(workCompaniesTable).om
 export const insertWorkDocumentFolderSchema = createInsertSchema(workDocumentFoldersTable).omit({ id: true, createdAt: true });
 export const insertWorkDocumentCategorySchema = createInsertSchema(workDocumentCategoriesTable).omit({ id: true, createdAt: true });
 export const insertWorkDocumentSchema = createInsertSchema(workDocumentsTable).omit({ id: true, createdAt: true });
+export const insertWorkSalaryRecordSchema = createInsertSchema(workSalaryRecordsTable).omit({ id: true, createdAt: true });
 export const insertWorkPfEntrySchema = createInsertSchema(workPfEntriesTable).omit({ id: true, createdAt: true });
 export const insertWorkPfWithdrawalSchema = createInsertSchema(workPfWithdrawalsTable).omit({ id: true, createdAt: true });
 
@@ -100,6 +121,7 @@ export type WorkCompany = typeof workCompaniesTable.$inferSelect;
 export type WorkDocumentFolder = typeof workDocumentFoldersTable.$inferSelect;
 export type WorkDocumentCategory = typeof workDocumentCategoriesTable.$inferSelect;
 export type WorkDocument = typeof workDocumentsTable.$inferSelect;
+export type WorkSalaryRecord = typeof workSalaryRecordsTable.$inferSelect;
 export type WorkPfEntry = typeof workPfEntriesTable.$inferSelect;
 export type WorkPfWithdrawal = typeof workPfWithdrawalsTable.$inferSelect;
 
@@ -108,5 +130,6 @@ export type InsertWorkCompany = z.infer<typeof insertWorkCompanySchema>;
 export type InsertWorkDocumentFolder = z.infer<typeof insertWorkDocumentFolderSchema>;
 export type InsertWorkDocumentCategory = z.infer<typeof insertWorkDocumentCategorySchema>;
 export type InsertWorkDocument = z.infer<typeof insertWorkDocumentSchema>;
+export type InsertWorkSalaryRecord = z.infer<typeof insertWorkSalaryRecordSchema>;
 export type InsertWorkPfEntry = z.infer<typeof insertWorkPfEntrySchema>;
 export type InsertWorkPfWithdrawal = z.infer<typeof insertWorkPfWithdrawalSchema>;

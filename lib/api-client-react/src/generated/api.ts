@@ -3002,49 +3002,1221 @@ export const useDeleteCreditCard = <TError = ErrorType<void>,
       return useMutation(getDeleteCreditCardMutationOptions(options));
     }
 
-export const getGetOneworkSummaryUrl = () => `/api/onework/summary`;
-export const getGetOneworkSummaryQueryKey = () => [`/api/onework/summary`] as const;
-export const getOneworkSummary = async (options?: RequestInit): Promise<OneworkSummary> => customFetch<OneworkSummary>(getGetOneworkSummaryUrl(), { ...options, method: 'GET' });
-export function useGetOneworkSummary<TData = Awaited<ReturnType<typeof getOneworkSummary>>, TError = ErrorType<unknown>>(options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getOneworkSummary>>, TError, TData>, request?: SecondParameter<typeof customFetch>}): UseQueryResult<TData, TError> {
-  const queryKey = options?.query?.queryKey ?? getGetOneworkSummaryQueryKey();
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneworkSummary>>> = ({ signal }) => getOneworkSummary({ signal, ...options?.request });
-  return useQuery({ queryKey, queryFn, ...options?.query } as UseQueryOptions<Awaited<ReturnType<typeof getOneworkSummary>>, TError, TData> & { queryKey: QueryKey });
+export const getGetOneworkSummaryUrl = () => {
+
+
+
+
+  return `/api/onework/summary`
 }
 
-export const updateOneworkProfile = async (data: OneworkProfileInput, options?: RequestInit): Promise<OneworkProfile> => customFetch<OneworkProfile>(`/api/onework/profile`, { ...options, method: 'PUT', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(data) });
-export function useUpdateOneworkProfile<TError = ErrorType<unknown>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateOneworkProfile>>, TError,{data: BodyType<OneworkProfileInput>}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['updateOneworkProfile'], mutationFn: ({ data }) => updateOneworkProfile(data, options?.request), ...options?.mutation }); }
+/**
+ * @summary Get OneWork summary
+ */
+export const getOneworkSummary = async ( options?: RequestInit): Promise<OneworkSummary> => {
 
-export const createWorkCompany = async (data: WorkCompanyInput, options?: RequestInit): Promise<WorkCompany> => customFetch<WorkCompany>(`/api/onework/companies`, { ...options, method: 'POST', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(data) });
-export const updateWorkCompany = async (id: number, data: WorkCompanyUpdate, options?: RequestInit): Promise<WorkCompany> => customFetch<WorkCompany>(`/api/onework/companies/${id}`, { ...options, method: 'PATCH', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(data) });
-export const deleteWorkCompany = async (id: number, options?: RequestInit): Promise<void> => customFetch<void>(`/api/onework/companies/${id}`, { ...options, method: 'DELETE' });
-export function useCreateWorkCompany<TError = ErrorType<unknown>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createWorkCompany>>, TError,{data: BodyType<WorkCompanyInput>}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['createWorkCompany'], mutationFn: ({ data }) => createWorkCompany(data, options?.request), ...options?.mutation }); }
-export function useUpdateWorkCompany<TError = ErrorType<unknown>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateWorkCompany>>, TError,{id: number; data: BodyType<WorkCompanyUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['updateWorkCompany'], mutationFn: ({ id, data }) => updateWorkCompany(id, data, options?.request), ...options?.mutation }); }
-export function useDeleteWorkCompany<TError = ErrorType<void>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkCompany>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['deleteWorkCompany'], mutationFn: ({ id }) => deleteWorkCompany(id, options?.request), ...options?.mutation }); }
+  return customFetch<OneworkSummary>(getGetOneworkSummaryUrl(),
+  {
+    ...options,
+    method: 'GET'
 
-export const createWorkDocumentCategory = async (data: WorkDocumentCategoryInput, options?: RequestInit): Promise<WorkDocumentCategory> => customFetch<WorkDocumentCategory>(`/api/onework/document-categories`, { ...options, method: 'POST', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(data) });
-export const updateWorkDocumentCategory = async (id: number, data: WorkDocumentCategoryUpdate, options?: RequestInit): Promise<WorkDocumentCategory> => customFetch<WorkDocumentCategory>(`/api/onework/document-categories/${id}`, { ...options, method: 'PATCH', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(data) });
-export const deleteWorkDocumentCategory = async (id: number, options?: RequestInit): Promise<void> => customFetch<void>(`/api/onework/document-categories/${id}`, { ...options, method: 'DELETE' });
-export function useCreateWorkDocumentCategory<TError = ErrorType<unknown>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createWorkDocumentCategory>>, TError,{data: BodyType<WorkDocumentCategoryInput>}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['createWorkDocumentCategory'], mutationFn: ({ data }) => createWorkDocumentCategory(data, options?.request), ...options?.mutation }); }
-export function useUpdateWorkDocumentCategory<TError = ErrorType<unknown>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateWorkDocumentCategory>>, TError,{id: number; data: BodyType<WorkDocumentCategoryUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['updateWorkDocumentCategory'], mutationFn: ({ id, data }) => updateWorkDocumentCategory(id, data, options?.request), ...options?.mutation }); }
-export function useDeleteWorkDocumentCategory<TError = ErrorType<void>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkDocumentCategory>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['deleteWorkDocumentCategory'], mutationFn: ({ id }) => deleteWorkDocumentCategory(id, options?.request), ...options?.mutation }); }
 
-export const createWorkDocument = async (data: WorkDocumentInput, options?: RequestInit): Promise<WorkDocument> => customFetch<WorkDocument>(`/api/onework/documents`, { ...options, method: 'POST', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(data) });
-export const updateWorkDocument = async (id: number, data: WorkDocumentUpdate, options?: RequestInit): Promise<WorkDocument> => customFetch<WorkDocument>(`/api/onework/documents/${id}`, { ...options, method: 'PATCH', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(data) });
-export const deleteWorkDocument = async (id: number, options?: RequestInit): Promise<void> => customFetch<void>(`/api/onework/documents/${id}`, { ...options, method: 'DELETE' });
-export function useCreateWorkDocument<TError = ErrorType<unknown>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createWorkDocument>>, TError,{data: BodyType<WorkDocumentInput>}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['createWorkDocument'], mutationFn: ({ data }) => createWorkDocument(data, options?.request), ...options?.mutation }); }
-export function useUpdateWorkDocument<TError = ErrorType<unknown>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateWorkDocument>>, TError,{id: number; data: BodyType<WorkDocumentUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['updateWorkDocument'], mutationFn: ({ id, data }) => updateWorkDocument(id, data, options?.request), ...options?.mutation }); }
-export function useDeleteWorkDocument<TError = ErrorType<void>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkDocument>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['deleteWorkDocument'], mutationFn: ({ id }) => deleteWorkDocument(id, options?.request), ...options?.mutation }); }
+  }
+);}
 
-export const createWorkPfEntry = async (data: WorkPfEntryInput, options?: RequestInit): Promise<WorkPfEntry> => customFetch<WorkPfEntry>(`/api/onework/pf-entries`, { ...options, method: 'POST', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(data) });
-export const updateWorkPfEntry = async (id: number, data: WorkPfEntryUpdate, options?: RequestInit): Promise<WorkPfEntry> => customFetch<WorkPfEntry>(`/api/onework/pf-entries/${id}`, { ...options, method: 'PATCH', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(data) });
-export const deleteWorkPfEntry = async (id: number, options?: RequestInit): Promise<void> => customFetch<void>(`/api/onework/pf-entries/${id}`, { ...options, method: 'DELETE' });
-export function useCreateWorkPfEntry<TError = ErrorType<unknown>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createWorkPfEntry>>, TError,{data: BodyType<WorkPfEntryInput>}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['createWorkPfEntry'], mutationFn: ({ data }) => createWorkPfEntry(data, options?.request), ...options?.mutation }); }
-export function useUpdateWorkPfEntry<TError = ErrorType<unknown>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateWorkPfEntry>>, TError,{id: number; data: BodyType<WorkPfEntryUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['updateWorkPfEntry'], mutationFn: ({ id, data }) => updateWorkPfEntry(id, data, options?.request), ...options?.mutation }); }
-export function useDeleteWorkPfEntry<TError = ErrorType<void>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkPfEntry>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['deleteWorkPfEntry'], mutationFn: ({ id }) => deleteWorkPfEntry(id, options?.request), ...options?.mutation }); }
 
-export const createWorkPfWithdrawal = async (data: WorkPfWithdrawalInput, options?: RequestInit): Promise<WorkPfWithdrawal> => customFetch<WorkPfWithdrawal>(`/api/onework/pf-withdrawals`, { ...options, method: 'POST', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(data) });
-export const updateWorkPfWithdrawal = async (id: number, data: WorkPfWithdrawalUpdate, options?: RequestInit): Promise<WorkPfWithdrawal> => customFetch<WorkPfWithdrawal>(`/api/onework/pf-withdrawals/${id}`, { ...options, method: 'PATCH', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(data) });
-export const deleteWorkPfWithdrawal = async (id: number, options?: RequestInit): Promise<void> => customFetch<void>(`/api/onework/pf-withdrawals/${id}`, { ...options, method: 'DELETE' });
-export function useCreateWorkPfWithdrawal<TError = ErrorType<unknown>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createWorkPfWithdrawal>>, TError,{data: BodyType<WorkPfWithdrawalInput>}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['createWorkPfWithdrawal'], mutationFn: ({ data }) => createWorkPfWithdrawal(data, options?.request), ...options?.mutation }); }
-export function useUpdateWorkPfWithdrawal<TError = ErrorType<unknown>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateWorkPfWithdrawal>>, TError,{id: number; data: BodyType<WorkPfWithdrawalUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['updateWorkPfWithdrawal'], mutationFn: ({ id, data }) => updateWorkPfWithdrawal(id, data, options?.request), ...options?.mutation }); }
-export function useDeleteWorkPfWithdrawal<TError = ErrorType<void>, TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkPfWithdrawal>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}) { return useMutation({ mutationKey: ['deleteWorkPfWithdrawal'], mutationFn: ({ id }) => deleteWorkPfWithdrawal(id, options?.request), ...options?.mutation }); }
+
+
+
+export const getGetOneworkSummaryQueryKey = () => {
+    return [
+    `/api/onework/summary`
+    ] as const;
+    }
+
+
+export const getGetOneworkSummaryQueryOptions = <TData = Awaited<ReturnType<typeof getOneworkSummary>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getOneworkSummary>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetOneworkSummaryQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOneworkSummary>>> = ({ signal }) => getOneworkSummary({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getOneworkSummary>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetOneworkSummaryQueryResult = NonNullable<Awaited<ReturnType<typeof getOneworkSummary>>>
+export type GetOneworkSummaryQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get OneWork summary
+ */
+
+export function useGetOneworkSummary<TData = Awaited<ReturnType<typeof getOneworkSummary>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getOneworkSummary>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetOneworkSummaryQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateOneworkProfileUrl = () => {
+
+
+
+
+  return `/api/onework/profile`
+}
+
+/**
+ * @summary Update OneWork profile
+ */
+export const updateOneworkProfile = async (oneworkProfileInput: OneworkProfileInput, options?: RequestInit): Promise<OneworkProfile> => {
+
+  return customFetch<OneworkProfile>(getUpdateOneworkProfileUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(oneworkProfileInput)
+  }
+);}
+
+
+
+
+
+export const getUpdateOneworkProfileMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateOneworkProfile>>, TError,{data: BodyType<OneworkProfileInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateOneworkProfile>>, TError,{data: BodyType<OneworkProfileInput>}, TContext> => {
+
+const mutationKey = ['updateOneworkProfile'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateOneworkProfile>>, {data: BodyType<OneworkProfileInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  updateOneworkProfile(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateOneworkProfileMutationResult = NonNullable<Awaited<ReturnType<typeof updateOneworkProfile>>>
+    export type UpdateOneworkProfileMutationBody = BodyType<OneworkProfileInput>
+    export type UpdateOneworkProfileMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update OneWork profile
+ */
+export const useUpdateOneworkProfile = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateOneworkProfile>>, TError,{data: BodyType<OneworkProfileInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateOneworkProfile>>,
+        TError,
+        {data: BodyType<OneworkProfileInput>},
+        TContext
+      > => {
+      return useMutation(getUpdateOneworkProfileMutationOptions(options));
+    }
+
+export const getCreateWorkCompanyUrl = () => {
+
+
+
+
+  return `/api/onework/companies`
+}
+
+/**
+ * @summary Create a work company
+ */
+export const createWorkCompany = async (workCompanyInput: WorkCompanyInput, options?: RequestInit): Promise<WorkCompany> => {
+
+  return customFetch<WorkCompany>(getCreateWorkCompanyUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(workCompanyInput)
+  }
+);}
+
+
+
+
+
+export const getCreateWorkCompanyMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createWorkCompany>>, TError,{data: BodyType<WorkCompanyInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createWorkCompany>>, TError,{data: BodyType<WorkCompanyInput>}, TContext> => {
+
+const mutationKey = ['createWorkCompany'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createWorkCompany>>, {data: BodyType<WorkCompanyInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createWorkCompany(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateWorkCompanyMutationResult = NonNullable<Awaited<ReturnType<typeof createWorkCompany>>>
+    export type CreateWorkCompanyMutationBody = BodyType<WorkCompanyInput>
+    export type CreateWorkCompanyMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Create a work company
+ */
+export const useCreateWorkCompany = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createWorkCompany>>, TError,{data: BodyType<WorkCompanyInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createWorkCompany>>,
+        TError,
+        {data: BodyType<WorkCompanyInput>},
+        TContext
+      > => {
+      return useMutation(getCreateWorkCompanyMutationOptions(options));
+    }
+
+export const getUpdateWorkCompanyUrl = (id: number,) => {
+
+
+
+
+  return `/api/onework/companies/${id}`
+}
+
+/**
+ * @summary Update a work company
+ */
+export const updateWorkCompany = async (id: number,
+    workCompanyUpdate: WorkCompanyUpdate, options?: RequestInit): Promise<WorkCompany> => {
+
+  return customFetch<WorkCompany>(getUpdateWorkCompanyUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(workCompanyUpdate)
+  }
+);}
+
+
+
+
+
+export const getUpdateWorkCompanyMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateWorkCompany>>, TError,{id: number;data: BodyType<WorkCompanyUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateWorkCompany>>, TError,{id: number;data: BodyType<WorkCompanyUpdate>}, TContext> => {
+
+const mutationKey = ['updateWorkCompany'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateWorkCompany>>, {id: number;data: BodyType<WorkCompanyUpdate>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateWorkCompany(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateWorkCompanyMutationResult = NonNullable<Awaited<ReturnType<typeof updateWorkCompany>>>
+    export type UpdateWorkCompanyMutationBody = BodyType<WorkCompanyUpdate>
+    export type UpdateWorkCompanyMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update a work company
+ */
+export const useUpdateWorkCompany = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateWorkCompany>>, TError,{id: number;data: BodyType<WorkCompanyUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateWorkCompany>>,
+        TError,
+        {id: number;data: BodyType<WorkCompanyUpdate>},
+        TContext
+      > => {
+      return useMutation(getUpdateWorkCompanyMutationOptions(options));
+    }
+
+export const getDeleteWorkCompanyUrl = (id: number,) => {
+
+
+
+
+  return `/api/onework/companies/${id}`
+}
+
+/**
+ * @summary Delete a work company
+ */
+export const deleteWorkCompany = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteWorkCompanyUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteWorkCompanyMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkCompany>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteWorkCompany>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteWorkCompany'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteWorkCompany>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteWorkCompany(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteWorkCompanyMutationResult = NonNullable<Awaited<ReturnType<typeof deleteWorkCompany>>>
+
+    export type DeleteWorkCompanyMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Delete a work company
+ */
+export const useDeleteWorkCompany = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkCompany>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteWorkCompany>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteWorkCompanyMutationOptions(options));
+    }
+
+export const getCreateWorkDocumentCategoryUrl = () => {
+
+
+
+
+  return `/api/onework/document-categories`
+}
+
+/**
+ * @summary Create a work document category
+ */
+export const createWorkDocumentCategory = async (workDocumentCategoryInput: WorkDocumentCategoryInput, options?: RequestInit): Promise<WorkDocumentCategory> => {
+
+  return customFetch<WorkDocumentCategory>(getCreateWorkDocumentCategoryUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(workDocumentCategoryInput)
+  }
+);}
+
+
+
+
+
+export const getCreateWorkDocumentCategoryMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createWorkDocumentCategory>>, TError,{data: BodyType<WorkDocumentCategoryInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createWorkDocumentCategory>>, TError,{data: BodyType<WorkDocumentCategoryInput>}, TContext> => {
+
+const mutationKey = ['createWorkDocumentCategory'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createWorkDocumentCategory>>, {data: BodyType<WorkDocumentCategoryInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createWorkDocumentCategory(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateWorkDocumentCategoryMutationResult = NonNullable<Awaited<ReturnType<typeof createWorkDocumentCategory>>>
+    export type CreateWorkDocumentCategoryMutationBody = BodyType<WorkDocumentCategoryInput>
+    export type CreateWorkDocumentCategoryMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Create a work document category
+ */
+export const useCreateWorkDocumentCategory = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createWorkDocumentCategory>>, TError,{data: BodyType<WorkDocumentCategoryInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createWorkDocumentCategory>>,
+        TError,
+        {data: BodyType<WorkDocumentCategoryInput>},
+        TContext
+      > => {
+      return useMutation(getCreateWorkDocumentCategoryMutationOptions(options));
+    }
+
+export const getUpdateWorkDocumentCategoryUrl = (id: number,) => {
+
+
+
+
+  return `/api/onework/document-categories/${id}`
+}
+
+/**
+ * @summary Update a work document category
+ */
+export const updateWorkDocumentCategory = async (id: number,
+    workDocumentCategoryUpdate: WorkDocumentCategoryUpdate, options?: RequestInit): Promise<WorkDocumentCategory> => {
+
+  return customFetch<WorkDocumentCategory>(getUpdateWorkDocumentCategoryUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(workDocumentCategoryUpdate)
+  }
+);}
+
+
+
+
+
+export const getUpdateWorkDocumentCategoryMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateWorkDocumentCategory>>, TError,{id: number;data: BodyType<WorkDocumentCategoryUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateWorkDocumentCategory>>, TError,{id: number;data: BodyType<WorkDocumentCategoryUpdate>}, TContext> => {
+
+const mutationKey = ['updateWorkDocumentCategory'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateWorkDocumentCategory>>, {id: number;data: BodyType<WorkDocumentCategoryUpdate>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateWorkDocumentCategory(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateWorkDocumentCategoryMutationResult = NonNullable<Awaited<ReturnType<typeof updateWorkDocumentCategory>>>
+    export type UpdateWorkDocumentCategoryMutationBody = BodyType<WorkDocumentCategoryUpdate>
+    export type UpdateWorkDocumentCategoryMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update a work document category
+ */
+export const useUpdateWorkDocumentCategory = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateWorkDocumentCategory>>, TError,{id: number;data: BodyType<WorkDocumentCategoryUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateWorkDocumentCategory>>,
+        TError,
+        {id: number;data: BodyType<WorkDocumentCategoryUpdate>},
+        TContext
+      > => {
+      return useMutation(getUpdateWorkDocumentCategoryMutationOptions(options));
+    }
+
+export const getDeleteWorkDocumentCategoryUrl = (id: number,) => {
+
+
+
+
+  return `/api/onework/document-categories/${id}`
+}
+
+/**
+ * @summary Delete a work document category
+ */
+export const deleteWorkDocumentCategory = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteWorkDocumentCategoryUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteWorkDocumentCategoryMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkDocumentCategory>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteWorkDocumentCategory>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteWorkDocumentCategory'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteWorkDocumentCategory>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteWorkDocumentCategory(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteWorkDocumentCategoryMutationResult = NonNullable<Awaited<ReturnType<typeof deleteWorkDocumentCategory>>>
+
+    export type DeleteWorkDocumentCategoryMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Delete a work document category
+ */
+export const useDeleteWorkDocumentCategory = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkDocumentCategory>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteWorkDocumentCategory>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteWorkDocumentCategoryMutationOptions(options));
+    }
+
+export const getCreateWorkDocumentUrl = () => {
+
+
+
+
+  return `/api/onework/documents`
+}
+
+/**
+ * @summary Create a work document
+ */
+export const createWorkDocument = async (workDocumentInput: WorkDocumentInput, options?: RequestInit): Promise<WorkDocument> => {
+
+  return customFetch<WorkDocument>(getCreateWorkDocumentUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(workDocumentInput)
+  }
+);}
+
+
+
+
+
+export const getCreateWorkDocumentMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createWorkDocument>>, TError,{data: BodyType<WorkDocumentInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createWorkDocument>>, TError,{data: BodyType<WorkDocumentInput>}, TContext> => {
+
+const mutationKey = ['createWorkDocument'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createWorkDocument>>, {data: BodyType<WorkDocumentInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createWorkDocument(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateWorkDocumentMutationResult = NonNullable<Awaited<ReturnType<typeof createWorkDocument>>>
+    export type CreateWorkDocumentMutationBody = BodyType<WorkDocumentInput>
+    export type CreateWorkDocumentMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Create a work document
+ */
+export const useCreateWorkDocument = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createWorkDocument>>, TError,{data: BodyType<WorkDocumentInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createWorkDocument>>,
+        TError,
+        {data: BodyType<WorkDocumentInput>},
+        TContext
+      > => {
+      return useMutation(getCreateWorkDocumentMutationOptions(options));
+    }
+
+export const getUpdateWorkDocumentUrl = (id: number,) => {
+
+
+
+
+  return `/api/onework/documents/${id}`
+}
+
+/**
+ * @summary Update a work document
+ */
+export const updateWorkDocument = async (id: number,
+    workDocumentUpdate: WorkDocumentUpdate, options?: RequestInit): Promise<WorkDocument> => {
+
+  return customFetch<WorkDocument>(getUpdateWorkDocumentUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(workDocumentUpdate)
+  }
+);}
+
+
+
+
+
+export const getUpdateWorkDocumentMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateWorkDocument>>, TError,{id: number;data: BodyType<WorkDocumentUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateWorkDocument>>, TError,{id: number;data: BodyType<WorkDocumentUpdate>}, TContext> => {
+
+const mutationKey = ['updateWorkDocument'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateWorkDocument>>, {id: number;data: BodyType<WorkDocumentUpdate>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateWorkDocument(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateWorkDocumentMutationResult = NonNullable<Awaited<ReturnType<typeof updateWorkDocument>>>
+    export type UpdateWorkDocumentMutationBody = BodyType<WorkDocumentUpdate>
+    export type UpdateWorkDocumentMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update a work document
+ */
+export const useUpdateWorkDocument = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateWorkDocument>>, TError,{id: number;data: BodyType<WorkDocumentUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateWorkDocument>>,
+        TError,
+        {id: number;data: BodyType<WorkDocumentUpdate>},
+        TContext
+      > => {
+      return useMutation(getUpdateWorkDocumentMutationOptions(options));
+    }
+
+export const getDeleteWorkDocumentUrl = (id: number,) => {
+
+
+
+
+  return `/api/onework/documents/${id}`
+}
+
+/**
+ * @summary Delete a work document
+ */
+export const deleteWorkDocument = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteWorkDocumentUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteWorkDocumentMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkDocument>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteWorkDocument>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteWorkDocument'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteWorkDocument>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteWorkDocument(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteWorkDocumentMutationResult = NonNullable<Awaited<ReturnType<typeof deleteWorkDocument>>>
+
+    export type DeleteWorkDocumentMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Delete a work document
+ */
+export const useDeleteWorkDocument = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkDocument>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteWorkDocument>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteWorkDocumentMutationOptions(options));
+    }
+
+export const getCreateWorkPfEntryUrl = () => {
+
+
+
+
+  return `/api/onework/pf-entries`
+}
+
+/**
+ * @summary Create a PF entry
+ */
+export const createWorkPfEntry = async (workPfEntryInput: WorkPfEntryInput, options?: RequestInit): Promise<WorkPfEntry> => {
+
+  return customFetch<WorkPfEntry>(getCreateWorkPfEntryUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(workPfEntryInput)
+  }
+);}
+
+
+
+
+
+export const getCreateWorkPfEntryMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createWorkPfEntry>>, TError,{data: BodyType<WorkPfEntryInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createWorkPfEntry>>, TError,{data: BodyType<WorkPfEntryInput>}, TContext> => {
+
+const mutationKey = ['createWorkPfEntry'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createWorkPfEntry>>, {data: BodyType<WorkPfEntryInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createWorkPfEntry(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateWorkPfEntryMutationResult = NonNullable<Awaited<ReturnType<typeof createWorkPfEntry>>>
+    export type CreateWorkPfEntryMutationBody = BodyType<WorkPfEntryInput>
+    export type CreateWorkPfEntryMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Create a PF entry
+ */
+export const useCreateWorkPfEntry = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createWorkPfEntry>>, TError,{data: BodyType<WorkPfEntryInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createWorkPfEntry>>,
+        TError,
+        {data: BodyType<WorkPfEntryInput>},
+        TContext
+      > => {
+      return useMutation(getCreateWorkPfEntryMutationOptions(options));
+    }
+
+export const getUpdateWorkPfEntryUrl = (id: number,) => {
+
+
+
+
+  return `/api/onework/pf-entries/${id}`
+}
+
+/**
+ * @summary Update a PF entry
+ */
+export const updateWorkPfEntry = async (id: number,
+    workPfEntryUpdate: WorkPfEntryUpdate, options?: RequestInit): Promise<WorkPfEntry> => {
+
+  return customFetch<WorkPfEntry>(getUpdateWorkPfEntryUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(workPfEntryUpdate)
+  }
+);}
+
+
+
+
+
+export const getUpdateWorkPfEntryMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateWorkPfEntry>>, TError,{id: number;data: BodyType<WorkPfEntryUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateWorkPfEntry>>, TError,{id: number;data: BodyType<WorkPfEntryUpdate>}, TContext> => {
+
+const mutationKey = ['updateWorkPfEntry'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateWorkPfEntry>>, {id: number;data: BodyType<WorkPfEntryUpdate>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateWorkPfEntry(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateWorkPfEntryMutationResult = NonNullable<Awaited<ReturnType<typeof updateWorkPfEntry>>>
+    export type UpdateWorkPfEntryMutationBody = BodyType<WorkPfEntryUpdate>
+    export type UpdateWorkPfEntryMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update a PF entry
+ */
+export const useUpdateWorkPfEntry = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateWorkPfEntry>>, TError,{id: number;data: BodyType<WorkPfEntryUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateWorkPfEntry>>,
+        TError,
+        {id: number;data: BodyType<WorkPfEntryUpdate>},
+        TContext
+      > => {
+      return useMutation(getUpdateWorkPfEntryMutationOptions(options));
+    }
+
+export const getDeleteWorkPfEntryUrl = (id: number,) => {
+
+
+
+
+  return `/api/onework/pf-entries/${id}`
+}
+
+/**
+ * @summary Delete a PF entry
+ */
+export const deleteWorkPfEntry = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteWorkPfEntryUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteWorkPfEntryMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkPfEntry>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteWorkPfEntry>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteWorkPfEntry'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteWorkPfEntry>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteWorkPfEntry(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteWorkPfEntryMutationResult = NonNullable<Awaited<ReturnType<typeof deleteWorkPfEntry>>>
+
+    export type DeleteWorkPfEntryMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Delete a PF entry
+ */
+export const useDeleteWorkPfEntry = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkPfEntry>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteWorkPfEntry>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteWorkPfEntryMutationOptions(options));
+    }
+
+export const getCreateWorkPfWithdrawalUrl = () => {
+
+
+
+
+  return `/api/onework/pf-withdrawals`
+}
+
+/**
+ * @summary Create a PF withdrawal
+ */
+export const createWorkPfWithdrawal = async (workPfWithdrawalInput: WorkPfWithdrawalInput, options?: RequestInit): Promise<WorkPfWithdrawal> => {
+
+  return customFetch<WorkPfWithdrawal>(getCreateWorkPfWithdrawalUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(workPfWithdrawalInput)
+  }
+);}
+
+
+
+
+
+export const getCreateWorkPfWithdrawalMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createWorkPfWithdrawal>>, TError,{data: BodyType<WorkPfWithdrawalInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createWorkPfWithdrawal>>, TError,{data: BodyType<WorkPfWithdrawalInput>}, TContext> => {
+
+const mutationKey = ['createWorkPfWithdrawal'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createWorkPfWithdrawal>>, {data: BodyType<WorkPfWithdrawalInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createWorkPfWithdrawal(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateWorkPfWithdrawalMutationResult = NonNullable<Awaited<ReturnType<typeof createWorkPfWithdrawal>>>
+    export type CreateWorkPfWithdrawalMutationBody = BodyType<WorkPfWithdrawalInput>
+    export type CreateWorkPfWithdrawalMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Create a PF withdrawal
+ */
+export const useCreateWorkPfWithdrawal = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createWorkPfWithdrawal>>, TError,{data: BodyType<WorkPfWithdrawalInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createWorkPfWithdrawal>>,
+        TError,
+        {data: BodyType<WorkPfWithdrawalInput>},
+        TContext
+      > => {
+      return useMutation(getCreateWorkPfWithdrawalMutationOptions(options));
+    }
+
+export const getUpdateWorkPfWithdrawalUrl = (id: number,) => {
+
+
+
+
+  return `/api/onework/pf-withdrawals/${id}`
+}
+
+/**
+ * @summary Update a PF withdrawal
+ */
+export const updateWorkPfWithdrawal = async (id: number,
+    workPfWithdrawalUpdate: WorkPfWithdrawalUpdate, options?: RequestInit): Promise<WorkPfWithdrawal> => {
+
+  return customFetch<WorkPfWithdrawal>(getUpdateWorkPfWithdrawalUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(workPfWithdrawalUpdate)
+  }
+);}
+
+
+
+
+
+export const getUpdateWorkPfWithdrawalMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateWorkPfWithdrawal>>, TError,{id: number;data: BodyType<WorkPfWithdrawalUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateWorkPfWithdrawal>>, TError,{id: number;data: BodyType<WorkPfWithdrawalUpdate>}, TContext> => {
+
+const mutationKey = ['updateWorkPfWithdrawal'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateWorkPfWithdrawal>>, {id: number;data: BodyType<WorkPfWithdrawalUpdate>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateWorkPfWithdrawal(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateWorkPfWithdrawalMutationResult = NonNullable<Awaited<ReturnType<typeof updateWorkPfWithdrawal>>>
+    export type UpdateWorkPfWithdrawalMutationBody = BodyType<WorkPfWithdrawalUpdate>
+    export type UpdateWorkPfWithdrawalMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update a PF withdrawal
+ */
+export const useUpdateWorkPfWithdrawal = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateWorkPfWithdrawal>>, TError,{id: number;data: BodyType<WorkPfWithdrawalUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateWorkPfWithdrawal>>,
+        TError,
+        {id: number;data: BodyType<WorkPfWithdrawalUpdate>},
+        TContext
+      > => {
+      return useMutation(getUpdateWorkPfWithdrawalMutationOptions(options));
+    }
+
+export const getDeleteWorkPfWithdrawalUrl = (id: number,) => {
+
+
+
+
+  return `/api/onework/pf-withdrawals/${id}`
+}
+
+/**
+ * @summary Delete a PF withdrawal
+ */
+export const deleteWorkPfWithdrawal = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteWorkPfWithdrawalUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteWorkPfWithdrawalMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkPfWithdrawal>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteWorkPfWithdrawal>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteWorkPfWithdrawal'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteWorkPfWithdrawal>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteWorkPfWithdrawal(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteWorkPfWithdrawalMutationResult = NonNullable<Awaited<ReturnType<typeof deleteWorkPfWithdrawal>>>
+
+    export type DeleteWorkPfWithdrawalMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Delete a PF withdrawal
+ */
+export const useDeleteWorkPfWithdrawal = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteWorkPfWithdrawal>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteWorkPfWithdrawal>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteWorkPfWithdrawalMutationOptions(options));
+    }
+

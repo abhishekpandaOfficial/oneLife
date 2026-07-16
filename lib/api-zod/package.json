@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./onework": "./src/onework.ts"
   },
   "dependencies": {
     "zod": "catalog:"

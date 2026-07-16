@@ -72,10 +72,17 @@ export async function totalCreditCardOutstanding() {
     const cards = await db.select().from(creditCardsTable);
     return cards.reduce((sum, c) => sum + Number(c.outstandingAmount), 0);
 }
-function monthsInclusive(startDate, endDate) {
+function monthKeysInclusive(startDate, endDate) {
     const start = new Date(startDate);
     const end = endDate ? new Date(endDate) : new Date();
-    return Math.max(0, (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()) + 1);
+    const months = [];
+    let current = new Date(start.getFullYear(), start.getMonth(), 1);
+    const limit = new Date(end.getFullYear(), end.getMonth(), 1);
+    while (current <= limit) {
+        months.push(`${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, "0")}`);
+        current.setMonth(current.getMonth() + 1);
+    }
+    return months;
 }
 export async function totalPfBalance() {
     const [companies, entries, withdrawals] = await Promise.all([
@@ -83,13 +90,16 @@ export async function totalPfBalance() {
         db.select().from(workPfEntriesTable),
         db.select().from(workPfWithdrawalsTable),
     ]);
-    const entryCompanyIds = new Set(entries.map((entry) => entry.companyId).filter(Boolean));
     const entriesTotal = entries.reduce((sum, entry) => sum + Number(entry.employeeAmount) + Number(entry.employerAmount) + Number(entry.interestAmount), 0);
-    const estimatedTotal = companies
-        .filter((company) => !entryCompanyIds.has(company.id))
-        .reduce((sum, company) => sum + monthsInclusive(company.startDate, company.endDate) * (Number(company.employeePfMonthly) + Number(company.employerPfMonthly)), 0);
+    const entryKeys = new Set(entries.map((entry) => `${entry.companyId ?? "general"}:${entry.month}`));
+    const adjustedEstimatedTotal = companies.reduce((sum, company) => {
+        const monthlyPf = Number(company.employeePfMonthly) + Number(company.employerPfMonthly);
+        return sum + monthKeysInclusive(company.startDate, company.endDate)
+            .filter((month) => !entryKeys.has(`${company.id}:${month}`))
+            .length * monthlyPf;
+    }, 0);
     const withdrawn = withdrawals.reduce((sum, withdrawal) => sum + Number(withdrawal.amount), 0);
-    return Math.max(0, entriesTotal + estimatedTotal - withdrawn);
+    return Math.max(0, entriesTotal + adjustedEstimatedTotal - withdrawn);
 }
 export async function totalInvestmentValue() {
     const investments = await db.select().from(investmentsTable);

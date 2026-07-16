@@ -5,7 +5,6 @@ import {
   useCreateBudget, 
   useUpdateBudget,
   useDeleteBudget,
-  useListCategories,
   getListBudgetsQueryKey,
   getGetDashboardSummaryQueryKey
 } from "@workspace/api-client-react";
@@ -30,7 +29,7 @@ import {
 } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CategorySelect } from "@/components/CategorySelect";
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
@@ -56,7 +55,6 @@ export default function Budget() {
   const monthStr = format(currentMonth, "yyyy-MM");
   
   const { data: budgets, isLoading } = useListBudgets({ month: monthStr });
-  const { data: categories } = useListCategories({ type: "expense" });
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
@@ -170,8 +168,7 @@ export default function Budget() {
   const totalActual = budgets?.reduce((acc, b) => acc + b.actualAmount, 0) || 0;
   const totalProgress = totalPlanned > 0 ? (totalActual / totalPlanned) * 100 : 0;
   
-  // Filter out categories that already have a budget this month
-  const availableCategories = categories?.filter(c => !budgets?.some(b => b.categoryId === c.id)) || [];
+  const budgetedCategoryIds = budgets?.map((b) => b.categoryId) ?? [];
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-12">
@@ -215,20 +212,20 @@ export default function Budget() {
                 <FormField control={form.control} name="categoryId" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Expense Category</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value ? field.value.toString() : ""} disabled={!!editingBudget}>
-                      <FormControl><SelectTrigger><SelectValue placeholder="Select..." /></SelectTrigger></FormControl>
-                      <SelectContent>
-                        {editingBudget ? (
-                          <SelectItem value={editingBudget.categoryId.toString()}>{editingBudget.categoryName}</SelectItem>
-                        ) : availableCategories.length === 0 ? (
-                          <SelectItem value="0" disabled>All categories have budgets</SelectItem>
-                        ) : (
-                          availableCategories.map(c => (
-                            <SelectItem key={c.id} value={c.id.toString()}>{c.name}</SelectItem>
-                          ))
-                        )}
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      {editingBudget ? (
+                        <Input value={editingBudget.categoryName} disabled />
+                      ) : (
+                        <CategorySelect
+                          type="expense"
+                          value={field.value || null}
+                          onChange={(id) => field.onChange(typeof id === "number" ? id : 0)}
+                          allowCreate
+                          excludeIds={budgetedCategoryIds}
+                          placeholder="Select expense category..."
+                        />
+                      )}
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
@@ -240,7 +237,7 @@ export default function Budget() {
                   </FormItem>
                 )} />
                 <div className="pt-4 flex justify-end">
-                  <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending || (!editingBudget && availableCategories.length === 0)}>
+                  <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending || (!editingBudget && !form.watch("categoryId"))}>
                     {editingBudget
                       ? updateMutation.isPending ? "Saving..." : "Save Changes"
                       : createMutation.isPending ? "Saving..." : "Save Budget"}

@@ -20,6 +20,7 @@ export interface DashboardSummary {
   totalCreditCardOutstanding: number;
   totalInvestmentValue: number;
   totalInsuranceCoverage: number;
+  pfBalance?: number;
   netWorthChange: number;
   netWorthChangePercent: number;
   emisDueCount: number;

@@ -1005,32 +1005,195 @@ export const DeleteCreditCardParams = zod.object({
 export const DeleteCreditCardResponse = zod.void()
 
 
-export const WorkEmploymentType = zod.enum(['full_time', 'part_time', 'contract', 'internship', 'freelance'])
-export const WorkDocumentType = zod.enum(['payslip', 'joining_letter', 'hike_letter', 'relieving_letter', 'form16', 'pf_statement', 'other'])
-export const WorkPfSource = zod.enum(['manual', 'estimated', 'epfo'])
-
-export const OneworkProfile = zod.object({
+/**
+ * @summary Get OneWork summary
+ */
+export const GetOneworkSummaryResponse = zod.object({
+  "profile": zod.union([zod.object({
   "id": zod.number(),
   "uanNumber": zod.string().nullish(),
   "epfoMemberId": zod.string().nullish(),
+  "googleDriveConnected": zod.string().nullish(),
+  "googleDriveEmail": zod.string().nullish(),
+  "googleDriveFolderId": zod.string().nullish(),
   "lastEpfoSyncAt": zod.coerce.date().nullish(),
   "createdAt": zod.coerce.date()
-})
-
-export const OneworkProfileInput = zod.object({
-  "uanNumber": zod.string().nullish(),
-  "epfoMemberId": zod.string().nullish()
-})
-
-export const WorkCompany = zod.object({
+}),zod.null()]),
+  "companies": zod.array(zod.object({
   "id": zod.number(),
   "companyName": zod.string(),
   "position": zod.string(),
   "location": zod.string().nullish(),
-  "employmentType": WorkEmploymentType,
+  "employmentType": zod.enum(['full_time', 'part_time', 'contract', 'internship', 'freelance']),
   "salaryMonthly": zod.number(),
-  "startDate": zod.string(),
-  "endDate": zod.string().nullable(),
+  "startDate": zod.coerce.date(),
+  "endDate": zod.coerce.date().nullable(),
+  "pfAccountNumber": zod.string().nullish(),
+  "employeePfMonthly": zod.number(),
+  "employerPfMonthly": zod.number(),
+  "color": zod.string(),
+  "icon": zod.string(),
+  "logoUrl": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "tenureMonths": zod.number(),
+  "tenureLabel": zod.string(),
+  "estimatedPfAmount": zod.number(),
+  "documentsCount": zod.number(),
+  "createdAt": zod.coerce.date()
+})),
+  "folders": zod.array(zod.object({
+  "id": zod.number(),
+  "companyId": zod.number(),
+  "companyName": zod.string().nullish(),
+  "name": zod.string(),
+  "color": zod.string(),
+  "icon": zod.string(),
+  "googleDriveFolderId": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "documentsCount": zod.number(),
+  "createdAt": zod.coerce.date()
+})),
+  "documents": zod.array(zod.object({
+  "id": zod.number(),
+  "companyId": zod.number().nullable(),
+  "companyName": zod.string().nullish(),
+  "folderId": zod.number().nullable(),
+  "folderName": zod.string().nullish(),
+  "categoryId": zod.number().nullable(),
+  "categoryName": zod.string().nullish(),
+  "categoryColor": zod.string().nullish(),
+  "categoryIcon": zod.string().nullish(),
+  "name": zod.string(),
+  "documentType": zod.enum(['offer_letter', 'payslip', 'joining_letter', 'hike_letter', 'relieving_letter', 'form16', 'pf_statement', 'other']),
+  "fileName": zod.string(),
+  "fileUrl": zod.string().nullish(),
+  "googleDriveFileId": zod.string().nullish(),
+  "documentDate": zod.coerce.date().nullable(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.coerce.date()
+})),
+  "documentCategories": zod.array(zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "color": zod.string(),
+  "icon": zod.string(),
+  "createdAt": zod.coerce.date()
+})),
+  "salaryRecords": zod.array(zod.object({
+  "id": zod.number(),
+  "companyId": zod.number(),
+  "companyName": zod.string().nullish(),
+  "documentId": zod.number().nullable(),
+  "month": zod.string(),
+  "netSalary": zod.number(),
+  "grossSalary": zod.number(),
+  "ctcAnnual": zod.number(),
+  "taxDeduction": zod.number(),
+  "otherDeductions": zod.number(),
+  "source": zod.string(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.coerce.date()
+})),
+  "pfEntries": zod.array(zod.object({
+  "id": zod.number(),
+  "companyId": zod.number().nullable(),
+  "companyName": zod.string().nullish(),
+  "month": zod.string(),
+  "employeeAmount": zod.number(),
+  "employerAmount": zod.number(),
+  "interestAmount": zod.number(),
+  "source": zod.enum(['manual', 'estimated', 'epfo']),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.coerce.date()
+})),
+  "pfWithdrawals": zod.array(zod.object({
+  "id": zod.number(),
+  "companyId": zod.number().nullable(),
+  "companyName": zod.string().nullish(),
+  "amount": zod.number(),
+  "withdrawalDate": zod.coerce.date(),
+  "reason": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.coerce.date()
+})),
+  "totalCompanies": zod.number(),
+  "activeCompanyName": zod.string().nullish(),
+  "totalExperienceMonths": zod.number(),
+  "totalSalaryMonthly": zod.number(),
+  "pfContributions": zod.number(),
+  "pfWithdrawalsTotal": zod.number(),
+  "pfBalance": zod.number(),
+  "epfoSyncStatus": zod.string()
+})
+
+
+/**
+ * @summary Update OneWork profile
+ */
+export const UpdateOneworkProfileBody = zod.object({
+  "uanNumber": zod.string().nullish(),
+  "epfoMemberId": zod.string().nullish(),
+  "googleDriveConnected": zod.string().nullish(),
+  "googleDriveEmail": zod.string().nullish(),
+  "googleDriveFolderId": zod.string().nullish(),
+  "lastEpfoSyncAt": zod.coerce.date().nullish()
+})
+
+export const UpdateOneworkProfileResponse = zod.object({
+  "id": zod.number(),
+  "uanNumber": zod.string().nullish(),
+  "epfoMemberId": zod.string().nullish(),
+  "googleDriveConnected": zod.string().nullish(),
+  "googleDriveEmail": zod.string().nullish(),
+  "googleDriveFolderId": zod.string().nullish(),
+  "lastEpfoSyncAt": zod.coerce.date().nullish(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Create a work company
+ */
+
+
+export const createWorkCompanyBodySalaryMonthlyDefault = 0;
+export const createWorkCompanyBodySalaryMonthlyMin = 0;
+
+export const createWorkCompanyBodyEmployeePfMonthlyDefault = 0;
+export const createWorkCompanyBodyEmployeePfMonthlyMin = 0;
+
+export const createWorkCompanyBodyEmployerPfMonthlyDefault = 0;
+export const createWorkCompanyBodyEmployerPfMonthlyMin = 0;
+
+export const createWorkCompanyBodyColorDefault = `#2563eb`;
+export const createWorkCompanyBodyIconDefault = `Building2`;
+
+export const CreateWorkCompanyBody = zod.object({
+  "companyName": zod.string().min(1),
+  "position": zod.string().min(1),
+  "location": zod.string().nullish(),
+  "employmentType": zod.enum(['full_time', 'part_time', 'contract', 'internship', 'freelance']).optional(),
+  "salaryMonthly": zod.number().min(createWorkCompanyBodySalaryMonthlyMin).default(createWorkCompanyBodySalaryMonthlyDefault),
+  "startDate": zod.coerce.date(),
+  "endDate": zod.coerce.date().nullish(),
+  "pfAccountNumber": zod.string().nullish(),
+  "employeePfMonthly": zod.number().min(createWorkCompanyBodyEmployeePfMonthlyMin).default(createWorkCompanyBodyEmployeePfMonthlyDefault),
+  "employerPfMonthly": zod.number().min(createWorkCompanyBodyEmployerPfMonthlyMin).default(createWorkCompanyBodyEmployerPfMonthlyDefault),
+  "color": zod.string().default(createWorkCompanyBodyColorDefault),
+  "icon": zod.string().default(createWorkCompanyBodyIconDefault),
+  "logoUrl": zod.string().nullish(),
+  "notes": zod.string().nullish()
+})
+
+export const CreateWorkCompanyResponse = zod.object({
+  "id": zod.number(),
+  "companyName": zod.string(),
+  "position": zod.string(),
+  "location": zod.string().nullish(),
+  "employmentType": zod.enum(['full_time', 'part_time', 'contract', 'internship', 'freelance']),
+  "salaryMonthly": zod.number(),
+  "startDate": zod.coerce.date(),
+  "endDate": zod.coerce.date().nullable(),
   "pfAccountNumber": zod.string().nullish(),
   "employeePfMonthly": zod.number(),
   "employerPfMonthly": zod.number(),
@@ -1045,48 +1208,89 @@ export const WorkCompany = zod.object({
   "createdAt": zod.coerce.date()
 })
 
-export const WorkCompanyInput = zod.object({
-  "companyName": zod.string().min(1),
-  "position": zod.string().min(1),
+
+/**
+ * @summary Update a work company
+ */
+export const UpdateWorkCompanyParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+
+export const updateWorkCompanyBodySalaryMonthlyMin = 0;
+
+export const updateWorkCompanyBodyEmployeePfMonthlyMin = 0;
+
+export const updateWorkCompanyBodyEmployerPfMonthlyMin = 0;
+
+
+
+export const UpdateWorkCompanyBody = zod.object({
+  "companyName": zod.string().min(1).optional(),
+  "position": zod.string().min(1).optional(),
   "location": zod.string().nullish(),
-  "employmentType": WorkEmploymentType.default("full_time"),
-  "salaryMonthly": zod.number().min(0).default(0),
-  "startDate": zod.coerce.date(),
+  "employmentType": zod.enum(['full_time', 'part_time', 'contract', 'internship', 'freelance']).optional(),
+  "salaryMonthly": zod.number().min(updateWorkCompanyBodySalaryMonthlyMin).optional(),
+  "startDate": zod.coerce.date().optional(),
   "endDate": zod.coerce.date().nullish(),
   "pfAccountNumber": zod.string().nullish(),
-  "employeePfMonthly": zod.number().min(0).default(0),
-  "employerPfMonthly": zod.number().min(0).default(0),
-  "color": zod.string().default("#2563eb"),
-  "icon": zod.string().default("Building2"),
+  "employeePfMonthly": zod.number().min(updateWorkCompanyBodyEmployeePfMonthlyMin).optional(),
+  "employerPfMonthly": zod.number().min(updateWorkCompanyBodyEmployerPfMonthlyMin).optional(),
+  "color": zod.string().optional(),
+  "icon": zod.string().optional(),
   "logoUrl": zod.string().nullish(),
   "notes": zod.string().nullish()
 })
 
-export const WorkCompanyUpdate = WorkCompanyInput.partial()
-
-export const WorkDocumentFolder = zod.object({
+export const UpdateWorkCompanyResponse = zod.object({
   "id": zod.number(),
-  "companyId": zod.number(),
-  "companyName": zod.string().nullish(),
-  "name": zod.string(),
+  "companyName": zod.string(),
+  "position": zod.string(),
+  "location": zod.string().nullish(),
+  "employmentType": zod.enum(['full_time', 'part_time', 'contract', 'internship', 'freelance']),
+  "salaryMonthly": zod.number(),
+  "startDate": zod.coerce.date(),
+  "endDate": zod.coerce.date().nullable(),
+  "pfAccountNumber": zod.string().nullish(),
+  "employeePfMonthly": zod.number(),
+  "employerPfMonthly": zod.number(),
   "color": zod.string(),
   "icon": zod.string(),
+  "logoUrl": zod.string().nullish(),
   "notes": zod.string().nullish(),
+  "tenureMonths": zod.number(),
+  "tenureLabel": zod.string(),
+  "estimatedPfAmount": zod.number(),
   "documentsCount": zod.number(),
   "createdAt": zod.coerce.date()
 })
 
-export const WorkDocumentFolderInput = zod.object({
-  "companyId": zod.number(),
-  "name": zod.string().min(1),
-  "color": zod.string().default("#2563eb"),
-  "icon": zod.string().default("FileText"),
-  "notes": zod.string().nullish()
+
+/**
+ * @summary Delete a work company
+ */
+export const DeleteWorkCompanyParams = zod.object({
+  "id": zod.coerce.number()
 })
 
-export const WorkDocumentFolderUpdate = WorkDocumentFolderInput.partial()
+export const DeleteWorkCompanyResponse = zod.void()
 
-export const WorkDocumentCategory = zod.object({
+
+/**
+ * @summary Create a work document category
+ */
+
+export const createWorkDocumentCategoryBodyColorDefault = `#64748b`;
+export const createWorkDocumentCategoryBodyIconDefault = `FileText`;
+
+export const CreateWorkDocumentCategoryBody = zod.object({
+  "name": zod.string().min(1),
+  "color": zod.string().default(createWorkDocumentCategoryBodyColorDefault),
+  "icon": zod.string().default(createWorkDocumentCategoryBodyIconDefault)
+})
+
+export const CreateWorkDocumentCategoryResponse = zod.object({
   "id": zod.number(),
   "name": zod.string(),
   "color": zod.string(),
@@ -1094,15 +1298,63 @@ export const WorkDocumentCategory = zod.object({
   "createdAt": zod.coerce.date()
 })
 
-export const WorkDocumentCategoryInput = zod.object({
-  "name": zod.string().min(1),
-  "color": zod.string().default("#64748b"),
-  "icon": zod.string().default("FileText")
+
+/**
+ * @summary Update a work document category
+ */
+export const UpdateWorkDocumentCategoryParams = zod.object({
+  "id": zod.coerce.number()
 })
 
-export const WorkDocumentCategoryUpdate = WorkDocumentCategoryInput.partial()
 
-export const WorkDocument = zod.object({
+
+
+export const UpdateWorkDocumentCategoryBody = zod.object({
+  "name": zod.string().min(1).optional(),
+  "color": zod.string().optional(),
+  "icon": zod.string().optional()
+})
+
+export const UpdateWorkDocumentCategoryResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "color": zod.string(),
+  "icon": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Delete a work document category
+ */
+export const DeleteWorkDocumentCategoryParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteWorkDocumentCategoryResponse = zod.void()
+
+
+/**
+ * @summary Create a work document
+ */
+
+
+
+
+export const CreateWorkDocumentBody = zod.object({
+  "companyId": zod.number().nullish(),
+  "folderId": zod.number().nullish(),
+  "categoryId": zod.number().nullish(),
+  "name": zod.string().min(1),
+  "documentType": zod.enum(['offer_letter', 'payslip', 'joining_letter', 'hike_letter', 'relieving_letter', 'form16', 'pf_statement', 'other']).optional(),
+  "fileName": zod.string().min(1),
+  "fileUrl": zod.string().nullish(),
+  "googleDriveFileId": zod.string().nullish(),
+  "documentDate": zod.coerce.date().nullish(),
+  "notes": zod.string().nullish()
+})
+
+export const CreateWorkDocumentResponse = zod.object({
   "id": zod.number(),
   "companyId": zod.number().nullable(),
   "companyName": zod.string().nullish(),
@@ -1113,29 +1365,98 @@ export const WorkDocument = zod.object({
   "categoryColor": zod.string().nullish(),
   "categoryIcon": zod.string().nullish(),
   "name": zod.string(),
-  "documentType": WorkDocumentType,
+  "documentType": zod.enum(['offer_letter', 'payslip', 'joining_letter', 'hike_letter', 'relieving_letter', 'form16', 'pf_statement', 'other']),
   "fileName": zod.string(),
   "fileUrl": zod.string().nullish(),
-  "documentDate": zod.string().nullable(),
+  "googleDriveFileId": zod.string().nullish(),
+  "documentDate": zod.coerce.date().nullable(),
   "notes": zod.string().nullish(),
   "createdAt": zod.coerce.date()
 })
 
-export const WorkDocumentInput = zod.object({
+
+/**
+ * @summary Update a work document
+ */
+export const UpdateWorkDocumentParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+
+
+
+export const UpdateWorkDocumentBody = zod.object({
   "companyId": zod.number().nullish(),
   "folderId": zod.number().nullish(),
   "categoryId": zod.number().nullish(),
-  "name": zod.string().min(1),
-  "documentType": WorkDocumentType.default("other"),
-  "fileName": zod.string().min(1),
+  "name": zod.string().min(1).optional(),
+  "documentType": zod.enum(['offer_letter', 'payslip', 'joining_letter', 'hike_letter', 'relieving_letter', 'form16', 'pf_statement', 'other']).optional(),
+  "fileName": zod.string().min(1).optional(),
   "fileUrl": zod.string().nullish(),
+  "googleDriveFileId": zod.string().nullish(),
   "documentDate": zod.coerce.date().nullish(),
   "notes": zod.string().nullish()
 })
 
-export const WorkDocumentUpdate = WorkDocumentInput.partial()
+export const UpdateWorkDocumentResponse = zod.object({
+  "id": zod.number(),
+  "companyId": zod.number().nullable(),
+  "companyName": zod.string().nullish(),
+  "folderId": zod.number().nullable(),
+  "folderName": zod.string().nullish(),
+  "categoryId": zod.number().nullable(),
+  "categoryName": zod.string().nullish(),
+  "categoryColor": zod.string().nullish(),
+  "categoryIcon": zod.string().nullish(),
+  "name": zod.string(),
+  "documentType": zod.enum(['offer_letter', 'payslip', 'joining_letter', 'hike_letter', 'relieving_letter', 'form16', 'pf_statement', 'other']),
+  "fileName": zod.string(),
+  "fileUrl": zod.string().nullish(),
+  "googleDriveFileId": zod.string().nullish(),
+  "documentDate": zod.coerce.date().nullable(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.coerce.date()
+})
 
-export const WorkPfEntry = zod.object({
+
+/**
+ * @summary Delete a work document
+ */
+export const DeleteWorkDocumentParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteWorkDocumentResponse = zod.void()
+
+
+/**
+ * @summary Create a PF entry
+ */
+export const createWorkPfEntryBodyMonthMin = 7;
+
+export const createWorkPfEntryBodyEmployeeAmountDefault = 0;
+export const createWorkPfEntryBodyEmployeeAmountMin = 0;
+
+export const createWorkPfEntryBodyEmployerAmountDefault = 0;
+export const createWorkPfEntryBodyEmployerAmountMin = 0;
+
+export const createWorkPfEntryBodyInterestAmountDefault = 0;
+export const createWorkPfEntryBodyInterestAmountMin = 0;
+
+
+
+export const CreateWorkPfEntryBody = zod.object({
+  "companyId": zod.number().nullish(),
+  "month": zod.string().min(createWorkPfEntryBodyMonthMin),
+  "employeeAmount": zod.number().min(createWorkPfEntryBodyEmployeeAmountMin).default(createWorkPfEntryBodyEmployeeAmountDefault),
+  "employerAmount": zod.number().min(createWorkPfEntryBodyEmployerAmountMin).default(createWorkPfEntryBodyEmployerAmountDefault),
+  "interestAmount": zod.number().min(createWorkPfEntryBodyInterestAmountMin).default(createWorkPfEntryBodyInterestAmountDefault),
+  "source": zod.enum(['manual', 'estimated', 'epfo']).optional(),
+  "notes": zod.string().nullish()
+})
+
+export const CreateWorkPfEntryResponse = zod.object({
   "id": zod.number(),
   "companyId": zod.number().nullable(),
   "companyName": zod.string().nullish(),
@@ -1143,70 +1464,128 @@ export const WorkPfEntry = zod.object({
   "employeeAmount": zod.number(),
   "employerAmount": zod.number(),
   "interestAmount": zod.number(),
-  "source": WorkPfSource,
+  "source": zod.enum(['manual', 'estimated', 'epfo']),
   "notes": zod.string().nullish(),
   "createdAt": zod.coerce.date()
 })
 
-export const WorkPfEntryInput = zod.object({
+
+/**
+ * @summary Update a PF entry
+ */
+export const UpdateWorkPfEntryParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const updateWorkPfEntryBodyMonthMin = 7;
+
+export const updateWorkPfEntryBodyEmployeeAmountMin = 0;
+
+export const updateWorkPfEntryBodyEmployerAmountMin = 0;
+
+export const updateWorkPfEntryBodyInterestAmountMin = 0;
+
+
+
+export const UpdateWorkPfEntryBody = zod.object({
   "companyId": zod.number().nullish(),
-  "month": zod.string().min(7),
-  "employeeAmount": zod.number().min(0).default(0),
-  "employerAmount": zod.number().min(0).default(0),
-  "interestAmount": zod.number().min(0).default(0),
-  "source": WorkPfSource.default("manual"),
+  "month": zod.string().min(updateWorkPfEntryBodyMonthMin).optional(),
+  "employeeAmount": zod.number().min(updateWorkPfEntryBodyEmployeeAmountMin).optional(),
+  "employerAmount": zod.number().min(updateWorkPfEntryBodyEmployerAmountMin).optional(),
+  "interestAmount": zod.number().min(updateWorkPfEntryBodyInterestAmountMin).optional(),
+  "source": zod.enum(['manual', 'estimated', 'epfo']).optional(),
   "notes": zod.string().nullish()
 })
 
-export const WorkPfEntryUpdate = WorkPfEntryInput.partial()
-
-export const WorkPfWithdrawal = zod.object({
+export const UpdateWorkPfEntryResponse = zod.object({
   "id": zod.number(),
   "companyId": zod.number().nullable(),
   "companyName": zod.string().nullish(),
-  "amount": zod.number(),
-  "withdrawalDate": zod.string(),
-  "reason": zod.string().nullish(),
+  "month": zod.string(),
+  "employeeAmount": zod.number(),
+  "employerAmount": zod.number(),
+  "interestAmount": zod.number(),
+  "source": zod.enum(['manual', 'estimated', 'epfo']),
   "notes": zod.string().nullish(),
   "createdAt": zod.coerce.date()
 })
 
-export const WorkPfWithdrawalInput = zod.object({
+
+/**
+ * @summary Delete a PF entry
+ */
+export const DeleteWorkPfEntryParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteWorkPfEntryResponse = zod.void()
+
+
+/**
+ * @summary Create a PF withdrawal
+ */
+export const createWorkPfWithdrawalBodyAmountMin = 0;
+
+
+
+export const CreateWorkPfWithdrawalBody = zod.object({
   "companyId": zod.number().nullish(),
-  "amount": zod.number().min(0),
+  "amount": zod.number().min(createWorkPfWithdrawalBodyAmountMin),
   "withdrawalDate": zod.coerce.date(),
   "reason": zod.string().nullish(),
   "notes": zod.string().nullish()
 })
 
-export const WorkPfWithdrawalUpdate = WorkPfWithdrawalInput.partial()
-
-export const OneworkSummary = zod.object({
-  "profile": OneworkProfile.nullable(),
-  "companies": zod.array(WorkCompany),
-  "folders": zod.array(WorkDocumentFolder),
-  "documents": zod.array(WorkDocument),
-  "documentCategories": zod.array(WorkDocumentCategory),
-  "pfEntries": zod.array(WorkPfEntry),
-  "pfWithdrawals": zod.array(WorkPfWithdrawal),
-  "totalCompanies": zod.number(),
-  "activeCompanyName": zod.string().nullish(),
-  "totalExperienceMonths": zod.number(),
-  "totalSalaryMonthly": zod.number(),
-  "pfContributions": zod.number(),
-  "pfWithdrawalsTotal": zod.number(),
-  "pfBalance": zod.number(),
-  "epfoSyncStatus": zod.string()
+export const CreateWorkPfWithdrawalResponse = zod.object({
+  "id": zod.number(),
+  "companyId": zod.number().nullable(),
+  "companyName": zod.string().nullish(),
+  "amount": zod.number(),
+  "withdrawalDate": zod.coerce.date(),
+  "reason": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.coerce.date()
 })
 
-export const GetWorkCompanyParams = zod.object({ "id": zod.coerce.number() })
-export const UpdateWorkCompanyParams = GetWorkCompanyParams
-export const DeleteWorkCompanyParams = GetWorkCompanyParams
-export const UpdateWorkDocumentCategoryParams = zod.object({ "id": zod.coerce.number() })
-export const DeleteWorkDocumentCategoryParams = UpdateWorkDocumentCategoryParams
-export const UpdateWorkDocumentParams = zod.object({ "id": zod.coerce.number() })
-export const DeleteWorkDocumentParams = UpdateWorkDocumentParams
-export const UpdateWorkPfEntryParams = zod.object({ "id": zod.coerce.number() })
-export const DeleteWorkPfEntryParams = UpdateWorkPfEntryParams
-export const UpdateWorkPfWithdrawalParams = zod.object({ "id": zod.coerce.number() })
-export const DeleteWorkPfWithdrawalParams = UpdateWorkPfWithdrawalParams
+
+/**
+ * @summary Update a PF withdrawal
+ */
+export const UpdateWorkPfWithdrawalParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const updateWorkPfWithdrawalBodyAmountMin = 0;
+
+
+
+export const UpdateWorkPfWithdrawalBody = zod.object({
+  "companyId": zod.number().nullish(),
+  "amount": zod.number().min(updateWorkPfWithdrawalBodyAmountMin).optional(),
+  "withdrawalDate": zod.coerce.date().optional(),
+  "reason": zod.string().nullish(),
+  "notes": zod.string().nullish()
+})
+
+export const UpdateWorkPfWithdrawalResponse = zod.object({
+  "id": zod.number(),
+  "companyId": zod.number().nullable(),
+  "companyName": zod.string().nullish(),
+  "amount": zod.number(),
+  "withdrawalDate": zod.coerce.date(),
+  "reason": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Delete a PF withdrawal
+ */
+export const DeleteWorkPfWithdrawalParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteWorkPfWithdrawalResponse = zod.void()
+
+

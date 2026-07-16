@@ -5,8 +5,7 @@ import {
   useUpdateCategory,
   useDeleteCategory, 
   Category,
-  TransactionType, 
-  getListCategoriesQueryKey 
+  TransactionType,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Plus, Tags, Trash2, ArrowUpRight, ArrowDownRight, CheckCircle2, Pencil } from "lucide-react";
@@ -29,6 +28,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { invalidateFinanceCategoryData } from "@/lib/finance-query-invalidation";
 
 const COLORS = [
   "#f43f5e", "#ec4899", "#d946ef", "#a855f7", "#8b5cf6", 
@@ -58,7 +58,7 @@ export default function Categories() {
     mutation: {
       onSuccess: () => {
         toast({ title: "Category created" });
-        queryClient.invalidateQueries({ queryKey: getListCategoriesQueryKey() });
+        invalidateFinanceCategoryData(queryClient);
         setIsDialogOpen(false);
         form.reset();
       },
@@ -70,7 +70,7 @@ export default function Categories() {
     mutation: {
       onSuccess: () => {
         toast({ title: "Category updated" });
-        queryClient.invalidateQueries({ queryKey: getListCategoriesQueryKey() });
+        invalidateFinanceCategoryData(queryClient);
         setIsDialogOpen(false);
         setEditingCategory(null);
         form.reset();
@@ -83,7 +83,7 @@ export default function Categories() {
     mutation: {
       onSuccess: () => {
         toast({ title: "Category deleted" });
-        queryClient.invalidateQueries({ queryKey: getListCategoriesQueryKey() });
+        invalidateFinanceCategoryData(queryClient);
         setDeleteId(null);
       },
       onError: () => {

@@ -109,6 +109,9 @@ CREATE TABLE IF NOT EXISTS "onework_profile" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"uan_number" text,
 	"epfo_member_id" text,
+	"google_drive_connected" text,
+	"google_drive_email" text,
+	"google_drive_folder_id" text,
 	"last_epfo_sync_at" timestamp with time zone,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -138,6 +141,7 @@ CREATE TABLE IF NOT EXISTS "work_document_folders" (
 	"name" text NOT NULL,
 	"color" text DEFAULT '#2563eb' NOT NULL,
 	"icon" text DEFAULT 'FileText' NOT NULL,
+	"google_drive_folder_id" text,
 	"notes" text,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -159,7 +163,23 @@ CREATE TABLE IF NOT EXISTS "work_documents" (
 	"document_type" text DEFAULT 'other' NOT NULL,
 	"file_name" text NOT NULL,
 	"file_url" text,
+	"google_drive_file_id" text,
 	"document_date" date,
+	"notes" text,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "work_salary_records" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"company_id" integer NOT NULL,
+	"document_id" integer,
+	"month" text NOT NULL,
+	"net_salary" numeric(14, 2) DEFAULT 0 NOT NULL,
+	"gross_salary" numeric(14, 2) DEFAULT 0 NOT NULL,
+	"ctc_annual" numeric(14, 2) DEFAULT 0 NOT NULL,
+	"tax_deduction" numeric(14, 2) DEFAULT 0 NOT NULL,
+	"other_deductions" numeric(14, 2) DEFAULT 0 NOT NULL,
+	"source" text DEFAULT 'manual' NOT NULL,
 	"notes" text,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -190,5 +210,7 @@ ALTER TABLE "work_document_folders" ADD CONSTRAINT "work_document_folders_compan
 ALTER TABLE "work_documents" ADD CONSTRAINT "work_documents_company_id_work_companies_id_fk" FOREIGN KEY ("company_id") REFERENCES "public"."work_companies"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "work_documents" ADD CONSTRAINT "work_documents_folder_id_work_document_folders_id_fk" FOREIGN KEY ("folder_id") REFERENCES "public"."work_document_folders"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "work_documents" ADD CONSTRAINT "work_documents_category_id_work_document_categories_id_fk" FOREIGN KEY ("category_id") REFERENCES "public"."work_document_categories"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "work_salary_records" ADD CONSTRAINT "work_salary_records_company_id_work_companies_id_fk" FOREIGN KEY ("company_id") REFERENCES "public"."work_companies"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "work_salary_records" ADD CONSTRAINT "work_salary_records_document_id_work_documents_id_fk" FOREIGN KEY ("document_id") REFERENCES "public"."work_documents"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "work_pf_entries" ADD CONSTRAINT "work_pf_entries_company_id_work_companies_id_fk" FOREIGN KEY ("company_id") REFERENCES "public"."work_companies"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "work_pf_withdrawals" ADD CONSTRAINT "work_pf_withdrawals_company_id_work_companies_id_fk" FOREIGN KEY ("company_id") REFERENCES "public"."work_companies"("id") ON DELETE set null ON UPDATE no action;

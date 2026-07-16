@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { 
   useListTransactions, 
-  useListCategories,
   useDeleteTransaction, 
   TransactionType,
   getListTransactionsQueryKey,
@@ -56,6 +55,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { CategorySelect } from "@/components/CategorySelect";
 import { useToast } from "@/hooks/use-toast";
 
 type DatePreset = "all" | "today" | "week" | "month" | "custom";
@@ -136,6 +136,11 @@ export default function Transactions({ type }: { type?: TransactionType }) {
     setToDate(nextRange.to);
   }, [type]);
 
+  // Reset category filter when transaction type filter changes
+  React.useEffect(() => {
+    setCategoryId("all");
+  }, [filterType]);
+
   const queryParams = React.useMemo(() => ({
     type: filterType === "all" ? undefined : filterType,
     categoryId: categoryId === "all" ? undefined : categoryId,
@@ -162,9 +167,6 @@ export default function Transactions({ type }: { type?: TransactionType }) {
   });
   const { data: monthExpenses } = useListTransactions({ type: "expense", ...monthRange }, {
     query: { enabled: showExpenseSummary, staleTime: 30_000 } as any,
-  });
-  const { data: categories } = useListCategories({ type: filterType === "all" ? undefined : filterType }, {
-    query: { staleTime: 60_000 } as any,
   });
 
   const deleteTx = useDeleteTransaction({
@@ -321,19 +323,14 @@ export default function Transactions({ type }: { type?: TransactionType }) {
                 className="bg-background"
                 aria-label="To date"
               />
-              <Select value={categoryId === "all" ? "all" : categoryId.toString()} onValueChange={(value) => setCategoryId(value === "all" ? "all" : Number(value))}>
-                <SelectTrigger className="bg-background">
-                  <SelectValue placeholder="Category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  {(categories || []).map((category) => (
-                    <SelectItem key={category.id} value={category.id.toString()}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <CategorySelect
+                type={filterType === "all" ? "all" : filterType}
+                value={categoryId}
+                onChange={(id) => setCategoryId(id === "all" || id === null ? "all" : id)}
+                allowAll
+                placeholder="Category"
+                className="bg-background"
+              />
             </div>
           </div>
           <div className="flex items-center justify-between gap-3">
